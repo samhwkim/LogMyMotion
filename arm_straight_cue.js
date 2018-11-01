@@ -1,3 +1,14 @@
+// Hello.
+//
+// This is JSHint, a tool that helps to detect errors and potential
+// problems in your JavaScript code.
+//
+// To start, simply enter some JavaScript anywhere on this page. Your
+// report will appear on the right side.
+//
+// Additionally, you can toggle specific options in the Configure
+// menu.
+
 let poseNet;
 let poses = [];
 
@@ -48,8 +59,8 @@ function setup() {
 }
 
 function distanceFormula(x1, y1, x2, y2) {
-  var result = Math.sqrt(Math.pow(y2-y1, 2) + Math.pow(x2-x1, 2))
-  return result
+  var result = Math.sqrt(Math.pow(y2-y1, 2) + Math.pow(x2-x1, 2));
+  return result;
 }
 
 function modelReady() {
@@ -84,46 +95,46 @@ function drawKeypoints()  {
 
         // Right shoulder coordinates
         if(j == 6) {
-          rightShoulderX = keypoint.position.x
-          rightShoulderY = keypoint.position.y
+          rightShoulderX = keypoint.position.x;
+          rightShoulderY = keypoint.position.y;
         }
 
         // Right elbow coordinates
         if(j == 8) {
-          rightElbowX = keypoint.position.x
-          rightElbowY = keypoint.position.y
+          rightElbowX = keypoint.position.x;
+          rightElbowY = keypoint.position.y;
         }
 
         // Right wrist coordinates
         if(j == 10) {
-          rightWristX = keypoint.position.x
-          rightWristY = keypoint.position.y
+          rightWristX = keypoint.position.x;
+          rightWristY = keypoint.position.y;
         }
 
         // This is where we use our points to create three sides of our triangle
-        shoulderToElbowDistance = distanceFormula(rightShoulderX, rightShoulderY, rightElbowX, rightElbowY)
-        elbowToWristDistance = distanceFormula(rightElbowX, rightElbowY, rightWristX, rightWristY)
-        shoulderToWristDistance = distanceFormula(rightShoulderX, rightShoulderY, rightWristX, rightWristY)
+        shoulderToElbowDistance = distanceFormula(rightShoulderX, rightShoulderY, rightElbowX, rightElbowY);
+        elbowToWristDistance = distanceFormula(rightElbowX, rightElbowY, rightWristX, rightWristY);
+        shoulderToWristDistance = distanceFormula(rightShoulderX, rightShoulderY, rightWristX, rightWristY);
 
         // This link explains the formula I use from here: https://www.mathsisfun.com/algebra/trig-solving-sss-triangles.html
         // This grabs the angle of the elbow vertex
-        let numerator = Math.pow(shoulderToElbowDistance, 2) + Math.pow(elbowToWristDistance, 2) - Math.pow(shoulderToWristDistance, 2)
-        numerator = numerator.toFixed(3)
-        let denominator = (2*shoulderToElbowDistance*elbowToWristDistance)
-        let fraction = (numerator/denominator)
+        let numerator = Math.pow(shoulderToElbowDistance, 2) + Math.pow(elbowToWristDistance, 2) - Math.pow(shoulderToWristDistance, 2);
+        numerator = numerator.toFixed(3);
+        let denominator = (2*shoulderToElbowDistance*elbowToWristDistance);
+        let fraction = (numerator/denominator);
 
         // Answer is in rad so we convert to degrees
-        let armRad = Math.acos(fraction)
-        armAngle = armRad * 180 / Math.PI
+        let armRad = Math.acos(fraction);
+        armAngle = armRad * 180 / Math.PI;
 
         // This is where we're setting the bounds of our cue.
         // If the angle is between 140 and 180 degrees then we're good.
         // For other cues we'll experiment what a good range is for each
         // grade. We'll have to get creative for some of our cues.
         if(armAngle > 140 && armAngle < 180) {
-          console.log("STRAIGHTISH")
+          console.log("STRAIGHTISH");
         } else {
-          console.log("BENT")
+          console.log("BENT");
         }
 
       	noStroke();
