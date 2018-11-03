@@ -120,7 +120,7 @@ function drawKeypoints()  {
         // If the angle is between 140 and 180 degrees then we're good.
         // For other cues we'll experiment what a good range is for each
         // grade. We'll have to get creative for some of our cues.
-        if(armAngle > 140 && armAngle < 180) {
+        if(armAngle > 140 && armAngle < 230) {
           console.log("STRAIGHTISH")
         } else {
           console.log("BENT")
