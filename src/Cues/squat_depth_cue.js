@@ -35,7 +35,7 @@ let leftKneeY = 0;
 function setup() {
   videoIsPlaying = false;
   createCanvas(1080, 720);
-  video = createVideo('squatnotdeepstilldata.mp4', vidLoad);
+  video = createVideo('../Videos/squat_not_deep_still.mp4', vidLoad);
   video.size(width, height);
 
   // Create a new poseNet method with a single detection
