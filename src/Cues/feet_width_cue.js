@@ -26,16 +26,26 @@ let PROPERTIES = {
   multiplier: 0.75,
 };
 
-let rightHipY = 0;
-let rightKneeY = 0;
+let rightAnkleX = 0;
+let rightAnkleY = 0;
 
-let leftHipY = 0;
-let leftKneeY = 0;
+let leftAnkleX = 0;
+let leftAnkleY = 0;
+
+let rightShoulderX = 0;
+let rightShoulderY = 0;
+
+let leftShoulderX = 0;
+let leftShoulderY = 0;
+
+let shoulderDistance = 0;
+let feetDistance = 0;
+
 
 function setup() {
   videoIsPlaying = false;
   createCanvas(1080, 720);
-  video = createVideo('squatnotdeepstilldata.mp4', vidLoad);
+  video = createVideo('GoodSquat.mp4', vidLoad);
   video.size(width, height);
 
   // Create a new poseNet method with a single detection
@@ -84,28 +94,42 @@ function drawKeypoints()  {
 
         // These if statements grab our coordinates for the joints we want to use in our cue
 
-        // Left hip coordinates
-        if(j == 11) {
-          leftHipY = keypoint.position.y;
+        // Right shoulder coordinates
+        if(keypoint.part == "rightShoulder") {
+          rightShoulderX = keypoint.position.x;
+          rightShoulderY = keypoint.position.y;
         }
 
-        // Right hip coordinates
-        if(j == 12) {
-          rightHipY = keypoint.position.y;
+        // Right elbow coordinates
+        if(keypoint.part == "leftShoulder") {
+          leftShoulderX = keypoint.position.x;
+          leftShoulderY = keypoint.position.y;
         }
 
-        // Left knee coordinates
-        if(j == 13) {
-          leftKneeY = keypoint.position.y;
+        // Right wrist coordinates
+        if(keypoint.part == "rightAnkle") {
+          rightAnkleX = keypoint.position.x;
+          rightAnkleY = keypoint.position.y;
         }
 
-        // Right knee coordinates
-        if(j == 14) {
-          rightKneeY = keypoint.position.y;
+        if(keypoint.part == "leftAnkle") {
+          leftAnkleX = keypoint.position.x;
+          leftAnkleY = keypoint.position.y;
         }
 
-        if(rightHipY > rightKneeY && leftHipY > leftKneeY) {
-          console.log("GOOD JOB")
+        // This is where we use our points to create three sides of our triangle
+        shoulderWidth = distanceFormula(rightShoulderX, rightShoulderY, leftShoulderX, leftShoulderY);
+        feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
+
+        if(feetWidth < shoulderWidth) {
+          console.log("MOVE FEET FURTHER APART");
+        }
+
+        else if (feetWidth > 1.3 * shoulderWidth) {
+              console.log("MOVE FEET CLOSER TOGETHER");
+        }
+        else {
+            console.log("GOOD FEET DISTANCE");
         }
 
       	noStroke();

@@ -26,25 +26,16 @@ let PROPERTIES = {
   multiplier: 0.75,
 };
 
-let rightShoulderX = 0;
-let rightShoulderY = 0;
+let rightHipY = 0;
+let rightKneeY = 0;
 
-let rightElbowX = 0;
-let rightElbowY = 0;
-
-let rightWristX = 0;
-let rightWristY = 0;
-
-let shoulderToElbowDistance = 0;
-let elbowToWristDistance = 0;
-let shoulderToWristDistance = 0;
-
-let armAngle = 0;
+let leftHipY = 0;
+let leftKneeY = 0;
 
 function setup() {
   videoIsPlaying = false;
   createCanvas(1080, 720);
-  video = createVideo('armstraightdata.mp4', vidLoad);
+  video = createVideo('../Videos/squat_not_deep_still.mp4', vidLoad);
   video.size(width, height);
 
   // Create a new poseNet method with a single detection
@@ -93,48 +84,28 @@ function drawKeypoints()  {
 
         // These if statements grab our coordinates for the joints we want to use in our cue
 
-        // Right shoulder coordinates
-        if(j == 6) {
-          rightShoulderX = keypoint.position.x;
-          rightShoulderY = keypoint.position.y;
+        // Left hip coordinates
+        if(j == 11) {
+          leftHipY = keypoint.position.y;
         }
 
-        // Right elbow coordinates
-        if(j == 8) {
-          rightElbowX = keypoint.position.x;
-          rightElbowY = keypoint.position.y;
+        // Right hip coordinates
+        if(j == 12) {
+          rightHipY = keypoint.position.y;
         }
 
-        // Right wrist coordinates
-        if(j == 10) {
-          rightWristX = keypoint.position.x;
-          rightWristY = keypoint.position.y;
+        // Left knee coordinates
+        if(j == 13) {
+          leftKneeY = keypoint.position.y;
         }
 
-        // This is where we use our points to create three sides of our triangle
-        shoulderToElbowDistance = distanceFormula(rightShoulderX, rightShoulderY, rightElbowX, rightElbowY);
-        elbowToWristDistance = distanceFormula(rightElbowX, rightElbowY, rightWristX, rightWristY);
-        shoulderToWristDistance = distanceFormula(rightShoulderX, rightShoulderY, rightWristX, rightWristY);
+        // Right knee coordinates
+        if(j == 14) {
+          rightKneeY = keypoint.position.y;
+        }
 
-        // This link explains the formula I use from here: https://www.mathsisfun.com/algebra/trig-solving-sss-triangles.html
-        // This grabs the angle of the elbow vertex
-        let numerator = Math.pow(shoulderToElbowDistance, 2) + Math.pow(elbowToWristDistance, 2) - Math.pow(shoulderToWristDistance, 2);
-        numerator = numerator.toFixed(3);
-        let denominator = (2*shoulderToElbowDistance*elbowToWristDistance);
-        let fraction = (numerator/denominator);
-
-        // Answer is in rad so we convert to degrees
-        let armRad = Math.acos(fraction);
-        armAngle = armRad * 180 / Math.PI;
-
-        // This is where we're setting the bounds of our cue.
-        // If the angle is between 140 and 180 degrees then we're good.
-        // For other cues we'll experiment what a good range is for each
-        // grade. We'll have to get creative for some of our cues.
-        if(armAngle > 140 && armAngle < 180) {
-          console.log("STRAIGHTISH");
-        } else {
-          console.log("BENT");
+        if(rightHipY > rightKneeY && leftHipY > leftKneeY) {
+          console.log("GOOD JOB")
         }
 
       	noStroke();
