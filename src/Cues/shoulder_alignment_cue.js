@@ -35,7 +35,7 @@ let leftShoulderY = 0;
 function setup() {
   videoIsPlaying = false;
   createCanvas(1080, 720);
-  video = createVideo('shoulderaligndata.mp4', vidLoad);
+  video = createVideo('../Videos/shoulders_misaligned_left.mp4', vidLoad);
   video.size(width, height);
 
   // Create a new poseNet method with a single detection
@@ -102,7 +102,7 @@ function drawKeypoints()  {
 
         let shoulderSlope = slopeFormula(leftShoulderX, leftShoulderY, rightShoulderX, rightShoulderY);
 
-        if (shoulderSlope >= 0.02) {
+        if (shoulderSlope >= 0.1) {
           console.log("TILTED");
         }
         else {
