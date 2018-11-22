@@ -1,31 +1,3 @@
-// Hello.
-//
-// This is JSHint, a tool that helps to detect errors and potential
-// problems in your JavaScript code.
-//
-// To start, simply enter some JavaScript anywhere on this page. Your
-// report will appear on the right side.
-//
-// Additionally, you can toggle specific options in the Configure
-// menu.
-
-let poseNet;
-let poses = [];
-
-let video;
-var videoIsPlaying;
-
-let PROPERTIES = {
-  imageScaleFactor: 0.5,
-  outputStride: 16,
-  flipHorizontal: false,
-  minConfidence: 0.5,
-  scoreThreshold: 0.5,
-  nmsRadius: 20,
-  detectionType: 'single',
-  multiplier: 0.75,
-};
-
 let rightAnkleX = 0;
 let rightAnkleY = 0;
 
@@ -41,134 +13,40 @@ let leftShoulderY = 0;
 let shoulderDistance = 0;
 let feetDistance = 0;
 
-
-function setup() {
-  videoIsPlaying = false;
-  createCanvas(1080, 720);
-  video = createVideo('GoodSquat.mp4', vidLoad);
-  video.size(width, height);
-
-  // Create a new poseNet method with a single detection
-  poseNet = ml5.poseNet(video, PROPERTIES, modelReady);
-  // This sets up an event that fills the global variable "poses"
-  // with an array every time new poses are detected
-  poseNet.on('pose', function(results) {
-    poses = results;
-  });
-  // Hide the video element, and just show the canvas
-  video.hide();
-}
-
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2-y1, 2) + Math.pow(x2-x1, 2));
   return result;
 }
 
-function modelReady() {
-  select('#status').html('Model Loaded');
-}
+function analyzeFeetWidth(pose) {
+    let rightShoulderKeypoint = pose.keypoints[6];
+    rightShoulderX = rightShoulderKeypoint.position.x;
+    rightShoulderY = rightShoulderKeypoint.position.y;
 
-function mousePressed(){
-  vidLoad();
-}
+    let leftShoulderKeypoint = pose.keypoints[5];
+    leftShoulderX = leftShoulderKeypoint.position.x;
+    leftShoulderY = leftShoulderKeypoint.position.y;
 
-function draw() {
-  image(video, 0, 0, width, height);
+    let rightAnkleKeypoint = pose.keypoints[16];
+    rightAnkleX = rightAnkleKeypoint.position.x;
+    rightAnkleY = rightAnkleKeypoint.position.y;
 
-  // We can call both functions to draw all keypoints and the skeletons
-  drawKeypoints();
-  drawSkeleton();
-}
+    let leftAnkleKeypoint = pose.keypoints[15];
+    leftAnkleX = leftAnkleKeypoint.position.x;
+    leftAnkleY = leftAnkleKeypoint.position.y;
 
-// A function to draw ellipses over the detected keypoints
-function drawKeypoints()  {
-  // Loop through all the poses detected
-  for (let i = 0; i < poses.length; i++) {
-    // For each pose detected, loop through all the keypoints
-    let pose = poses[i].pose;
-    for (let j = 0; j < pose.keypoints.length; j++) {
-      // A keypoint is an object describing a body part (like rightArm or leftShoulder)
-      let keypoint = pose.keypoints[j];
-      // Only draw an ellipse is the pose probability is bigger than 0.2
-      if (keypoint.score > 0.2) {
+    shoulderWidth = distanceFormula(rightShoulderX, rightShoulderY, leftShoulderX, leftShoulderY);
+    feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
 
-        // These if statements grab our coordinates for the joints we want to use in our cue
-
-        // Right shoulder coordinates
-        if(keypoint.part == "rightShoulder") {
-          rightShoulderX = keypoint.position.x;
-          rightShoulderY = keypoint.position.y;
-        }
-
-        // Right elbow coordinates
-        if(keypoint.part == "leftShoulder") {
-          leftShoulderX = keypoint.position.x;
-          leftShoulderY = keypoint.position.y;
-        }
-
-        // Right wrist coordinates
-        if(keypoint.part == "rightAnkle") {
-          rightAnkleX = keypoint.position.x;
-          rightAnkleY = keypoint.position.y;
-        }
-
-        if(keypoint.part == "leftAnkle") {
-          leftAnkleX = keypoint.position.x;
-          leftAnkleY = keypoint.position.y;
-        }
-
-        // This is where we use our points to create three sides of our triangle
-        shoulderWidth = distanceFormula(rightShoulderX, rightShoulderY, leftShoulderX, leftShoulderY);
-        feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
-
-        if(feetWidth < shoulderWidth) {
-          console.log("MOVE FEET FURTHER APART");
-        }
-
-        else if (feetWidth > 1.3 * shoulderWidth) {
-              console.log("MOVE FEET CLOSER TOGETHER");
-        }
-        else {
-            console.log("GOOD FEET DISTANCE");
-        }
-
-      	noStroke();
-        fill(255, 0, 0);
-        ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
-      }
+    if(feetWidth < shoulderWidth) {
+      console.log("MOVE FEET FURTHER APART")
     }
-  }
-}
 
-// A function to draw the skeletons
-function drawSkeleton() {
-  // Loop through all the skeletons detected
-  for (let i = 0; i < poses.length; i++) {
-    let skeleton = poses[i].skeleton;
-    // For every skeleton, loop through all body connections
-    for (let j = 0; j < skeleton.length; j++) {
-      let partA = skeleton[j][0];
-      let partB = skeleton[j][1];
-      stroke(255, 0, 0);
-      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+    else if (feetWidth > 1.3 * shoulderWidth) {
+      console.log("MOVE FEET CLOSER TOGETHER");
     }
-  }
-}
 
-
-// This function is called when the video loads
-function vidLoad() {
-  video.stop();
-  video.loop();
-  videoIsPlaying = true;
-}
-
-function keyPressed(){
-  if (videoIsPlaying) {
-    video.pause();
-    videoIsPlaying = false;
-  } else {
-    video.loop();
-    videoIsPlaying = true;
-  }
+    else {
+      console.log("GOOD FEET DISTANCE");
+    }
 }
