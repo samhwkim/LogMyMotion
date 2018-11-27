@@ -1,0 +1,21 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+.team-container {
+  text-align: center;
+}
+
+#memberpic {
+  border-radius: 50%;
+}
+#memberpic1 {
+  border-radius: 50%;
+}
+
+#memberinfo {
+  font: 1.2em "Raleway", sans-serif;
+}
+figure {
+  text-align: center;
+  display: inline-block;
+}

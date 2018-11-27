@@ -1,0 +1,64 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+body {
+  background: #fafafa;
+  color: #404040;
+}
+
+.blue-accents {
+  color: #99ccff;
+  font-weight: 1000;
+}
+
+.purple-underline {
+  border-bottom: 0.07em solid #595959;
+}
+
+.titlesection {
+  max-width: 100%;
+  width: 100%;
+}
+
+.titlesection #LMMtitle {
+  padding-top: 10%;
+  padding-left: 20%;
+  font: 7.1em "Raleway", sans-serif;
+}
+.titlesection .titleshadow {
+  text-shadow: 5px 5px #cccccc;
+}
+
+.groupmembers {
+  padding-top: 2.5%;
+  text-align: right;
+  padding-right: 20%;
+}
+
+.groupmembers #pll {
+  font: 1.2em "Raleway", sans-serif;
+}
+
+.trynowsection {
+  position: relative;
+  text-align: center;
+  padding-top: 10%;
+}
+
+.trynowsection .trynowtext {
+  font: 3em "Raleway", sans-serif;
+}
+
+.trynowsection .trynowtext .trynowlink {
+  text-decoration: none;
+  color: black;
+  border: 5px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.trynowsection .trynowtext .trynowlink:hover {
+  color: #99ccff;
+  border: 5px solid;
+}

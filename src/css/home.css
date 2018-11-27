@@ -1,0 +1,15 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+.mainvideoclass {
+  padding-top: 17.5%;
+  text-align: center;
+  font: 5em "Raleway", sans-serif;
+}
+
+.teamclass {
+  padding-top: 30%;
+  padding-bottom: 7.5%;
+  text-align: center;
+  font: 5em "Raleway", sans-serif;
+}
