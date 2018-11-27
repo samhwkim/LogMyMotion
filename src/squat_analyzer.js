@@ -5,12 +5,15 @@ let video;
 var videoIsPlaying;
 let frameCounter = 0;
 
+let feetWidthConfidenceLevel = 0;
+let shoulderAlignmentConfidenceLevel = 0;
+let squatDepthConfidenceLevel = 0;
 
 let PROPERTIES = {
   imageScaleFactor: 0.5,
   outputStride: 16,
   flipHorizontal: false,
-  minConfidence: 0.5,
+  minConfidence: 0.1,
   scoreThreshold: 0.5,
   nmsRadius: 20,
   detectionType: 'single',
@@ -18,28 +21,28 @@ let PROPERTIES = {
 };
 
 function setup() {
+  // debugger
   videoIsPlaying = false;
-  createCanvas(1080, 720);
-  video = createVideo('Videos/squat_deep.mp4', vidLoad);
+  createCanvas(640, 480);
+  video = createCapture(VIDEO);
+  // video = createVideo('Videos/squat_deep_resized.mp4', vidLoad);
   video.size(width, height);
-  video.onended = function() {
-    videoIsPlaying = false;
-  }
+  // video.onended = function() {
+  //   videoIsPlaying = false;
+  // }
 
   // Create a new poseNet method with a single detection
   poseNet = ml5.poseNet(video, PROPERTIES, modelReady);
   // This sets up an event that fills the global variable "poses"
   // with an array every time new poses are detected
+  poseNet.detectionType = 'single';
+  debugger
   poseNet.on('pose', function(results) {
     poses = results;
   });
+
   // Hide the video element, and just show the canvas
   video.hide();
-}
-
-function distanceFormula(x1, y1, x2, y2) {
-  var result = Math.sqrt(Math.pow(y2-y1, 2) + Math.pow(x2-x1, 2));
-  return result;
 }
 
 function modelReady() {
@@ -52,31 +55,65 @@ function mousePressed(){
 
 function draw() {
   image(video, 0, 0, width, height);
-  if(videoIsPlaying == true) {
-    analyzeFrame();
-  }
 
-  // We can call both functions to draw all keypoints and the skeletons
-  //drawKeypoints();
+  analyzeFrame();
   drawSkeleton();
 }
 
 function analyzeFrame()  {
   for (let i = 0; i < poses.length; i++) {
-
     let pose = poses[i].pose;
+    if(pose.score > 0.5) {
+        // if (analyzeFeetWidth(pose) == true) {
+        //   feetWidthConfidenceLevel++;
+        // }
+        // if (analyzeShoulderAlignment(pose) == true) {
+        //   shoulderAlignmentConfidenceLevel++;
+        // }
+        if (analyzeSquatDepth(pose) == true) {
+          squatDepthConfidenceLevel++;
+        }
 
-    // if (frameCounter % 50 == 0) {
-    //   console.log(frameCounter);
-      //analyzeFeetWidth(pose)
-      analyzeSquatDepth(pose)
-      //analyzeShoulderAlignment(pose)
-    // }
+      for (let j = 5; j < pose.keypoints.length; j++) {
+        // A keypoint is an object describing a body part (like rightArm or leftShoulder)
+        let keypoint = pose.keypoints[j];
+        // Only draw an ellipse is the pose probability is bigger than 0.2
 
-    noStroke();
-    fill(255, 0, 0);
-    ellipse(keypoint.position.x, keypoint.position.y, 10, 10);
-    //}
+        // TODO: CREATE CONFIG FILE
+        if (keypoint.score > 0.5) {
+          fill(255, 0, 0);
+          noStroke();
+          ellipse(keypoint.position.x, keypoint.position.y, 8, 8);
+          //}
+        }
+      }
+  }
+  }
+}
+
+function determineGrades() {
+  if (feetWidthConfidenceLevel > 5) {
+    console.log("FEET WIDTH GOOD")
+  }
+
+  else {
+    console.log("FEET WIDTH BAD")
+  }
+
+  if (shoulderAlignmentConfidenceLevel > 5) {
+    console.log("SHOULDER ALIGNMENT GOOD")
+  }
+
+  else {
+    console.log("SHOULDER ALIGNMENT BAD")
+  }
+
+  if (squatDepthConfidenceLevel > 5) {
+    console.log("SQUAT DEPTH GOOD")
+  }
+
+  else {
+    console.log("SQUAT DEPTH BAD")
   }
 }
 
@@ -86,11 +123,13 @@ function drawSkeleton() {
   for (let i = 0; i < poses.length; i++) {
     let skeleton = poses[i].skeleton;
     // For every skeleton, loop through all body connections
-    for (let j = 0; j < skeleton.length; j++) {
-      let partA = skeleton[j][0];
-      let partB = skeleton[j][1];
-      stroke(255, 0, 0);
-      line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+    if(poses[i].pose.score > 0.5) {
+      for (let j = 0; j < skeleton.length; j++) {
+        let partA = skeleton[j][0];
+        let partB = skeleton[j][1];
+        stroke(255, 0, 0);
+        line(partA.position.x, partA.position.y, partB.position.x, partB.position.y);
+      }
     }
   }
 }
@@ -98,10 +137,11 @@ function drawSkeleton() {
 
 // This function is called when the video loads
 function vidLoad() {
-  video.stop();
-  video.loop();
-  videoIsPlaying = true;
+  video.play();
 
+  //video.stop();
+  //video.loop();
+  videoIsPlaying = true;
 }
 
 function keyPressed(){

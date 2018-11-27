@@ -21,9 +21,9 @@ function analyzeShoulderAlignment(pose) {
     let shoulderSlope = slopeFormula(leftShoulderX, leftShoulderY, rightShoulderX, rightShoulderY);
 
     if (shoulderSlope >= 0.1) {
-      console.log("TILTED");
+      return true;
     }
     else {
-      console.log("STRAIGHT");
+      return false;
     }
 }

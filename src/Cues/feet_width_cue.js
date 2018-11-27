@@ -38,15 +38,15 @@ function analyzeFeetWidth(pose) {
     shoulderWidth = distanceFormula(rightShoulderX, rightShoulderY, leftShoulderX, leftShoulderY);
     feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
 
-    if(feetWidth < shoulderWidth) {
-      console.log("MOVE FEET FURTHER APART")
+    if(feetWidth < (.5 * shoulderWidth)) {
+      return false;
     }
 
-    else if (feetWidth > 1.3 * shoulderWidth) {
-      console.log("MOVE FEET CLOSER TOGETHER");
+    else if (feetWidth > (1.5 * shoulderWidth)) {
+      return false;
     }
 
     else {
-      console.log("GOOD FEET DISTANCE");
+      return true;
     }
 }

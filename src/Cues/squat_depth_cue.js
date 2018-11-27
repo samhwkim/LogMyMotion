@@ -4,7 +4,6 @@ let rightKneeY = 0;
 let leftHipY = 0;
 let leftKneeY = 0;
 
-
 // A function to draw ellipses over the detected keypoints
 function analyzeSquatDepth(pose) {
   // Left hip coordinates
@@ -28,6 +27,7 @@ function analyzeSquatDepth(pose) {
   rightKneeY = rightKneeKeypoint.position.y;
 
   if(rightHipY > rightKneeY && leftHipY > leftKneeY) {
-    console.log("GOOD JOB")
+    console.log("DEEP ENOUGH")
+    // return true
   }
 }
