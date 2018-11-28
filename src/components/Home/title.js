@@ -19,7 +19,7 @@ export default class title extends Component {
         </section>
         <section className="trynowsection">
           <div className="trynowtext">
-            <a className="trynowlink" href="/">
+            <a className="trynowlink" href="/posenetdemo">
               Try Now!
             </a>
           </div>
