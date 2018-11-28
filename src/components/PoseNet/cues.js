@@ -39,7 +39,7 @@ export const squatDepthCue = keypoints => {
   rightKneeX = rightKneeKeypoint.position.x;
   rightKneeY = rightKneeKeypoint.position.y;
 
-  if (rightHipY > rightKneeY && leftHipY > leftKneeY) {
+  if (rightHipY > rightKneeY * 0.775 && leftHipY > leftKneeY * 0.775) {
     //console.log("DEEP ENOUGH");
     return true;
   } else {
@@ -105,7 +105,7 @@ export const analyzeFeetWidth = keypoints => {
   );
   feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
 
-  if (feetWidth < 0.5 * shoulderWidth) {
+  if (feetWidth < 0.75 * shoulderWidth) {
     return false;
   } else if (feetWidth > 1.5 * shoulderWidth) {
     return false;
