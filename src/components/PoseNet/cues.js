@@ -1,12 +1,3 @@
-let rightHipY = 0;
-let rightKneeY = 0;
-let leftHipY = 0;
-let leftKneeY = 0;
-let rightHipX = 0;
-let rightKneeX = 0;
-let leftHipX = 0;
-let leftKneeX = 0;
-
 let rightShoulderX = 0;
 let rightShoulderY = 0;
 let leftShoulderX = 0;
@@ -19,33 +10,6 @@ let rightAnkleY = 0;
 let shoulderWidth = 0;
 let feetWidth = 0;
 
-export const squatDepthCue = keypoints => {
-  let leftHipKeypoint = keypoints[11];
-  leftHipX = leftHipKeypoint.position.x;
-  leftHipY = leftHipKeypoint.position.y;
-
-  // Right hip coordinates
-  let rightHipKeypoint = keypoints[12];
-  rightHipX = rightHipKeypoint.position.x;
-  rightHipY = rightHipKeypoint.position.y;
-
-  // Left knee coordinates
-  let leftKneeKeypoint = keypoints[13];
-  leftKneeX = leftKneeKeypoint.position.x;
-  leftKneeY = leftKneeKeypoint.position.y;
-
-  // Right knee coordinates
-  let rightKneeKeypoint = keypoints[14];
-  rightKneeX = rightKneeKeypoint.position.x;
-  rightKneeY = rightKneeKeypoint.position.y;
-
-  if (rightHipY > rightKneeY * 0.775 && leftHipY > leftKneeY * 0.775) {
-    //console.log("DEEP ENOUGH");
-    return true;
-  } else {
-    return false;
-  }
-};
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
   return result;
@@ -73,7 +37,7 @@ export const analyzeShoulderAlignment = keypoints => {
     rightShoulderY
   );
 
-  if (shoulderSlope <= 0.1) {
+  if (shoulderSlope >= 0.1) {
     return true;
   } else {
     return false;
@@ -105,7 +69,7 @@ export const analyzeFeetWidth = keypoints => {
   );
   feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
 
-  if (feetWidth < 0.75 * shoulderWidth) {
+  if (feetWidth < 0.5 * shoulderWidth) {
     return false;
   } else if (feetWidth > 1.5 * shoulderWidth) {
     return false;

@@ -2,10 +2,11 @@ import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import {
-  squatDepthCue,
   analyzeShoulderAlignment,
   analyzeFeetWidth
 } from "./cues";
+
+import{squatDepthCue} from"./squat_depth_cue";
 import "../../css/posenet.css";
 
 let scoreSA = 0;
