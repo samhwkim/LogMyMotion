@@ -1,38 +1,24 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Raleway");
-
-.mainvideo-container {
-  padding-top: 5%;
-  padding-left: 5%;
-}
-
-#mainvideosquat {
-  max-width: 800px;
-  max-height: 600px;
-  border: 7px solid #595959;
-  border-radius: 10px;
-}
-
 .videocueinfo {
   padding-right: 5%;
-  float: left;
   font: 1.8em "Raleway", Sans-serif;
 }
 
-.videocueinfo #video-info-SD {
-  padding-top: 10%;
-  padding-bottom: 15%;
+/* .videocueinfo #video-info-SD {
+  padding-top: 5%;
+  padding-bottom: 5%;
 }
 
 .videocueinfo #video-info-SA {
-  padding-top: 20%;
-  padding-bottom: 15%;
+  padding-top: 5%;
+  padding-bottom: 5%;
 }
 
 .videocueinfo #video-info-FW {
-  padding-top: 20%;
-  padding-bottom: 15%;
-}
+  padding-top: 5%;
+  padding-bottom: 5%;
+} */
 
 .videocueinfo #SD-good {
   text-align: center;

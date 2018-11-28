@@ -6,11 +6,11 @@ import {
   analyzeShoulderAlignment,
   analyzeFeetWidth
 } from "./cues";
-
+import "../../css/posenet.css";
 export default class PoseNet extends React.Component {
   static defaultProps = {
-    videoWidth: 600,
-    videoHeight: 500,
+    videoWidth: 400,
+    videoHeight: 300,
     flipHorizontal: true,
     algorithm: "single-pose",
     mobileNetArchitecture: isMobile() ? 0.5 : 1.01,
@@ -19,7 +19,7 @@ export default class PoseNet extends React.Component {
     showPoints: true,
     minPoseConfidence: 0.1,
     minPartConfidence: 0.5,
-    maxPoseDetections: 2,
+    maxPoseDetections: 1,
     nmsRadius: 20.0,
     outputStride: 16,
     imageScaleFactor: 0.5,
@@ -30,9 +30,35 @@ export default class PoseNet extends React.Component {
 
   constructor(props) {
     super(props, PoseNet.defaultProps);
-    this.state = { loading: true };
+    this.state = {
+      loading: true,
+      backgroundcolorSA: "",
+      backgroundcolorSD: "red",
+      backgroundcolorFW: "red"
+    };
   }
 
+  onChangeSA(inputEntry) {
+    if (inputEntry) {
+      this.setState({ backgroundcolorSA: "green" });
+    } else {
+      this.setState({ backgroundcolorSA: "red" });
+    }
+  }
+  onChangeSD(inputEntry) {
+    if (inputEntry) {
+      this.setState({ backgroundcolorSD: "green" });
+    } else {
+      this.setState({ backgroundcolorSD: "red" });
+    }
+  }
+  onChangeFW(inputEntry) {
+    if (inputEntry) {
+      this.setState({ backgroundcolorFW: "green" });
+    } else {
+      this.setState({ backgroundcolorFW: "red" });
+    }
+  }
   getCanvas = elem => {
     this.canvas = elem;
   };
@@ -173,12 +199,26 @@ export default class PoseNet extends React.Component {
           // let righthipkeypoint = keypoints[11];
           // console.log("x position"+ righthipkeypoint.position.x);
           // console.log("y position:"+righthipkeypoint.position.y);
-          squatDepthCue(keypoints);
-          if (analyzeFeetWidth(keypoints)) {
-            console.log("Good feet Width");
+
+          if (squatDepthCue(keypoints)) {
+            this.onChangeSD(true);
+          } else {
+            this.onChangeSD(false);
           }
+          if (analyzeFeetWidth(keypoints)) {
+            //console.log("Good feet Width");
+            this.onChangeFW(true);
+          } else {
+            this.onChangeFW(false);
+          }
+
           if (analyzeShoulderAlignment(keypoints)) {
-            console.log("Good Shoulder alignment");
+            //console.log("Good Shoulder alignment");
+            this.onChangeSA(true);
+          } else {
+            //console.log("Bad Shoulder alignment");
+
+            this.onChangeSA(false);
           }
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
@@ -202,6 +242,11 @@ export default class PoseNet extends React.Component {
   }
 
   render() {
+    const {
+      backgroundcolorSA,
+      backgroundcolorFW,
+      backgroundcolorSD
+    } = this.state;
     const loading = this.state.loading ? (
       <div className="PoseNet__loading">{this.props.loadingText}</div>
     ) : (
@@ -212,6 +257,20 @@ export default class PoseNet extends React.Component {
         {loading}
         <video playsInline ref={this.getVideo} />
         <canvas ref={this.getCanvas} />
+        <div className="videocueinfo">
+          <div id="video-info-SD">Squat Depth:</div>
+          <div id="SD-good" style={{ backgroundColor: backgroundcolorSD }}>
+            Good{" "}
+          </div>
+          <div id="video-info-SA">Shoulder Alignment:</div>
+          <div id="SA-good" style={{ backgroundColor: backgroundcolorSA }}>
+            Good
+          </div>
+          <div id="video-info-FW">Feet Width:</div>
+          <div id="FW-good" style={{ backgroundColor: backgroundcolorFW }}>
+            Good{" "}
+          </div>
+        </div>
       </div>
     );
   }

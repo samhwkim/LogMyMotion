@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 
 import Title from "../Home/title";
-import MainDemo from "../Home/maindemo";
+//import MainDemo from "../Home/maindemo";
 import CueVideos from "../Home/cuevideos";
 import TeamMembers from "../Home/abouttheteam";
 import Footer from "../Home/footer";
@@ -12,8 +12,8 @@ export default class Home extends Component {
     return (
       <div>
         <Title />
-        <div className="mainvideoclass">Demo</div>
-        <MainDemo />
+        {/*<div className="mainvideoclass">Demo</div>
+        <MainDemo />*/}
         <CueVideos
           cuenumber="1"
           cueName={"Squat Depth"}

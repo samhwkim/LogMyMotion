@@ -40,8 +40,10 @@ export const squatDepthCue = keypoints => {
   rightKneeY = rightKneeKeypoint.position.y;
 
   if (rightHipY > rightKneeY && leftHipY > leftKneeY) {
-    console.log("DEEP ENOUGH");
-    // return true
+    //console.log("DEEP ENOUGH");
+    return true;
+  } else {
+    return false;
   }
 };
 function distanceFormula(x1, y1, x2, y2) {
