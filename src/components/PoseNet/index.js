@@ -36,7 +36,7 @@ export default class PoseNet extends React.Component {
     super(props, PoseNet.defaultProps);
     this.state = {
       loading: true,
-      backgroundcolorSA: "",
+      backgroundcolorSA: "red",
       backgroundcolorSD: "red",
       backgroundcolorFW: "red"
     };
@@ -259,6 +259,24 @@ export default class PoseNet extends React.Component {
     ) : (
       ""
     );
+    let textSD;
+    let textFW;
+    let textSA;
+    if (backgroundcolorSD == "red") {
+      textSD = "Bad";
+    } else {
+      textSD = "Good";
+    }
+    if (backgroundcolorFW == "red") {
+      textFW = "Bad";
+    } else {
+      textFW = "Good";
+    }
+    if (backgroundcolorSA == "red") {
+      textSA = "Bad";
+    } else {
+      textSA = "Good";
+    }
     return (
       <div className="PoseNet">
         {loading}
@@ -267,15 +285,15 @@ export default class PoseNet extends React.Component {
         <div className="videocueinfo">
           <div id="video-info-SD">Squat Depth:</div>
           <div id="SD-good" style={{ backgroundColor: backgroundcolorSD }}>
-            Good{" "}
+            {textSD}
           </div>
           <div id="video-info-SA">Shoulder Alignment:</div>
           <div id="SA-good" style={{ backgroundColor: backgroundcolorSA }}>
-            Good
+            {textSA}
           </div>
           <div id="video-info-FW">Feet Width:</div>
           <div id="FW-good" style={{ backgroundColor: backgroundcolorFW }}>
-            Good{" "}
+            {textFW}
           </div>
         </div>
       </div>
