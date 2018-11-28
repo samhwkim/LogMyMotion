@@ -1,15 +1,19 @@
-import * as posenet from '@tensorflow-models/posenet'
-import * as React from 'react'
-import { isMobile, drawKeypoints, drawSkeleton } from './utils'
+import * as posenet from "@tensorflow-models/posenet";
+import * as React from "react";
+import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
+import {
+  squatDepthCue,
+  analyzeShoulderAlignment,
+  analyzeFeetWidth
+} from "./cues";
 
 export default class PoseNet extends React.Component {
-
   static defaultProps = {
     videoWidth: 600,
     videoHeight: 500,
     flipHorizontal: true,
-    algorithm: 'single-pose',
-    mobileNetArchitecture: isMobile() ? 0.50 : 1.01,
+    algorithm: "single-pose",
+    mobileNetArchitecture: isMobile() ? 0.5 : 1.01,
     showVideo: true,
     showSkeleton: true,
     showPoints: true,
@@ -19,23 +23,23 @@ export default class PoseNet extends React.Component {
     nmsRadius: 20.0,
     outputStride: 16,
     imageScaleFactor: 0.5,
-    skeletonColor: 'aqua',
+    skeletonColor: "aqua",
     skeletonLineWidth: 2,
-    loadingText: 'Loading pose detector...'
-  }
+    loadingText: "Loading pose detector..."
+  };
 
   constructor(props) {
-    super(props, PoseNet.defaultProps)
-    this.state = { loading: true }
+    super(props, PoseNet.defaultProps);
+    this.state = { loading: true };
   }
 
   getCanvas = elem => {
-    this.canvas = elem
-  }
+    this.canvas = elem;
+  };
 
   getVideo = elem => {
-    this.video = elem
-  }
+    this.video = elem;
+  };
 
   async componentWillMount() {
     // Loads the pre-trained PoseNet model
@@ -44,59 +48,59 @@ export default class PoseNet extends React.Component {
 
   async componentDidMount() {
     try {
-      await this.setupCamera()
-    } catch(e) {
-      throw 'This browser does not support video capture, or this device does not have a camera'
+      await this.setupCamera();
+    } catch (e) {
+      throw "This browser does not support video capture, or this device does not have a camera";
     } finally {
-      this.setState({ loading: false })
+      this.setState({ loading: false });
     }
 
-    this.detectPose()
+    this.detectPose();
   }
 
   async setupCamera() {
-      // MDN: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
+    // MDN: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw 'Browser API navigator.mediaDevices.getUserMedia not available'
+      throw "Browser API navigator.mediaDevices.getUserMedia not available";
     }
 
-    const { videoWidth, videoHeight } = this.props
-    const video = this.video
-    const mobile = isMobile()
+    const { videoWidth, videoHeight } = this.props;
+    const video = this.video;
+    const mobile = isMobile();
 
-    video.width = videoWidth
-    video.height = videoHeight
+    video.width = videoWidth;
+    video.height = videoHeight;
 
     // MDN: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     const stream = await navigator.mediaDevices.getUserMedia({
       audio: false,
       video: {
-        facingMode: 'user',
+        facingMode: "user",
         width: mobile ? void 0 : videoWidth,
-        height: mobile ? void 0: videoHeight,
+        height: mobile ? void 0 : videoHeight
       }
     });
 
-    video.srcObject = stream
+    video.srcObject = stream;
 
     return new Promise(resolve => {
       video.onloadedmetadata = () => {
         // Once the video metadata is ready, we can start streaming video
-        video.play()
-        resolve(video)
-      }
-    })
+        video.play();
+        resolve(video);
+      };
+    });
   }
 
   detectPose() {
-    const { videoWidth, videoHeight } = this.props
-    const canvas = this.canvas
-    const ctx = canvas.getContext('2d')
+    const { videoWidth, videoHeight } = this.props;
+    const canvas = this.canvas;
+    const ctx = canvas.getContext("2d");
 
-    canvas.width = videoWidth
-    canvas.height = videoHeight
+    canvas.width = videoWidth;
+    canvas.height = videoHeight;
 
-    this.poseDetectionFrame(ctx)
+    this.poseDetectionFrame(ctx);
   }
 
   poseDetectionFrame(ctx) {
@@ -115,30 +119,28 @@ export default class PoseNet extends React.Component {
       showPoints,
       showSkeleton,
       skeletonColor,
-      skeletonLineWidth,
-    } = this.props
+      skeletonLineWidth
+    } = this.props;
 
-    const net = this.net
-    const video = this.video
+    const net = this.net;
+    const video = this.video;
 
     const poseDetectionFrameInner = async () => {
-      let poses = []
+      let poses = [];
 
       switch (algorithm) {
-        case 'single-pose':
-
+        case "single-pose":
           const pose = await net.estimateSinglePose(
             video,
             imageScaleFactor,
             flipHorizontal,
             outputStride
-          )
+          );
 
-          poses.push(pose)
+          poses.push(pose);
 
-          break
-        case 'multi-pose':
-
+          break;
+        case "multi-pose":
           poses = await net.estimateMultiplePoses(
             video,
             imageScaleFactor,
@@ -147,19 +149,19 @@ export default class PoseNet extends React.Component {
             maxPoseDetections,
             minPartConfidence,
             nmsRadius
-          )
+          );
 
-          break
+          break;
       }
 
       ctx.clearRect(0, 0, videoWidth, videoHeight);
 
       if (showVideo) {
-        ctx.save()
-        ctx.scale(-1, 1)
-        ctx.translate(-videoWidth, 0)
-        ctx.drawImage(video, 0, 0, videoWidth, videoHeight)
-        ctx.restore()
+        ctx.save();
+        ctx.scale(-1, 1);
+        ctx.translate(-videoWidth, 0);
+        ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+        ctx.restore();
       }
 
       // For each pose (i.e. person) detected in an image, loop through the poses
@@ -167,31 +169,50 @@ export default class PoseNet extends React.Component {
       // scores
       poses.forEach(({ score, keypoints }) => {
         if (score >= minPoseConfidence) {
+          // console.log(keypoints[11].position.x);
+          // let righthipkeypoint = keypoints[11];
+          // console.log("x position"+ righthipkeypoint.position.x);
+          // console.log("y position:"+righthipkeypoint.position.y);
+          squatDepthCue(keypoints);
+          if (analyzeFeetWidth(keypoints)) {
+            console.log("Good feet Width");
+          }
+          if (analyzeShoulderAlignment(keypoints)) {
+            console.log("Good Shoulder alignment");
+          }
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
           }
           if (showSkeleton) {
-            drawSkeleton(keypoints, minPartConfidence, skeletonColor, skeletonLineWidth, ctx);
+            drawSkeleton(
+              keypoints,
+              minPartConfidence,
+              skeletonColor,
+              skeletonLineWidth,
+              ctx
+            );
           }
         }
-      })
+      });
 
-      requestAnimationFrame(poseDetectionFrameInner)
-    }
+      requestAnimationFrame(poseDetectionFrameInner);
+    };
 
-    poseDetectionFrameInner()
+    poseDetectionFrameInner();
   }
 
   render() {
-    const loading = this.state.loading
-      ? <div className="PoseNet__loading">{ this.props.loadingText }</div>
-      : ''
+    const loading = this.state.loading ? (
+      <div className="PoseNet__loading">{this.props.loadingText}</div>
+    ) : (
+      ""
+    );
     return (
       <div className="PoseNet">
-        { loading }
-        <video playsInline ref={ this.getVideo }></video>
-        <canvas ref={ this.getCanvas }></canvas>
+        {loading}
+        <video playsInline ref={this.getVideo} />
+        <canvas ref={this.getCanvas} />
       </div>
-    )
+    );
   }
 }
