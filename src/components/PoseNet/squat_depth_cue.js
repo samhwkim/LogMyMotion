@@ -7,7 +7,7 @@ let rightKneeX = 0;
 let leftHipX = 0;
 let leftKneeX = 0;
 
-export const squatDepthCue = keypoints => {
+export const analyzeSquatDepth = keypoints => {
   let leftHipKeypoint = keypoints[11];
   leftHipX = leftHipKeypoint.position.x;
   leftHipY = leftHipKeypoint.position.y;

@@ -1,12 +1,10 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
-import {
-  analyzeShoulderAlignment,
-  analyzeFeetWidth
-} from "./cues";
 
-import{squatDepthCue} from"./squat_depth_cue";
+import{analyzeSquatDepth} from "./squat_depth_cue";
+import{analyzeFeetWidth} from "./feet_width_cue";
+import{analyzeShoulderAlignment} from "./shoulder_align_cue"
 import "../../css/posenet.css";
 
 let scoreSA = 0;
@@ -207,7 +205,7 @@ export default class PoseNet extends React.Component {
           // console.log("y position:"+righthipkeypoint.position.y);
           streamCount++;
           if (streamCount > 250) {
-            if (squatDepthCue(keypoints)) {
+            if (analyzeSquatDepth(keypoints)) {
               this.onChangeSD(true);
             } else {
               this.onChangeSD(false);
