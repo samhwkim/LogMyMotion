@@ -20,7 +20,7 @@ function analyzeShoulderAlignment(pose) {
 
     let shoulderSlope = slopeFormula(leftShoulderX, leftShoulderY, rightShoulderX, rightShoulderY);
 
-    if (shoulderSlope >= 0.1) {
+    if (shoulderSlope <= 0.1) {
       return true;
     }
     else {
