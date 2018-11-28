@@ -7,6 +7,10 @@ import {
   analyzeFeetWidth
 } from "./cues";
 import "../../css/posenet.css";
+
+let scoreSA = 0;
+let scoreFW = 0;
+let streamCount = 0;
 export default class PoseNet extends React.Component {
   static defaultProps = {
     videoWidth: 400,
@@ -17,7 +21,7 @@ export default class PoseNet extends React.Component {
     showVideo: true,
     showSkeleton: true,
     showPoints: true,
-    minPoseConfidence: 0.1,
+    minPoseConfidence: 0.5,
     minPartConfidence: 0.5,
     maxPoseDetections: 1,
     nmsRadius: 20.0,
@@ -193,33 +197,36 @@ export default class PoseNet extends React.Component {
       // For each pose (i.e. person) detected in an image, loop through the poses
       // and draw the resulting skeleton and keypoints if over certain confidence
       // scores
+
       poses.forEach(({ score, keypoints }) => {
         if (score >= minPoseConfidence) {
           // console.log(keypoints[11].position.x);
           // let righthipkeypoint = keypoints[11];
           // console.log("x position"+ righthipkeypoint.position.x);
           // console.log("y position:"+righthipkeypoint.position.y);
-
-          if (squatDepthCue(keypoints)) {
-            this.onChangeSD(true);
-          } else {
-            this.onChangeSD(false);
+          streamCount++;
+          if (streamCount > 250) {
+            if (squatDepthCue(keypoints)) {
+              this.onChangeSD(true);
+            } else {
+              this.onChangeSD(false);
+            }
           }
           if (analyzeFeetWidth(keypoints)) {
-            //console.log("Good feet Width");
             this.onChangeFW(true);
+            scoreFW++;
           } else {
-            this.onChangeFW(false);
+            scoreFW < 100 ? this.onChangeFW(false) : this.onChangeFW(true);
           }
 
+          //this.onChangeFW(true);
           if (analyzeShoulderAlignment(keypoints)) {
-            //console.log("Good Shoulder alignment");
             this.onChangeSA(true);
+            scoreSA++;
           } else {
-            //console.log("Bad Shoulder alignment");
-
-            this.onChangeSA(false);
+            scoreSA < 100 ? this.onChangeSA(false) : this.onChangeSA(true);
           }
+          //this.onChangeSA(true);
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
           }

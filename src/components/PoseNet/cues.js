@@ -73,7 +73,7 @@ export const analyzeShoulderAlignment = keypoints => {
     rightShoulderY
   );
 
-  if (shoulderSlope >= 0.1) {
+  if (shoulderSlope <= 0.1) {
     return true;
   } else {
     return false;
