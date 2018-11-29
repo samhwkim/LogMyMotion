@@ -4,6 +4,7 @@
 .cuesection1 {
   padding-top: 25%;
 }
+
 .cueclass {
   text-align: center;
   padding-bottom: 5%;
@@ -13,7 +14,10 @@
 
 .cuesection1 .indivcue1 {
   padding-left: 10%;
+  display: flex;
+  align-items: flex-start;
 }
+
 .cuesection1 .indivcue1 #cuevideo1 {
   max-width: 400px;
   max-height: 300px;
@@ -23,6 +27,7 @@
 
 .cuesection1 .indivcue1 #aboutcue1 {
   padding-right: 10%;
+  padding-left: 1%;
   font: 1.2em "Raleway", sans-serif;
   float: right;
 }

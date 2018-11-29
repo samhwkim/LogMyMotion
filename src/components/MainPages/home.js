@@ -19,8 +19,8 @@ export default class Home extends Component {
           cueName={"Squat Depth"}
           videoName1={"squat_deep.mp4"}
           videoName2={"squat_not_deep.mp4"}
-          aboutCue1={"Something about Squat Depth 1."}
-          aboutCue2={"Something about Squat Depth 2."}
+          aboutCue1={"It's important to have proper depth when performing squats. Doing so not only ensures that you're properly training the entire lower body musculature, but also indicates that you have excellent overall movement. By performing deep squats, you'll be properly training all the muscle groups (glutes, hamstrings, and quads), improving your posture, making your knees stronger, and training your muscles to be more explosive. This is greatly beneficial to both experienced athletes and individuals looking to stay in shape."}
+          aboutCue2={"If you're "}
         />
         <CueVideos
           cuenumber="2"
