@@ -2,9 +2,9 @@ import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 
-import{analyzeSquatDepth} from "./squat_depth_cue";
-import{analyzeFeetWidth} from "./feet_width_cue";
-import{analyzeShoulderAlignment} from "./shoulder_align_cue"
+import { analyzeSquatDepth } from "./squat_depth_cue";
+import { analyzeFeetWidth } from "./feet_width_cue";
+import { analyzeShoulderAlignment } from "./shoulder_align_cue";
 import "../../css/posenet.css";
 
 let scoreSA = 0;
@@ -12,9 +12,9 @@ let scoreFW = 0;
 let streamCount = 0;
 export default class PoseNet extends React.Component {
   static defaultProps = {
-    videoWidth: 400,
-    videoHeight: 300,
-    flipHorizontal: true,
+    videoWidth: 600,
+    videoHeight: 400,
+    flipHorizontal: false,
     algorithm: "single-pose",
     mobileNetArchitecture: isMobile() ? 0.5 : 1.01,
     showVideo: true,
@@ -181,17 +181,27 @@ export default class PoseNet extends React.Component {
           );
 
           break;
+        default:
+          const defaultPose = await net.estimateSinglePose(
+            video,
+            imageScaleFactor,
+            flipHorizontal,
+            outputStride
+          );
+
+          poses.push(defaultPose);
+          break;
       }
 
       ctx.clearRect(0, 0, videoWidth, videoHeight);
-
-      if (showVideo) {
-        ctx.save();
-        ctx.scale(-1, 1);
-        ctx.translate(-videoWidth, 0);
-        ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
-        ctx.restore();
-      }
+      //console.log(ctx);
+      // if (showVideo) {
+      //   ctx.save();
+      //   ctx.scale(-1, 1);
+      //   ctx.translate(-videoWidth, 0);
+      //   ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
+      //   ctx.restore();
+      // }
 
       // For each pose (i.e. person) detected in an image, loop through the poses
       // and draw the resulting skeleton and keypoints if over certain confidence
@@ -261,17 +271,17 @@ export default class PoseNet extends React.Component {
     let textSD;
     let textFW;
     let textSA;
-    if (backgroundcolorSD == "red") {
+    if (backgroundcolorSD === "red") {
       textSD = "Bad";
     } else {
       textSD = "Good";
     }
-    if (backgroundcolorFW == "red") {
+    if (backgroundcolorFW === "red") {
       textFW = "Bad";
     } else {
       textFW = "Good";
     }
-    if (backgroundcolorSA == "red") {
+    if (backgroundcolorSA === "red") {
       textSA = "Bad";
     } else {
       textSA = "Good";
@@ -279,8 +289,8 @@ export default class PoseNet extends React.Component {
     return (
       <div className="PoseNet">
         {loading}
-        <video playsInline ref={this.getVideo} />
-        <canvas ref={this.getCanvas} />
+        <video id="posenetVideo" playsInline ref={this.getVideo} />
+        <canvas id="posenetCanvas" ref={this.getCanvas} />
         <div className="videocueinfo">
           <div id="video-info-SD">Squat Depth:</div>
           <div id="SD-good" style={{ backgroundColor: backgroundcolorSD }}>

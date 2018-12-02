@@ -2,10 +2,10 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway");
 .videocueinfo {
   padding-right: 5%;
-  font: 1.8em "Raleway", Sans-serif;
+  font: 2.5em "Raleway", Sans-serif;
 }
 
-/* .videocueinfo #video-info-SD {
+.videocueinfo #video-info-SD {
   padding-top: 5%;
   padding-bottom: 5%;
 }
@@ -18,7 +18,11 @@
 .videocueinfo #video-info-FW {
   padding-top: 5%;
   padding-bottom: 5%;
-} */
+}
+
+.videocueinfo {
+  float: right;
+}
 
 .videocueinfo #SD-good {
   text-align: center;
@@ -42,4 +46,11 @@
   border-color: black;
   padding: 6px;
   border-radius: 12px;
+}
+
+.PoseNet #posenetCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
 }
