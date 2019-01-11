@@ -22,6 +22,12 @@ export default class title extends Component {
             <a className="trynowlink" href="/posenetdemo">
               Try Now!
             </a>
+            <a className="trynowlink" href="/login">
+              Log in
+            </a>
+            <a className="trynowlink" href="/signup">
+              Sign Up
+            </a>
           </div>
         </section>
       </div>
