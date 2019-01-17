@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { NavItem, Nav, NavDropdown, MenuItem } from "react-bootstrap";
-
+import { withFirebase } from '../Firebase';
+import LogOutButton from '../Logout';
 
 class HeaderLinks extends Component {
   render() {
@@ -43,8 +44,7 @@ class HeaderLinks extends Component {
           <NavDropdown
             eventKey={2}
             title="Dropdown"
-            id="basic-nav-dropdown-right"
-          >
+            id="basic-nav-dropdown-right">
             <MenuItem eventKey={2.1}>Action</MenuItem>
             <MenuItem eventKey={2.2}>Another action</MenuItem>
             <MenuItem eventKey={2.3}>Something</MenuItem>
@@ -53,9 +53,7 @@ class HeaderLinks extends Component {
             <MenuItem divider />
             <MenuItem eventKey={2.5}>Separated link</MenuItem>
           </NavDropdown>
-          <NavItem eventKey={3} href="#">
-            Log out
-          </NavItem>
+          <LogOutButton />
         </Nav>
       </div>
     );
