@@ -7,9 +7,30 @@ import { analyzeFeetWidth } from "./feet_width_cue";
 import { analyzeShoulderAlignment } from "./shoulder_align_cue";
 import "../../css/posenet.css";
 
-let scoreSA = 0;
-let scoreFW = 0;
-let streamCount = 0;
+let shouldersSet = false;
+let feetSet = false;
+let calibrationConfidenceLevel = 0;
+let calibrationComplete = false;
+let goodDepth = false;
+let repCounter = 0;
+
+let startingLeftHipX = [];
+let startingLeftHipY = [];
+let startingRightHipX = [];
+let startingRightHipY = [];
+
+let startingAvgLeftHipX = 0;
+let startingAvgLeftHipY = 0;
+let startingAvgRightHipX = 0;
+let startingAvgRightHipY = 0;
+
+let distanceLeftHipFromStarting = 0;
+
+function distanceFormula(x1, y1, x2, y2) {
+  var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
+  return result;
+}
+
 export default class PoseNet extends React.Component {
   static defaultProps = {
     videoWidth: 600,
@@ -209,33 +230,82 @@ export default class PoseNet extends React.Component {
 
       poses.forEach(({ score, keypoints }) => {
         if (score >= minPoseConfidence) {
-          // console.log(keypoints[11].position.x);
-          // let righthipkeypoint = keypoints[11];
-          // console.log("x position"+ righthipkeypoint.position.x);
-          // console.log("y position:"+righthipkeypoint.position.y);
-          streamCount++;
-          if (streamCount > 250) {
+          if (!calibrationComplete) {
+            if (analyzeFeetWidth(keypoints)) {
+              this.onChangeFW(true);
+              feetSet = true;
+            } else {
+              this.onChangeFW(false);
+              feetSet = false;
+            }
+
+            //this.onChangeFW(true);
+            if (analyzeShoulderAlignment(keypoints)) {
+              this.onChangeSA(true);
+              shouldersSet = true;
+            } else {
+              this.onChangeSA(false);
+              shouldersSet = false;
+            }
+
+            if (feetSet && shouldersSet) {
+              calibrationConfidenceLevel++;
+              startingLeftHipX.push(keypoints[11].position.x);
+              startingLeftHipY.push(keypoints[11].position.y);
+              startingRightHipX.push(keypoints[12].position.x);
+              startingRightHipY.push(keypoints[12].position.y);
+            } else {
+              calibrationConfidenceLevel = 0;
+              startingLeftHipX = [];
+              startingLeftHipY = [];
+              startingRightHipX = [];
+              startingRightHipY = [];
+            }
+
+            if (calibrationConfidenceLevel > 75) {
+              calibrationComplete = true;
+              for (var i = 0; i < 75; i++) {
+                startingAvgLeftHipX += startingLeftHipX[i];
+                startingAvgLeftHipY += startingLeftHipY[i];
+                startingAvgRightHipX += startingRightHipX[i];
+                startingAvgRightHipY += startingRightHipY[i];
+              }
+
+              startingAvgLeftHipX /= 75;
+              startingAvgLeftHipY /= 75;
+              startingAvgRightHipX /= 75;
+              startingAvgRightHipY /= 75;
+              console.log("Calibration complete");
+            }
+          }
+
+          else {
             if (analyzeSquatDepth(keypoints)) {
               this.onChangeSD(true);
-            } else {
+              goodDepth = true;
+            }
+
+            distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
+            if (goodDepth && distanceLeftHipFromStarting < 25) {
+              repCounter++;
+              console.log(repCounter);
+              goodDepth = false;
               this.onChangeSD(false);
             }
           }
-          if (analyzeFeetWidth(keypoints)) {
-            this.onChangeFW(true);
-            scoreFW++;
-          } else {
-            scoreFW < 100 ? this.onChangeFW(false) : this.onChangeFW(true);
-          }
+          // if (analyzeSquatDepth(keypoints) && calibrationComplete) {
+          //   this.onChangeSD(true);
+          //   goodDepth = true;
+          //   distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
+          // } else if (goodDepth && distanceLeftHipFromStarting < 50) {
+          //     goodDepth = false;
+          //     this.onChangeSD(goodDepth);
+          //     repCounter++;
+          //     console.log(repCounter);
+          //   } else {
+          //   this.onChangeSD(false);
+          // }
 
-          //this.onChangeFW(true);
-          if (analyzeShoulderAlignment(keypoints)) {
-            this.onChangeSA(true);
-            scoreSA++;
-          } else {
-            scoreSA < 100 ? this.onChangeSA(false) : this.onChangeSA(true);
-          }
-          //this.onChangeSA(true);
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
           }
