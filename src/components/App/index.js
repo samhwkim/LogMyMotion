@@ -17,6 +17,7 @@ import "../../assets/css/animate.min.css";
 import "../../assets/sass/light-bootstrap-dashboard.css?v=1.2.0";
 import "../../assets/css/demo.css";
 import "../../assets/css/pe-icon-7-stroke.css";
+import TableList from "../../views/TableList/TableList";
 
 
 const App = () => (
@@ -27,6 +28,8 @@ const App = () => (
       <Route path={ROUTES.LOG_IN} component={Login} />
       <Route path={ROUTES.HOME} component={Dashboard} />
       <Route path={ROUTES.POSENET} component={PosenetDemo} />
+      <Route path={ROUTES.ANALYZER} component={PosenetDemo} />
+      <Route path={ROUTES.LOG} component={TableList} />
     </div>
   </Router>
 );
