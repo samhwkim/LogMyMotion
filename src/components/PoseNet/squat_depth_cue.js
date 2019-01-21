@@ -27,8 +27,7 @@ export const analyzeSquatDepth = keypoints => {
   rightKneeX = rightKneeKeypoint.position.x;
   rightKneeY = rightKneeKeypoint.position.y;
 
-  if (rightHipY > rightKneeY * 0.775 && leftHipY > leftKneeY * 0.775) {
-    //console.log("DEEP ENOUGH");
+  if (rightHipY > rightKneeY * 0.85 && leftHipY > leftKneeY * 0.85) {
     return true;
   } else {
     return false;
