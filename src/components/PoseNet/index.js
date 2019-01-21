@@ -12,7 +12,9 @@ let feetSet = false;
 let calibrationConfidenceLevel = 0;
 let calibrationComplete = false;
 let goodDepth = false;
-let repCounter = 0;
+let startedRep = false;
+let goodRepCounter = 0;
+let badRepCounter = 0;
 
 let startingLeftHipX = [];
 let startingLeftHipY = [];
@@ -25,6 +27,7 @@ let startingAvgRightHipX = 0;
 let startingAvgRightHipY = 0;
 
 let distanceLeftHipFromStarting = 0;
+let distanceRightHipFromStarting = 0;
 
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
@@ -286,25 +289,24 @@ export default class PoseNet extends React.Component {
             }
 
             distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
-            if (goodDepth && distanceLeftHipFromStarting < 25) {
-              repCounter++;
-              console.log(repCounter);
+            if (distanceLeftHipFromStarting > 25) {
+              startedRep = true;
+            }
+
+            if (startedRep && goodDepth && distanceLeftHipFromStarting < 25) {
+              goodRepCounter++;
+              console.log("Good reps: " + goodRepCounter);
               goodDepth = false;
+              startedRep = false;
               this.onChangeSD(false);
             }
+
+            if (startedRep && !goodDepth && distanceLeftHipFromStarting < 25) {
+              badRepCounter++;
+              console.log("Bad reps: " + badRepCounter);
+              startedRep = false;
+            }
           }
-          // if (analyzeSquatDepth(keypoints) && calibrationComplete) {
-          //   this.onChangeSD(true);
-          //   goodDepth = true;
-          //   distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
-          // } else if (goodDepth && distanceLeftHipFromStarting < 50) {
-          //     goodDepth = false;
-          //     this.onChangeSD(goodDepth);
-          //     repCounter++;
-          //     console.log(repCounter);
-          //   } else {
-          //   this.onChangeSD(false);
-          // }
 
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
