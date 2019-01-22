@@ -73,9 +73,11 @@ export default class PoseNet extends React.Component {
     }
   }
   onChangeSD(inputEntry) {
-    if (inputEntry) {
+    if (inputEntry == "good") {
       this.setState({ backgroundcolorSD: "green" });
-    } else {
+    } else if(inputEntry == "okay") {
+      this.setState({backgroundcolorSD: "yellow"});
+    } else if(inputEntry == "bad") {
       this.setState({ backgroundcolorSD: "red" });
     }
   }
@@ -283,9 +285,13 @@ export default class PoseNet extends React.Component {
           }
 
           else {
-            if (analyzeSquatDepth(keypoints)) {
-              this.onChangeSD(true);
+            if (analyzeSquatDepth(keypoints) == "good") {
+              this.onChangeSD("good");
               goodDepth = true;
+            }
+            if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
+              this.onChangeSD("okay")
+              goodDepth = false;
             }
 
             distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
@@ -298,7 +304,7 @@ export default class PoseNet extends React.Component {
               console.log("Good reps: " + goodRepCounter);
               goodDepth = false;
               startedRep = false;
-              this.onChangeSD(false);
+              this.onChangeSD("bad");
             }
 
             if (startedRep && !goodDepth && distanceLeftHipFromStarting < 25) {
@@ -345,7 +351,10 @@ export default class PoseNet extends React.Component {
     let textSA;
     if (backgroundcolorSD === "red") {
       textSD = "Bad";
-    } else {
+    } else if(backgroundcolorSD == "yellow") {
+      textSD = "Okay";
+    }
+    else {
       textSD = "Good";
     }
     if (backgroundcolorFW === "red") {

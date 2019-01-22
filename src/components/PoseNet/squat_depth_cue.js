@@ -28,8 +28,12 @@ export const analyzeSquatDepth = keypoints => {
   rightKneeY = rightKneeKeypoint.position.y;
 
   if (rightHipY > rightKneeY * 0.85 && leftHipY > leftKneeY * 0.85) {
-    return true;
-  } else {
-    return false;
+    return "good";
+  }
+  else if(rightHipY > rightKneeY * 0.80 && leftHipY > leftKneeY * 0.80) {
+    return "okay";
+  }
+  else {
+    return "bad";
   }
 };
