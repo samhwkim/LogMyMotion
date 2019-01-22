@@ -52,13 +52,53 @@ body {
 .trynowsection .trynowtext .trynowlink {
   text-decoration: none;
   color: black;
-  border: 5px solid;
+  border: 3px solid;
   border-color: black;
-  padding: 6px;
+  padding: 5px;
   border-radius: 12px;
 }
 
 .trynowsection .trynowtext .trynowlink:hover {
+  color: #99ccff;
+  border: 5px solid;
+}
+
+.logon-container {
+  float: right;
+  font: 2.5em "Raleway", sans-serif;
+  padding-right: 2.5%;
+  padding-top: 2.5%;
+}
+
+.logon-container .loginlink {
+  text-decoration: none;
+  color: black;
+  border: 3px solid;
+  border-color: black;
+  padding: 5px;
+  border-radius: 12px;
+  padding-bottom: 2.5%;
+}
+
+.logon-container .loginlink:hover {
+  color: #99ccff;
+  border: 5px solid;
+}
+.logon-container .logintext {
+  padding-bottom: 2.5%;
+}
+
+.logon-container .signuplink {
+  text-decoration: none;
+  color: black;
+  border: 3px solid;
+  border-color: black;
+  padding: 5px;
+  border-radius: 12px;
+  padding-bottom: 2.5%;
+}
+
+.logon-container .signuplink:hover {
   color: #99ccff;
   border: 5px solid;
 }

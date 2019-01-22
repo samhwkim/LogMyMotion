@@ -5,6 +5,17 @@ export default class title extends Component {
     return (
       <div>
         <section className="titlesection">
+          <div className="logon-container">
+            <div className="logintext">
+              <a className="loginlink" href="/login">
+                Login
+              </a>
+            </div>
+            <br />
+            <a className="signuplink" href="/signup">
+              Sign Up
+            </a>
+          </div>
           <div id="LMMtitle">
             LogMy
             <span className="blue-accents">
@@ -21,12 +32,6 @@ export default class title extends Component {
           <div className="trynowtext">
             <a className="trynowlink" href="/posenetdemo">
               Try Now!
-            </a>
-            <a className="trynowlink" href="/login">
-              Log in
-            </a>
-            <a className="trynowlink" href="/signup">
-              Sign Up
             </a>
           </div>
         </section>
