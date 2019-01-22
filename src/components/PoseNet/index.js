@@ -341,14 +341,8 @@ export default class PoseNet extends React.Component {
               600
             );
 
-<<<<<<< HEAD
-          else {
             if (analyzeSquatDepth(keypoints) == "good") {
               this.onChangeSD("good");
-=======
-            if (analyzeSquatDepth(keypoints)) {
-              this.onChangeSD(true);
->>>>>>> 6a3e377a9d274e204c7f78ccde40b27bc185bda9
               goodDepth = true;
             }
             if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
