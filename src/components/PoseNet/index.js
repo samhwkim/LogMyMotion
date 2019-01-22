@@ -7,6 +7,7 @@ import { analyzeFeetWidth } from "./feet_width_cue";
 import { analyzeShoulderAlignment } from "./shoulder_align_cue";
 import { drawShoulderAlignmentLines } from "./utils";
 import { drawSquatDepthLine } from "./utils";
+import { analyzeKneeAngle } from "./knee_angle_cue";
 import "../../css/posenet.css";
 
 let shouldersSet = false;
@@ -72,9 +73,10 @@ export default class PoseNet extends React.Component {
       backgroundcolorSA: "red",
       backgroundcolorSD: "red",
       backgroundcolorFW: "red",
+      backgroundcolorKA: "red",
       calibrationState: "Calibrating",
       goodCounter: 0,
-      badCounter: 0
+      badCounter: 0,
     };
   }
 
@@ -85,6 +87,7 @@ export default class PoseNet extends React.Component {
       this.setState({ backgroundcolorSA: "red" });
     }
   }
+
   onChangeSD(inputEntry) {
     if (inputEntry == "good") {
       this.setState({ backgroundcolorSD: "green" });
@@ -94,11 +97,20 @@ export default class PoseNet extends React.Component {
       this.setState({ backgroundcolorSD: "red" });
     }
   }
+
   onChangeFW(inputEntry) {
     if (inputEntry) {
       this.setState({ backgroundcolorFW: "green" });
     } else {
       this.setState({ backgroundcolorFW: "red" });
+    }
+  }
+
+  onChangeKA(inputEntry) {
+    if (inputEntry) {
+      this.setState({ backgroundcolorKA: "green"});
+    } else {
+      this.setState({ backgroundcolorKA: "red"});
     }
   }
 
@@ -119,6 +131,7 @@ export default class PoseNet extends React.Component {
       this.setState({ calibrationState: "Calibration Complete" });
     }
   }
+
   getCanvas = elem => {
     this.canvas = elem;
   };
@@ -377,7 +390,31 @@ export default class PoseNet extends React.Component {
               console.log("Bad reps: " + badRepCounter);
               startedRep = false;
             }
+
+            var kneeAngleResults = analyzeKneeAngle(keypoints);
+            let leftKneeAngle = kneeAngleResults[0];
+            let rightKneeAngle = kneeAngleResults[1];
+
+            if ((leftKneeAngle >= 100 && leftKneeAngle <= 125) || (rightKneeAngle >= 100 && rightKneeAngle <= 125)) {
+              this.onChangeKA(true);
+            } else {
+              this.onChangeKA(false);
+            }
           }
+
+            // console.log(leftAngle);
+            // console.log(rightAngle);
+
+
+
+            // console.log(`Left Leg Slope: ${leftSlope}`);
+            // console.log(`Right Leg Slope: ${rightSlope}`);
+
+
+            /*if (analyzeKneeAngle(keypoints)) {
+              this.onChangeKA(true);
+            }
+            */
 
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
@@ -404,7 +441,8 @@ export default class PoseNet extends React.Component {
     const {
       backgroundcolorSA,
       backgroundcolorFW,
-      backgroundcolorSD
+      backgroundcolorSD,
+      backgroundcolorKA,
     } = this.state;
     const loading = this.state.loading ? (
       <div className="PoseNet__loading">{this.props.loadingText}</div>
@@ -414,6 +452,7 @@ export default class PoseNet extends React.Component {
     let textSD;
     let textFW;
     let textSA;
+    let textKA;
     if (backgroundcolorSD === "red") {
       textSD = "Bad";
     } else if(backgroundcolorSD == "yellow") {
@@ -432,6 +471,12 @@ export default class PoseNet extends React.Component {
     } else {
       textSA = "Good";
     }
+    if (backgroundcolorKA === "red") {
+      textKA = "Bad";
+    } else {
+      textKA = "Good";
+    }
+
     return (
       <div className="PoseNet">
         {loading}
@@ -449,6 +494,10 @@ export default class PoseNet extends React.Component {
           <div id="video-info-FW">Feet Width:</div>
           <div id="FW-good" style={{ backgroundColor: backgroundcolorFW }}>
             {textFW}
+          </div>
+          <div id="video-info-KA">Knee Angle:</div>
+          <div id="KA-good" style={{ backgroundColor: backgroundcolorKA }}>
+            {textKA}
           </div>
         </div>
         <div className="calibration-container">

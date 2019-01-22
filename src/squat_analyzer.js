@@ -8,6 +8,7 @@ let frameCounter = 0;
 let feetWidthConfidenceLevel = 0;
 let shoulderAlignmentConfidenceLevel = 0;
 let squatDepthConfidenceLevel = 0;
+let kneeAngleConfidenceLevel = 0;
 
 let PROPERTIES = {
   imageScaleFactor: 0.5,

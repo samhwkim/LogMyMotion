@@ -20,6 +20,13 @@
   padding-bottom: 5%;
 }
 
+.videocueinfo #video-info-KA {
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+
+
 .videocueinfo {
   float: right;
 }
@@ -41,6 +48,14 @@
 }
 
 .videocueinfo #FW-good {
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.videocueinfo #KA-good {
   text-align: center;
   border: 3px solid;
   border-color: black;

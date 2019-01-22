@@ -34,6 +34,11 @@
   padding-bottom: 15%;
 }
 
+.videocueinfo #video-info-KA {
+  padding-top: 20%;
+  padding-bottom: 15%;
+}
+
 .videocueinfo #SD-good {
   text-align: center;
   border: 3px solid;
@@ -51,6 +56,14 @@
 }
 
 .videocueinfo #FW-good {
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.videocueinfo #KA-good {
   text-align: center;
   border: 3px solid;
   border-color: black;
