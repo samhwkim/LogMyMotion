@@ -67,3 +67,37 @@ export function drawSkeleton(
     );
   });
 }
+
+export function drawShoulderAlignmentLines(startingAvgLeftShoulderX, startingAvgRightShoulderX, currentLeftShoulderX, currentRightShoulderX, ctx, canvasHeight) {
+  ctx.beginPath();
+  ctx.moveTo(startingAvgLeftShoulderX + 10, 0);
+  ctx.lineTo(startingAvgLeftShoulderX + 10, canvasHeight);
+  if (currentLeftShoulderX > startingAvgLeftShoulderX + 10) {
+    ctx.strokeStyle = "red";
+  } else {
+    ctx.strokeStyle = "green";
+  }
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(startingAvgRightShoulderX - 10, 0);
+  ctx.lineTo(startingAvgRightShoulderX - 10, canvasHeight);
+  if (currentRightShoulderX < startingAvgRightShoulderX - 10) {
+    ctx.strokeStyle = "red";
+  } else {
+    ctx.strokeStyle = "green";
+  }
+  ctx.stroke();
+}
+
+export function drawSquatDepthLine(startingAvgLeftKneeY, currentLeftHipY, ctx, canvasWidth) {
+  ctx.beginPath();
+  ctx.moveTo(0, startingAvgLeftKneeY - 15);
+  ctx.lineTo(600, startingAvgLeftKneeY - 15);
+  if (currentLeftHipY < startingAvgLeftKneeY - 15) {
+    ctx.strokeStyle = "red";
+  } else {
+    ctx.strokeStyle = "green";
+  }
+  ctx.stroke();
+}

@@ -54,3 +54,11 @@
   left: 0;
   z-index: 10;
 }
+
+.calibration-container {
+  font: 3.5em "Raleway", Sans-serif;
+}
+
+.rep-container {
+  font: 3.5em "Raleway", Sans-serif;
+}
