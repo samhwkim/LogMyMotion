@@ -5,6 +5,8 @@ import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
 import { analyzeShoulderAlignment } from "./shoulder_align_cue";
+import { drawShoulderAlignmentLines } from "./utils";
+import { drawSquatDepthLine } from "./utils";
 import "../../css/posenet.css";
 
 let shouldersSet = false;
@@ -20,11 +22,17 @@ let startingLeftHipX = [];
 let startingLeftHipY = [];
 let startingRightHipX = [];
 let startingRightHipY = [];
+let startingLeftShoulderX = [];
+let startingRightShoulderX = [];
+let startingLeftKneeY = [];
 
 let startingAvgLeftHipX = 0;
 let startingAvgLeftHipY = 0;
 let startingAvgRightHipX = 0;
 let startingAvgRightHipY = 0;
+let startingAvgLeftShoulderX = 0;
+let startingAvgRightShoulderX = 0;
+let startingAvgLeftKneeY = 0;
 
 let distanceLeftHipFromStarting = 0;
 let distanceRightHipFromStarting = 0;
@@ -242,7 +250,6 @@ export default class PoseNet extends React.Component {
               feetSet = false;
             }
 
-            //this.onChangeFW(true);
             if (analyzeShoulderAlignment(keypoints)) {
               this.onChangeSA(true);
               shouldersSet = true;
@@ -257,12 +264,19 @@ export default class PoseNet extends React.Component {
               startingLeftHipY.push(keypoints[11].position.y);
               startingRightHipX.push(keypoints[12].position.x);
               startingRightHipY.push(keypoints[12].position.y);
+              startingLeftShoulderX.push(keypoints[5].position.x);
+              startingRightShoulderX.push(keypoints[6].position.x);
+              startingLeftKneeY.push(keypoints[13].position.y);
+
             } else {
               calibrationConfidenceLevel = 0;
               startingLeftHipX = [];
               startingLeftHipY = [];
               startingRightHipX = [];
               startingRightHipY = [];
+              startingLeftShoulderX = [];
+              startingRightShoulderX = [];
+              startingLeftKneeY = [];
             }
 
             if (calibrationConfidenceLevel > 75) {
@@ -272,17 +286,26 @@ export default class PoseNet extends React.Component {
                 startingAvgLeftHipY += startingLeftHipY[i];
                 startingAvgRightHipX += startingRightHipX[i];
                 startingAvgRightHipY += startingRightHipY[i];
+                startingAvgLeftShoulderX += startingLeftShoulderX[i];
+                startingAvgRightShoulderX += startingRightShoulderX[i];
+                startingAvgLeftKneeY += startingLeftKneeY[i];
               }
 
               startingAvgLeftHipX /= 75;
               startingAvgLeftHipY /= 75;
               startingAvgRightHipX /= 75;
               startingAvgRightHipY /= 75;
+              startingAvgLeftShoulderX /= 75;
+              startingAvgRightShoulderX /= 75;
+              startingAvgLeftKneeY /= 75;
               console.log("Calibration complete");
             }
           }
 
           else {
+            drawShoulderAlignmentLines(startingAvgLeftShoulderX, startingAvgRightShoulderX, keypoints[5].position.x, keypoints[6].position.x, this.canvas.getContext("2d"), 400);
+            drawSquatDepthLine(startingAvgLeftKneeY, keypoints[11].position.y, this.canvas.getContext("2d"), 600);
+
             if (analyzeSquatDepth(keypoints)) {
               this.onChangeSD(true);
               goodDepth = true;
