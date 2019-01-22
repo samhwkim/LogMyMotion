@@ -5,6 +5,8 @@ import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
 import { analyzeShoulderAlignment } from "./shoulder_align_cue";
+import { drawShoulderAlignmentLines } from "./utils";
+import { drawSquatDepthLine } from "./utils";
 import "../../css/posenet.css";
 
 let shouldersSet = false;
@@ -15,16 +17,24 @@ let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
+//let goodCounter = 0;
+//let badCounter = 0;
 
 let startingLeftHipX = [];
 let startingLeftHipY = [];
 let startingRightHipX = [];
 let startingRightHipY = [];
+let startingLeftShoulderX = [];
+let startingRightShoulderX = [];
+let startingLeftKneeY = [];
 
 let startingAvgLeftHipX = 0;
 let startingAvgLeftHipY = 0;
 let startingAvgRightHipX = 0;
 let startingAvgRightHipY = 0;
+let startingAvgLeftShoulderX = 0;
+let startingAvgRightShoulderX = 0;
+let startingAvgLeftKneeY = 0;
 
 let distanceLeftHipFromStarting = 0;
 let distanceRightHipFromStarting = 0;
@@ -61,7 +71,10 @@ export default class PoseNet extends React.Component {
       loading: true,
       backgroundcolorSA: "red",
       backgroundcolorSD: "red",
-      backgroundcolorFW: "red"
+      backgroundcolorFW: "red",
+      calibrationState: "Calibrating",
+      goodCounter: 0,
+      badCounter: 0
     };
   }
 
@@ -86,6 +99,24 @@ export default class PoseNet extends React.Component {
       this.setState({ backgroundcolorFW: "green" });
     } else {
       this.setState({ backgroundcolorFW: "red" });
+    }
+  }
+
+  onChangeGoodRep(inputEntry) {
+    if (inputEntry) {
+      this.setState({ goodCounter: this.state.goodCounter + 1 });
+    }
+  }
+
+  onChangeBadRep(inputEntry) {
+    if (inputEntry) {
+      this.setState({ badCounter: this.state.badCounter + 1 });
+    }
+  }
+
+  onChangeCalibrationState(inputEntry) {
+    if (inputEntry) {
+      this.setState({ calibrationState: "Calibration Complete" });
     }
   }
   getCanvas = elem => {
@@ -244,7 +275,6 @@ export default class PoseNet extends React.Component {
               feetSet = false;
             }
 
-            //this.onChangeFW(true);
             if (analyzeShoulderAlignment(keypoints)) {
               this.onChangeSA(true);
               shouldersSet = true;
@@ -259,12 +289,18 @@ export default class PoseNet extends React.Component {
               startingLeftHipY.push(keypoints[11].position.y);
               startingRightHipX.push(keypoints[12].position.x);
               startingRightHipY.push(keypoints[12].position.y);
+              startingLeftShoulderX.push(keypoints[5].position.x);
+              startingRightShoulderX.push(keypoints[6].position.x);
+              startingLeftKneeY.push(keypoints[13].position.y);
             } else {
               calibrationConfidenceLevel = 0;
               startingLeftHipX = [];
               startingLeftHipY = [];
               startingRightHipX = [];
               startingRightHipY = [];
+              startingLeftShoulderX = [];
+              startingRightShoulderX = [];
+              startingLeftKneeY = [];
             }
 
             if (calibrationConfidenceLevel > 75) {
@@ -274,19 +310,45 @@ export default class PoseNet extends React.Component {
                 startingAvgLeftHipY += startingLeftHipY[i];
                 startingAvgRightHipX += startingRightHipX[i];
                 startingAvgRightHipY += startingRightHipY[i];
+                startingAvgLeftShoulderX += startingLeftShoulderX[i];
+                startingAvgRightShoulderX += startingRightShoulderX[i];
+                startingAvgLeftKneeY += startingLeftKneeY[i];
               }
 
               startingAvgLeftHipX /= 75;
               startingAvgLeftHipY /= 75;
               startingAvgRightHipX /= 75;
               startingAvgRightHipY /= 75;
+              startingAvgLeftShoulderX /= 75;
+              startingAvgRightShoulderX /= 75;
+              startingAvgLeftKneeY /= 75;
+              this.onChangeCalibrationState(true);
               console.log("Calibration complete");
             }
-          }
+          } else {
+            drawShoulderAlignmentLines(
+              startingAvgLeftShoulderX,
+              startingAvgRightShoulderX,
+              keypoints[5].position.x,
+              keypoints[6].position.x,
+              this.canvas.getContext("2d"),
+              400
+            );
+            drawSquatDepthLine(
+              startingAvgLeftKneeY,
+              keypoints[11].position.y,
+              this.canvas.getContext("2d"),
+              600
+            );
 
+<<<<<<< HEAD
           else {
             if (analyzeSquatDepth(keypoints) == "good") {
               this.onChangeSD("good");
+=======
+            if (analyzeSquatDepth(keypoints)) {
+              this.onChangeSD(true);
+>>>>>>> 6a3e377a9d274e204c7f78ccde40b27bc185bda9
               goodDepth = true;
             }
             if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
@@ -294,13 +356,20 @@ export default class PoseNet extends React.Component {
               goodDepth = false;
             }
 
-            distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
+            distanceLeftHipFromStarting = distanceFormula(
+              startingAvgLeftHipX,
+              startingAvgLeftHipY,
+              keypoints[11].position.x,
+              keypoints[11].position.y
+            );
             if (distanceLeftHipFromStarting > 25) {
               startedRep = true;
             }
 
             if (startedRep && goodDepth && distanceLeftHipFromStarting < 25) {
               goodRepCounter++;
+              this.onChangeGoodRep(true);
+              this.onChangeGoodRep(false);
               console.log("Good reps: " + goodRepCounter);
               goodDepth = false;
               startedRep = false;
@@ -309,6 +378,8 @@ export default class PoseNet extends React.Component {
 
             if (startedRep && !goodDepth && distanceLeftHipFromStarting < 25) {
               badRepCounter++;
+              this.onChangeBadRep(true);
+              this.onChangeBadRep(false);
               console.log("Bad reps: " + badRepCounter);
               startedRep = false;
             }
@@ -384,6 +455,19 @@ export default class PoseNet extends React.Component {
           <div id="video-info-FW">Feet Width:</div>
           <div id="FW-good" style={{ backgroundColor: backgroundcolorFW }}>
             {textFW}
+          </div>
+        </div>
+        <div className="calibration-container">
+          <div>{this.state.calibrationState}</div>
+        </div>
+        <div className="rep-container">
+          <div id="good-rep">
+            <div>Good Rep:</div>
+            {this.state.goodCounter}
+          </div>
+          <div id="bad-rep">
+            <div>Bad Rep:</div>
+            {this.state.badCounter}
           </div>
         </div>
       </div>

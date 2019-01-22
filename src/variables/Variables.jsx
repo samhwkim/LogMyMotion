@@ -485,14 +485,14 @@ var legendPie = {
 // Data for Line Chart
 var dataSales = {
   labels: [
-    "9:00AM",
-    "12:00AM",
-    "3:00PM",
-    "6:00PM",
-    "9:00PM",
-    "12:00PM",
-    "3:00AM",
-    "6:00AM"
+    "1/07",
+    "1/09",
+    "1/11",
+    "1/13",
+    "1/15",
+    "1/17",
+    "1/19",
+    "1/21"
   ],
   series: [
     [287, 385, 490, 492, 554, 586, 698, 695],
@@ -529,7 +529,7 @@ var responsiveSales = [
   ]
 ];
 var legendSales = {
-  names: ["Open", "Click", "Click Second Time"],
+  names: ["Bench Press", "Squat", "Barbell Rows"],
   types: ["info", "danger", "warning"]
 };
 

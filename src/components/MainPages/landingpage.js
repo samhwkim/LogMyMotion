@@ -6,7 +6,6 @@ import CueVideos from "../LandingPage/cuevideos";
 import TeamMembers from "../LandingPage/abouttheteam";
 import Footer from "../LandingPage/footer";
 import "../../css/landingpage.css";
-import Home from "./home";
 
 export default class LandingPage extends Component {
   render() {

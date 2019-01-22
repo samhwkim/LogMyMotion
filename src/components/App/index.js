@@ -6,7 +6,6 @@ import Navigation from '../Navigation';
 import LandingPage from '../MainPages/landingpage';
 import Signup from "../MainPages/signup";
 import Login from "../MainPages/login";
-import Home from "../MainPages/home";
 import PosenetDemo from "../MainPages/posenetdemo";
 import Dashboard from "../../layouts/Dashboard/Dashboard.jsx";
 import { withAuthentication } from '../Session';
