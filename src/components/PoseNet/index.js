@@ -17,6 +17,8 @@ let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
+let goodCounter = 0;
+let badCounter = 0;
 
 let startingLeftHipX = [];
 let startingLeftHipY = [];
@@ -69,7 +71,8 @@ export default class PoseNet extends React.Component {
       loading: true,
       backgroundcolorSA: "red",
       backgroundcolorSD: "red",
-      backgroundcolorFW: "red"
+      backgroundcolorFW: "red",
+      calibrationState: "Calibrating"
     };
   }
 
@@ -92,6 +95,24 @@ export default class PoseNet extends React.Component {
       this.setState({ backgroundcolorFW: "green" });
     } else {
       this.setState({ backgroundcolorFW: "red" });
+    }
+  }
+
+  onChangeGoodRep(inputEntry) {
+    if (inputEntry) {
+      goodCounter++;
+    }
+  }
+
+  onChangeBadRep(inputEntry) {
+    if (inputEntry) {
+      badCounter++;
+    }
+  }
+
+  onChangeCalibrationState(inputEntry) {
+    if (inputEntry) {
+      this.setState({ calibrationState: "Calibration Complete" });
     }
   }
   getCanvas = elem => {
@@ -311,13 +332,20 @@ export default class PoseNet extends React.Component {
               goodDepth = true;
             }
 
-            distanceLeftHipFromStarting = distanceFormula(startingAvgLeftHipX, startingAvgLeftHipY, keypoints[11].position.x, keypoints[11].position.y);
+            distanceLeftHipFromStarting = distanceFormula(
+              startingAvgLeftHipX,
+              startingAvgLeftHipY,
+              keypoints[11].position.x,
+              keypoints[11].position.y
+            );
             if (distanceLeftHipFromStarting > 25) {
               startedRep = true;
             }
 
             if (startedRep && goodDepth && distanceLeftHipFromStarting < 25) {
               goodRepCounter++;
+              this.onChangeGoodRep(true);
+              this.onChangeGoodRep(false);
               console.log("Good reps: " + goodRepCounter);
               goodDepth = false;
               startedRep = false;
@@ -326,6 +354,8 @@ export default class PoseNet extends React.Component {
 
             if (startedRep && !goodDepth && distanceLeftHipFromStarting < 25) {
               badRepCounter++;
+              this.onChangeBadRep(true);
+              this.onChangeBadRep(false);
               console.log("Bad reps: " + badRepCounter);
               startedRep = false;
             }
@@ -398,6 +428,19 @@ export default class PoseNet extends React.Component {
           <div id="video-info-FW">Feet Width:</div>
           <div id="FW-good" style={{ backgroundColor: backgroundcolorFW }}>
             {textFW}
+          </div>
+        </div>
+        <div className="calibration-container">
+          <div>{this.state.calibrationState}</div>
+        </div>
+        <div className="rep-container">
+          <div id="good-rep">
+            <div>Good Rep:</div>
+            {goodCounter}
+          </div>
+          <div id="bad-rep">
+            <div>Bad Rep:</div>
+            {badCounter}
           </div>
         </div>
       </div>
