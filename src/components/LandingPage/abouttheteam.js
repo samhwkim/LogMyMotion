@@ -16,8 +16,8 @@ export default class AboutTheTeam extends Component {
             id="memberpic"
             src={sam}
             alt="sam"
-            width="250px"
-            height="250px"
+            width="200px"
+            height="200px"
           />
           <figcaption id="memberinfo">Sam Kim - Team Lead</figcaption>
         </figure>
@@ -26,8 +26,8 @@ export default class AboutTheTeam extends Component {
             id="memberpic"
             src={yam}
             alt="yam"
-            width="250px"
-            height="250px"
+            width="200px"
+            height="200px"
           />
           <figcaption id="memberinfo">Nikhil Patil - Scribe</figcaption>
         </figure>
@@ -36,8 +36,8 @@ export default class AboutTheTeam extends Component {
             id="memberpic"
             src={eric}
             alt="eric"
-            width="250px"
-            height="250px"
+            width="200px"
+            height="200px"
           />
           <figcaption id="memberinfo">Eric Freilafert</figcaption>
         </figure>
@@ -46,8 +46,8 @@ export default class AboutTheTeam extends Component {
             id="memberpic1"
             src={arvan}
             alt="arvan"
-            width="250px"
-            height="250px"
+            width="200px"
+            height="200px"
           />{" "}
           <figcaption id="memberinfo">Arvan Das</figcaption>
         </figure>
@@ -56,8 +56,8 @@ export default class AboutTheTeam extends Component {
             id="memberpic1"
             src={ethan}
             alt="ethan"
-            width="250px"
-            height="250px"
+            width="200px"
+            height="200px"
           />
           <figcaption id="memberinfo">Ethan Su</figcaption>
         </figure>

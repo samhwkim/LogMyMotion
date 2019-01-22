@@ -17,8 +17,8 @@ let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
-let goodCounter = 0;
-let badCounter = 0;
+//let goodCounter = 0;
+//let badCounter = 0;
 
 let startingLeftHipX = [];
 let startingLeftHipY = [];
@@ -72,7 +72,9 @@ export default class PoseNet extends React.Component {
       backgroundcolorSA: "red",
       backgroundcolorSD: "red",
       backgroundcolorFW: "red",
-      calibrationState: "Calibrating"
+      calibrationState: "Calibrating",
+      goodCounter: 0,
+      badCounter: 0
     };
   }
 
@@ -100,13 +102,13 @@ export default class PoseNet extends React.Component {
 
   onChangeGoodRep(inputEntry) {
     if (inputEntry) {
-      goodCounter++;
+      this.setState({ goodCounter: this.state.goodCounter + 1 });
     }
   }
 
   onChangeBadRep(inputEntry) {
     if (inputEntry) {
-      badCounter++;
+      this.setState({ badCounter: this.state.badCounter + 1 });
     }
   }
 
@@ -288,7 +290,6 @@ export default class PoseNet extends React.Component {
               startingLeftShoulderX.push(keypoints[5].position.x);
               startingRightShoulderX.push(keypoints[6].position.x);
               startingLeftKneeY.push(keypoints[13].position.y);
-
             } else {
               calibrationConfidenceLevel = 0;
               startingLeftHipX = [];
@@ -319,13 +320,24 @@ export default class PoseNet extends React.Component {
               startingAvgLeftShoulderX /= 75;
               startingAvgRightShoulderX /= 75;
               startingAvgLeftKneeY /= 75;
+              this.onChangeCalibrationState(true);
               console.log("Calibration complete");
             }
-          }
-
-          else {
-            drawShoulderAlignmentLines(startingAvgLeftShoulderX, startingAvgRightShoulderX, keypoints[5].position.x, keypoints[6].position.x, this.canvas.getContext("2d"), 400);
-            drawSquatDepthLine(startingAvgLeftKneeY, keypoints[11].position.y, this.canvas.getContext("2d"), 600);
+          } else {
+            drawShoulderAlignmentLines(
+              startingAvgLeftShoulderX,
+              startingAvgRightShoulderX,
+              keypoints[5].position.x,
+              keypoints[6].position.x,
+              this.canvas.getContext("2d"),
+              400
+            );
+            drawSquatDepthLine(
+              startingAvgLeftKneeY,
+              keypoints[11].position.y,
+              this.canvas.getContext("2d"),
+              600
+            );
 
             if (analyzeSquatDepth(keypoints)) {
               this.onChangeSD(true);
@@ -436,11 +448,11 @@ export default class PoseNet extends React.Component {
         <div className="rep-container">
           <div id="good-rep">
             <div>Good Rep:</div>
-            {goodCounter}
+            {this.state.goodCounter}
           </div>
           <div id="bad-rep">
             <div>Bad Rep:</div>
-            {badCounter}
+            {this.state.badCounter}
           </div>
         </div>
       </div>
