@@ -87,33 +87,4 @@ export function analyzeKneeAngle(keypoints) {
 
     // return the leg angles
     return [leftLegAngle, rightLegAngle];
-
-    // let rightLegSlope = slopeFormula(rightKneeX, rightKneeY, rightAnkleX, rightAnkleY);
-    // let leftLegSlope = slopeFormula(leftKneeX, leftKneeY, leftAnkleX, leftAnkleY);
-    //
-    // return [rightLegSlope, leftLegSlope];
-
-    /*
-    if (rightLegSlope >= 0.5 && leftLegSlope >= 0.5) {
-        return true;
-    } else {
-      return false;
-    }
-
-    // This is where we use our points to create three sides of our triangle
-    shoulderToElbowDistance = distanceFormula(rightShoulderX, rightShoulderY, rightElbowX, rightElbowY);
-    elbowToWristDistance = distanceFormula(rightElbowX, rightElbowY, rightWristX, rightWristY);
-    shoulderToWristDistance = distanceFormula(rightShoulderX, rightShoulderY, rightWristX, rightWristY);
-
-    // This link explains the formula I use from here: https://www.mathsisfun.com/algebra/trig-solving-sss-triangles.html
-    // This grabs the angle of the elbow vertex
-    let numerator = Math.pow(shoulderToElbowDistance, 2) + Math.pow(elbowToWristDistance, 2) - Math.pow(shoulderToWristDistance, 2);
-    numerator = numerator.toFixed(3);
-    let denominator = (2*shoulderToElbowDistance*elbowToWristDistance);
-    let fraction = (numerator/denominator);
-
-    // Answer is in rad so we convert to degrees
-    let armRad = Math.acos(fraction);
-    armAngle = armRad * 180 / Math.PI;
-    */
 }
