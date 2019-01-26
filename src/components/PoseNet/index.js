@@ -1,5 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
+import Rodal from 'rodal';
+import SpeechRecognition from 'react-speech-recognition'
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
@@ -9,6 +11,8 @@ import { drawShoulderAlignmentLines } from "./utils";
 import { drawSquatDepthLine } from "./utils";
 import { analyzeKneeAngle } from "./knee_angle_cue";
 import "../../css/posenet.css";
+import 'rodal/lib/rodal.css';
+
 
 let shouldersSet = false;
 let feetSet = false;
@@ -45,7 +49,7 @@ function distanceFormula(x1, y1, x2, y2) {
   return result;
 }
 
-export default class PoseNet extends React.Component {
+class PoseNet extends React.Component {
   static defaultProps = {
     videoWidth: 600,
     videoHeight: 400,
@@ -66,6 +70,7 @@ export default class PoseNet extends React.Component {
     loadingText: "Loading pose detector..."
   };
 
+
   constructor(props) {
     super(props, PoseNet.defaultProps);
     this.state = {
@@ -77,8 +82,17 @@ export default class PoseNet extends React.Component {
       calibrationState: "Calibrating",
       goodCounter: 0,
       badCounter: 0,
+      summaryVisible: false
     };
   }
+
+    showSummary() {
+      this.setState({ summaryVisible: true });
+    }
+
+    hideSummary() {
+      this.setState({ summaryVisible: false });
+    }
 
   onChangeSA(inputEntry) {
     if (inputEntry) {
@@ -336,6 +350,7 @@ export default class PoseNet extends React.Component {
               startingAvgRightShoulderX /= 75;
               startingAvgLeftKneeY /= 75;
               this.onChangeCalibrationState(true);
+              this.props.startListening();
               console.log("Calibration complete");
             }
           } else {
@@ -444,6 +459,11 @@ export default class PoseNet extends React.Component {
       backgroundcolorSD,
       backgroundcolorKA,
     } = this.state;
+    const { transcript, resetTranscript, startListening, stopListening, browserSupportsSpeechRecognition } = this.props;
+    if (!browserSupportsSpeechRecognition) {
+      return null;
+    }
+
     const loading = this.state.loading ? (
       <div className="PoseNet__loading">{this.props.loadingText}</div>
     ) : (
@@ -475,6 +495,11 @@ export default class PoseNet extends React.Component {
       textKA = "Bad";
     } else {
       textKA = "Good";
+    }
+
+    if(this.props.transcript.includes("done")) {
+      this.showSummary();
+      this.props.resetTranscript();
     }
 
     return (
@@ -512,8 +537,17 @@ export default class PoseNet extends React.Component {
             <div>Bad Rep:</div>
             {this.state.badCounter}
           </div>
+          <Rodal visible={this.state.summaryVisible} measure={"%"} width={80} height={80} onClose={this.hideSummary.bind(this)}>
+            <div>Summary</div>
+          </Rodal>
         </div>
       </div>
     );
   }
 }
+
+const speechRecognitionOptions = {
+  autoStart: false
+}
+
+export default SpeechRecognition(speechRecognitionOptions)(PoseNet);
