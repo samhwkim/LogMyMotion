@@ -3,6 +3,10 @@ import * as React from "react";
 import Rodal from 'rodal';
 import SpeechRecognition from 'react-speech-recognition'
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
+import GoodRepSound from "../../assets/audio/Goodrep.mp3";
+import Sound from "react-sound";
+
+
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -84,6 +88,17 @@ class PoseNet extends React.Component {
       badCounter: 0,
       summaryVisible: false
     };
+    this.playRepSound = this.playRepSound.bind(this);
+    this.goodRepSound = new Audio(GoodRepSound);
+
+  }
+
+  playRepSound(inputEntry) {
+    if(inputEntry === "good") {
+        this.goodRepSound.play();
+    } else {
+
+    }
   }
 
     showSummary() {
@@ -392,6 +407,8 @@ class PoseNet extends React.Component {
               goodRepCounter++;
               this.onChangeGoodRep(true);
               this.onChangeGoodRep(false);
+              //play good rep sound
+              this.playRepSound("good");
               console.log("Good reps: " + goodRepCounter);
               goodDepth = false;
               startedRep = false;
