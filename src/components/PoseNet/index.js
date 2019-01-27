@@ -3,6 +3,8 @@ import * as React from "react";
 import Rodal from "rodal";
 import SpeechRecognition from "react-speech-recognition";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
+import GoodRepSound from "../../assets/audio/Goodrep.mp3";
+import Sound from "react-sound";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -90,6 +92,15 @@ class PoseNet extends React.Component {
     this.onChangeKA = this.onChangeKA.bind(this);
     this.onChangeSA = this.onChangeSA.bind(this);
     this.onChangeSD = this.onChangeSD.bind(this);
+    this.playRepSound = this.playRepSound.bind(this);
+    this.goodRepSound = new Audio(GoodRepSound);
+  }
+
+  playRepSound(inputEntry) {
+    if (inputEntry === "good") {
+      this.goodRepSound.play();
+    } else {
+    }
   }
 
   showSummary() {
@@ -398,6 +409,8 @@ class PoseNet extends React.Component {
               goodRepCounter++;
               this.onChangeGoodRep(true);
               this.onChangeGoodRep(false);
+              //play good rep sound
+              this.playRepSound("good");
               console.log("Good reps: " + goodRepCounter);
               goodDepth = false;
               startedRep = false;
@@ -522,6 +535,18 @@ class PoseNet extends React.Component {
           ref={this.getVideo}
           style={{ scale: 1, height: "75%", width: "85%" }}
         />
+        <div className="videoOverlay-Good">
+          <div id="good-rep">
+            <div>Good Rep:</div>
+            {this.state.goodCounter}
+          </div>
+        </div>
+        <div className="videoOverlay-Bad">
+          <div id="bad-rep">
+            <div>Bad Rep:</div>
+            {this.state.badCounter}
+          </div>
+        </div>
         <canvas
           id="posenetCanvas"
           ref={this.getCanvas}

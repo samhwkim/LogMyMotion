@@ -76,3 +76,26 @@
 .rep-container {
   font: 3.5em "Raleway", Sans-serif;
 }
+
+.videoOverlay-Good {
+  font: 2.5em "Raleway", Sans-serif;
+  color: green;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.videoOverlay-Bad {
+  font: 2.5em "Raleway", Sans-serif;
+  color: red;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+}
+
+.PoseNet #posenetVideo {
+  display: block;
+  margin: 0 auto;
+}
