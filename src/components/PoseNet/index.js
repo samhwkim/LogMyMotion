@@ -5,6 +5,8 @@ import SpeechRecognition from "react-speech-recognition";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
+import SummaryTable from "../SummaryTable";
+import Firebase from "../Firebase";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -367,7 +369,7 @@ class PoseNet extends React.Component {
               startingAvgRightShoulderX /= 75;
               startingAvgLeftKneeY /= 75;
               this.onChangeCalibrationState(true);
-              this.props.startListening();
+              // this.props.startListening();
               console.log("Calibration complete");
             }
           } else {
@@ -590,6 +592,7 @@ class PoseNet extends React.Component {
             onClose={this.hideSummary.bind(this)}
           >
             <div>Summary</div>
+            <SummaryTable />
           </Rodal>
         </div>
       </div>
@@ -601,4 +604,5 @@ const speechRecognitionOptions = {
   autoStart: false
 };
 
-export default SpeechRecognition(speechRecognitionOptions)(PoseNet);
+// export default SpeechRecognition(speechRecognitionOptions)(PoseNet);
+export default SpeechRecognition(PoseNet);

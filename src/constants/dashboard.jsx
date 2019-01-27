@@ -27,6 +27,11 @@ const dashboardRoutes = [
     icon: "pe-7s-gym",
   },
   {
+    path: "/tutorial",
+    name: "Tutorial",
+    icon: "pe-7s-bookmarks",
+  },
+  {
     upgrade: true,
     path: "/upgrade",
     name: "Upgrade to PRO",
