@@ -33,8 +33,17 @@ class SignupBase extends Component {
   }
 
   signup(e){
+    const {email, password} = this.state;
     e.preventDefault();
-    this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password).then((u)=> {
+    this.props.firebase.doCreateUserWithEmailAndPassword(this.state.email, this.state.password)
+    .then(authUser => {
+      // Creates a user in the Firebase database
+      return this.props.firebase.user(authUser.user.uid).set({
+        email,
+        password,
+      });
+    })
+    .then((u)=> {
     }).then((u)=> {
       console.log(u);
       this.setState({...INITIAL_STATE});

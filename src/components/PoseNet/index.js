@@ -6,6 +6,8 @@ import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
+import Firebase from "../Firebase";
+
 
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
