@@ -68,7 +68,14 @@ export function drawSkeleton(
   });
 }
 
-export function drawShoulderAlignmentLines(startingAvgLeftShoulderX, startingAvgRightShoulderX, currentLeftShoulderX, currentRightShoulderX, ctx, canvasHeight) {
+export function drawShoulderAlignmentLines(
+  startingAvgLeftShoulderX,
+  startingAvgRightShoulderX,
+  currentLeftShoulderX,
+  currentRightShoulderX,
+  ctx,
+  canvasHeight
+) {
   ctx.beginPath();
   ctx.moveTo(startingAvgLeftShoulderX + 10, 0);
   ctx.lineTo(startingAvgLeftShoulderX + 10, canvasHeight);
@@ -90,7 +97,12 @@ export function drawShoulderAlignmentLines(startingAvgLeftShoulderX, startingAvg
   ctx.stroke();
 }
 
-export function drawSquatDepthLine(startingAvgLeftKneeY, currentLeftHipY, ctx, canvasWidth) {
+export function drawSquatDepthLine(
+  startingAvgLeftKneeY,
+  currentLeftHipY,
+  ctx,
+  canvasWidth
+) {
   ctx.beginPath();
   ctx.moveTo(0, startingAvgLeftKneeY - 15);
   ctx.lineTo(600, startingAvgLeftKneeY - 15);

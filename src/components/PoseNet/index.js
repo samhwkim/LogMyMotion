@@ -1,7 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
-import Rodal from 'rodal';
-import SpeechRecognition from 'react-speech-recognition'
+import Rodal from "rodal";
+import SpeechRecognition from "react-speech-recognition";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
@@ -11,8 +11,7 @@ import { drawShoulderAlignmentLines } from "./utils";
 import { drawSquatDepthLine } from "./utils";
 import { analyzeKneeAngle } from "./knee_angle_cue";
 import "../../css/posenet.css";
-import 'rodal/lib/rodal.css';
-
+import "rodal/lib/rodal.css";
 
 let shouldersSet = false;
 let feetSet = false;
@@ -70,7 +69,6 @@ class PoseNet extends React.Component {
     loadingText: "Loading pose detector..."
   };
 
-
   constructor(props) {
     super(props, PoseNet.defaultProps);
     this.state = {
@@ -82,17 +80,25 @@ class PoseNet extends React.Component {
       calibrationState: "Calibrating",
       goodCounter: 0,
       badCounter: 0,
-      summaryVisible: false
+      summaryVisible: false,
+      badCounter: 0
     };
+    this.onChangeBadRep = this.onChangeBadRep.bind(this);
+    this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
+    this.onChangeFW = this.onChangeFW.bind(this);
+    this.onChangeGoodRep = this.onChangeGoodRep.bind(this);
+    this.onChangeKA = this.onChangeKA.bind(this);
+    this.onChangeSA = this.onChangeSA.bind(this);
+    this.onChangeSD = this.onChangeSD.bind(this);
   }
 
-    showSummary() {
-      this.setState({ summaryVisible: true });
-    }
+  showSummary() {
+    this.setState({ summaryVisible: true });
+  }
 
-    hideSummary() {
-      this.setState({ summaryVisible: false });
-    }
+  hideSummary() {
+    this.setState({ summaryVisible: false });
+  }
 
   onChangeSA(inputEntry) {
     if (inputEntry) {
@@ -105,9 +111,9 @@ class PoseNet extends React.Component {
   onChangeSD(inputEntry) {
     if (inputEntry == "good") {
       this.setState({ backgroundcolorSD: "green" });
-    } else if(inputEntry == "okay") {
-      this.setState({backgroundcolorSD: "yellow"});
-    } else if(inputEntry == "bad") {
+    } else if (inputEntry == "okay") {
+      this.setState({ backgroundcolorSD: "yellow" });
+    } else if (inputEntry == "bad") {
       this.setState({ backgroundcolorSD: "red" });
     }
   }
@@ -122,9 +128,9 @@ class PoseNet extends React.Component {
 
   onChangeKA(inputEntry) {
     if (inputEntry) {
-      this.setState({ backgroundcolorKA: "green"});
+      this.setState({ backgroundcolorKA: "green" });
     } else {
-      this.setState({ backgroundcolorKA: "red"});
+      this.setState({ backgroundcolorKA: "red" });
     }
   }
 
@@ -374,7 +380,7 @@ class PoseNet extends React.Component {
               goodDepth = true;
             }
             if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
-              this.onChangeSD("okay")
+              this.onChangeSD("okay");
               goodDepth = false;
             }
 
@@ -410,23 +416,23 @@ class PoseNet extends React.Component {
             let leftKneeAngle = kneeAngleResults[0];
             let rightKneeAngle = kneeAngleResults[1];
 
-            if ((leftKneeAngle >= 100 && leftKneeAngle <= 125) || (rightKneeAngle >= 100 && rightKneeAngle <= 125)) {
+            if (
+              (leftKneeAngle >= 100 && leftKneeAngle <= 125) ||
+              (rightKneeAngle >= 100 && rightKneeAngle <= 125)
+            ) {
               this.onChangeKA(true);
             } else {
               this.onChangeKA(false);
             }
           }
 
-            // console.log(leftAngle);
-            // console.log(rightAngle);
+          // console.log(leftAngle);
+          // console.log(rightAngle);
 
+          // console.log(`Left Leg Slope: ${leftSlope}`);
+          // console.log(`Right Leg Slope: ${rightSlope}`);
 
-
-            // console.log(`Left Leg Slope: ${leftSlope}`);
-            // console.log(`Right Leg Slope: ${rightSlope}`);
-
-
-            /*if (analyzeKneeAngle(keypoints)) {
+          /*if (analyzeKneeAngle(keypoints)) {
               this.onChangeKA(true);
             }
             */
@@ -457,9 +463,15 @@ class PoseNet extends React.Component {
       backgroundcolorSA,
       backgroundcolorFW,
       backgroundcolorSD,
-      backgroundcolorKA,
+      backgroundcolorKA
     } = this.state;
-    const { transcript, resetTranscript, startListening, stopListening, browserSupportsSpeechRecognition } = this.props;
+    const {
+      transcript,
+      resetTranscript,
+      startListening,
+      stopListening,
+      browserSupportsSpeechRecognition
+    } = this.props;
     if (!browserSupportsSpeechRecognition) {
       return null;
     }
@@ -475,10 +487,9 @@ class PoseNet extends React.Component {
     let textKA;
     if (backgroundcolorSD === "red") {
       textSD = "Bad";
-    } else if(backgroundcolorSD == "yellow") {
+    } else if (backgroundcolorSD == "yellow") {
       textSD = "Okay";
-    }
-    else {
+    } else {
       textSD = "Good";
     }
     if (backgroundcolorFW === "red") {
@@ -497,7 +508,7 @@ class PoseNet extends React.Component {
       textKA = "Good";
     }
 
-    if(this.props.transcript.includes("done")) {
+    if (this.props.transcript.includes("done")) {
       this.showSummary();
       this.props.resetTranscript();
     }
@@ -505,8 +516,17 @@ class PoseNet extends React.Component {
     return (
       <div className="PoseNet">
         {loading}
-        <video id="posenetVideo" playsInline ref={this.getVideo} />
-        <canvas id="posenetCanvas" ref={this.getCanvas} />
+        <video
+          id="posenetVideo"
+          playsInline
+          ref={this.getVideo}
+          style={{ scale: 1, height: "75%", width: "85%" }}
+        />
+        <canvas
+          id="posenetCanvas"
+          ref={this.getCanvas}
+          style={{ scale: 1, width: "85%" }}
+        />
         <div className="videocueinfo">
           <div id="video-info-SD">Squat Depth:</div>
           <div id="SD-good" style={{ backgroundColor: backgroundcolorSD }}>
@@ -537,7 +557,13 @@ class PoseNet extends React.Component {
             <div>Bad Rep:</div>
             {this.state.badCounter}
           </div>
-          <Rodal visible={this.state.summaryVisible} measure={"%"} width={80} height={80} onClose={this.hideSummary.bind(this)}>
+          <Rodal
+            visible={this.state.summaryVisible}
+            measure={"%"}
+            width={80}
+            height={80}
+            onClose={this.hideSummary.bind(this)}
+          >
             <div>Summary</div>
           </Rodal>
         </div>
@@ -548,6 +574,6 @@ class PoseNet extends React.Component {
 
 const speechRecognitionOptions = {
   autoStart: false
-}
+};
 
 export default SpeechRecognition(speechRecognitionOptions)(PoseNet);
