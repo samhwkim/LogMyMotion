@@ -85,6 +85,19 @@ export function analyzeKneeAngle(keypoints) {
     let rightLegRad = Math.acos(rightLegFraction);
     let rightLegAngle = rightLegRad * 180 / Math.PI;
 
-    // return the leg angles
-    return [leftLegAngle, rightLegAngle];
+    console.log(leftLegAngle);
+
+    if (leftLegAngle <= 140 || rightLegAngle <= 140) {
+      return true;
+    } else {
+      return false;
+    }
+
+    // if  ((leftLegAngle >= 100 && leftLegAngle <= 130) || (rightLegAngle >= 100 && rightLegAngle <= 130)) {
+    //   return true;
+    // } else {
+    //   return false;
+    // }
+
+    // return [leftLegAngle, rightLegAngle];
 }

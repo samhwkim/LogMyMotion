@@ -388,13 +388,29 @@ class PoseNet extends React.Component {
               600
             );
 
+            // fetch the results of the knee angle analysis
+            this.onChangeKA(false);
+            var kneeAngleResults = analyzeKneeAngle(keypoints);
+
             if (analyzeSquatDepth(keypoints) == "good") {
               this.onChangeSD("good");
               goodDepth = true;
+
+              if (kneeAngleResults) {
+                this.onChangeKA(true);
+              } else {
+                this.onChangeKA(false);
+              }
             }
             if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
               this.onChangeSD("okay");
               goodDepth = false;
+
+              if (kneeAngleResults) {
+                this.onChangeKA(true);
+              } else {
+                this.onChangeKA(false);
+              }
             }
 
             distanceLeftHipFromStarting = distanceFormula(
@@ -427,30 +443,10 @@ class PoseNet extends React.Component {
               startedRep = false;
             }
 
-            var kneeAngleResults = analyzeKneeAngle(keypoints);
-            let leftKneeAngle = kneeAngleResults[0];
-            let rightKneeAngle = kneeAngleResults[1];
-
-            if (
-              (leftKneeAngle >= 100 && leftKneeAngle <= 125) ||
-              (rightKneeAngle >= 100 && rightKneeAngle <= 125)
-            ) {
-              this.onChangeKA(true);
-            } else {
-              this.onChangeKA(false);
-            }
           }
 
-          // console.log(leftAngle);
-          // console.log(rightAngle);
 
-          // console.log(`Left Leg Slope: ${leftSlope}`);
-          // console.log(`Right Leg Slope: ${rightSlope}`);
 
-          /*if (analyzeKneeAngle(keypoints)) {
-              this.onChangeKA(true);
-            }
-            */
 
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
