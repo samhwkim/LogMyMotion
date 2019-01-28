@@ -27,6 +27,7 @@
     "react-scripts": "1.1.1",
     "react-sound": "^1.2.0",
     "react-speech-recognition": "^1.0.7",
+    "react-virtualized": "^9.21.0",
     "recompose": "^0.30.0",
     "rodal": "^1.6.3",
     "video-react": "^0.13.1"

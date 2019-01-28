@@ -1,86 +1,227 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 import { withStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
+import { AutoSizer, Column, SortDirection, Table } from 'react-virtualized';
 
 const styles = theme => ({
-  root: {
-    width: '100%',
-    marginTop: theme.spacing.unit * 3,
-    overflowX: 'auto',
-  },
   table: {
-    minWidth: 700,
+    fontFamily: theme.typography.fontFamily,
   },
-  headertablecell: {
-    fontSize: '15pt',
+  flexContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    boxSizing: 'border-box',
   },
-  tablecell: {
+  tableRow: {
+    cursor: 'pointer',
+  },
+  tableRowHover: {
+    '&:hover': {
+      backgroundColor: theme.palette.grey[200],
+    },
+  },
+  tableCell: {
+    flex: 1,
+    // border: "1px solid blue",
+  },
+  headerTableCell: {
     fontSize: '15pt',
-  }
-
+    // border: '1px solid red',
+    justifyContent: 'center'
+  },
+  dataTableCell: {
+    fontSize: '10pt',
+    justifyContent: 'center'
+  },
+  noClick: {
+    cursor: 'initial',
+  },
 });
-// <i class="fa fa-check text-success" aria-hidden="true"></i>
-// <i class="fa fa-times text-danger" aria-hidden="true"></i>
 
-let id = 0;
-function createData(name, calories, fat, carbs, protein) {
-  id += 1;
-  return { id, name, calories, fat, carbs, protein };
+class MuiVirtualizedTable extends React.PureComponent {
+  getRowClassName = ({ index }) => {
+    const { classes, rowClassName, onRowClick } = this.props;
+
+    return classNames(classes.tableRow, classes.flexContainer, rowClassName, {
+      [classes.tableRowHover]: index !== -1 && onRowClick != null,
+    });
+  };
+
+  cellRenderer = ({ cellData, columnIndex = null }) => {
+    const { columns, classes, rowHeight, onRowClick } = this.props;
+    return (
+      <TableCell
+        component="div"
+        className={classNames(classes.tableCell, classes.flexContainer, classes.dataTableCell, {
+          [classes.noClick]: onRowClick == null,
+        })}
+        variant="body"
+        style={{ height: rowHeight }}
+        align={"center"}
+      >
+        {cellData}
+      </TableCell>
+    );
+  };
+
+  headerRenderer = ({ label, columnIndex, dataKey, sortBy, sortDirection }) => {
+    const { headerHeight, columns, classes, sort } = this.props;
+    const direction = {
+      [SortDirection.ASC]: 'asc',
+      [SortDirection.DESC]: 'desc',
+    };
+
+    const inner =
+      !columns[columnIndex].disableSort && sort != null ? (
+        <TableSortLabel active={dataKey === sortBy} direction={direction[sortDirection]}>
+          {label}
+        </TableSortLabel>
+      ) : (
+        label
+      );
+
+    return (
+      <TableCell
+        component="div"
+        className={classNames(classes.tableCell, classes.flexContainer, classes.noClick, classes.headerTableCell)}
+        variant="head"
+        style={{ height: headerHeight }}
+        align={'center'}
+      >
+        {inner}
+      </TableCell>
+    );
+  };
+
+  render() {
+    const { classes, columns, ...tableProps } = this.props;
+    return (
+      <AutoSizer>
+        {({ height, width }) => (
+          <Table
+            className={classes.table}
+            height={height}
+            width={width}
+            {...tableProps}
+            rowClassName={this.getRowClassName}
+          >
+            {columns.map(({ cellContentRenderer = null, className, dataKey, ...other }, index) => {
+              let renderer;
+              if (cellContentRenderer != null) {
+                renderer = cellRendererProps =>
+                  this.cellRenderer({
+                    cellData: cellContentRenderer(cellRendererProps),
+                    columnIndex: index,
+                  });
+              } else {
+                renderer = this.cellRenderer;
+              }
+
+              return (
+                <Column
+                  key={dataKey}
+                  headerRenderer={headerProps =>
+                    this.headerRenderer({
+                      ...headerProps,
+                      columnIndex: index,
+                    })
+                  }
+                  className={classNames(classes.flexContainer, classes.headerTableCell, className)}
+                  cellRenderer={renderer}
+                  dataKey={dataKey}
+                  {...other}
+                />
+              );
+            })}
+          </Table>
+        )}
+      </AutoSizer>
+    );
+  }
 }
 
-const rows = [
-  createData('1', "GOOD", "BAD", "BAD", "GOOD"),
-  createData('2', "GOOD", "BAD", "GOOD", "BAD"),
-  createData('3', "BAD", "BAD", "BAD", "GOOD"),
-  createData('4', "GOOD", "BAD", "GOOD", "BAD"),
-  createData('5', "BAD", "GOOD", "BAD", "GOOD"),
-];
+MuiVirtualizedTable.propTypes = {
+  classes: PropTypes.object.isRequired,
+  columns: PropTypes.arrayOf(
+    PropTypes.shape({
+      cellContentRenderer: PropTypes.func,
+      dataKey: PropTypes.string.isRequired,
+      width: PropTypes.number.isRequired,
+    }),
+  ).isRequired,
+  headerHeight: PropTypes.number,
+  onRowClick: PropTypes.func,
+  rowClassName: PropTypes.string,
+  rowHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
+  sort: PropTypes.func,
+};
 
-function SimpleTable(props) {
-  const { classes } = props;
+MuiVirtualizedTable.defaultProps = {
+  headerHeight: 56,
+  rowHeight: 56,
+};
+
+const WrappedVirtualizedTable = withStyles(styles)(MuiVirtualizedTable);
+
+
+let id = 0;
+function createData(repnumber, squatdepth, shoulderalignment, feetwidth, kneeangle) {
+  id += 1;
+  return {id, repnumber, squatdepth, shoulderalignment, feetwidth, kneeangle};
+}
+
+function ReactVirtualizedTable(props) {
+
+  const rows = [];
+  for(let i = 0; i < props.repCount; i++) {
+      rows.push(createData(i+1, "GOOD", "BAD", "BAD", "GOOD"));
+  };
 
   return (
-    <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell className={classes.headertablecell}>Rep Number</TableCell>
-            <TableCell className={classes.headertablecell}>Squat Depth</TableCell>
-            <TableCell className={classes.headertablecell}>Shoulder Alignment</TableCell>
-            <TableCell className={classes.headertablecell}>Feet Width</TableCell>
-            <TableCell className={classes.headertablecell}>Knee Angle</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map(row => {
-            return (
-              <TableRow key={row.id}>
-                <TableCell component="th" scope="row" className={classes.tablecell}>
-                  {row.name}
-                </TableCell>
-                <TableCell numeric className={classes.tablecell}>
-                  {row.calories}
-                </TableCell>
-                <TableCell numeric className={classes.tablecell}>{row.fat}</TableCell>
-                <TableCell numeric className={classes.tablecell}>{row.carbs}</TableCell>
-                <TableCell numeric className={classes.tablecell}>{row.protein}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+    <Paper style={{ height: 400, width: '100%' }}>
+      <WrappedVirtualizedTable
+        rowCount={rows.length}
+        rowGetter={({ index }) => rows[index]}
+        onRowClick={event => console.log(event)}
+        columns={[
+          {
+            width: 900,
+            flexGrow: 1.0,
+            label: 'Rep Number',
+            dataKey: 'repnumber',
+          },
+          {
+            width: 1025,
+            label: 'Squat Depth',
+            dataKey: 'squatdepth',
+            numeric: true,
+          },
+          {
+            width: 1025,
+            label: 'Shoulder Alignment',
+            dataKey: 'shoulderalignment',
+            numeric: true,
+          },
+          {
+            width: 1025,
+            label: 'Feet Width',
+            dataKey: 'feetwidth',
+            numeric: true,
+          },
+          {
+            width: 1025,
+            label: 'Knee Angle',
+            dataKey: 'kneeangle',
+            numeric: true,
+          },
+        ]}
+      />
     </Paper>
   );
 }
 
-SimpleTable.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-export default withStyles(styles)(SimpleTable);
+export default ReactVirtualizedTable;

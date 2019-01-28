@@ -51,7 +51,7 @@ class Sidebar extends Component {
             href="https://www.creative-tim.com"
             className="simple-text logo-normal"
           >
-            Creative Tim
+            Log My Motion
           </a>
         </div>
         <div className="sidebar-wrapper">

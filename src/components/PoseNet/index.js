@@ -588,7 +588,7 @@ class PoseNet extends React.Component {
             onClose={this.hideSummary.bind(this)}
           >
             <div>Summary</div>
-            <SummaryTable />
+            <SummaryTable repCount={10}/>
           </Rodal>
         </div>
       </div>
