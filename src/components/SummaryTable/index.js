@@ -177,18 +177,47 @@ function createData(repnumber, squatdepth, shoulderalignment, feetwidth, kneeang
 function ReactVirtualizedTable(props) {
 
   const rows = [];
-  let numReps = props.numReps;
   let repStatsList = props.repStatsList;
   let summaryStatus = props.summaryStatus;
 
-  // for(let i = 0; i < props.repCount; i++) {
-  //     rows.push(createData(i+1, "GOOD", "BAD", "BAD", "GOOD"));
-  // };
-
   if (summaryStatus) {
-      console.log('AHA!');
-      for (let i = 0; i < numReps; i++) {
-        rows.push(createData(i+1, repStatsList[i][0].toString(), repStatsList[i][1].toString(), repStatsList[i][2].toString(), repStatsList[i][3].toString()));
+      var greenCircle = <i class="fa fa-circle text-success" aria-hidden="true"></i>;
+      var yellowCircle = <i class="fa fa-circle text-warning" aria-hidden="true"></i>;
+      var redCircle = <i class="fa fa-circle text-danger" aria-hidden="true"></i>;
+      let squatDepthColor;
+      let shoulderAlignmentColor;
+      let feetWidthColor;
+      let kneeAngleColor;
+
+      for (let i = 0; i < props.numReps; i++) {
+        if(repStatsList[i][0]) {
+          //SQUAT DEPTH
+          squatDepthColor = greenCircle;
+        } else {
+          squatDepthColor = redCircle;
+        }
+
+        if(repStatsList[i][1]) {
+          //SHOULDER ALIGNMENT
+          shoulderAlignmentColor = greenCircle;
+        } else {
+          shoulderAlignmentColor = redCircle;
+        }
+
+        if(repStatsList[i][2]) {
+          //FEET WIDTH
+          feetWidthColor = greenCircle;
+        } else {
+          feetWidthColor = redCircle;
+        }
+
+        if(repStatsList[i][3]) {
+          //KNEE ANGLE
+          kneeAngleColor = greenCircle;
+        } else {
+          kneeAngleColor = redCircle;
+        }
+        rows.push(createData(i+1, squatDepthColor, shoulderAlignmentColor, feetWidthColor, kneeAngleColor));
       }
     }
 
