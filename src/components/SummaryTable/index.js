@@ -177,9 +177,23 @@ function createData(repnumber, squatdepth, shoulderalignment, feetwidth, kneeang
 function ReactVirtualizedTable(props) {
 
   const rows = [];
-  for(let i = 0; i < props.repCount; i++) {
-      rows.push(createData(i+1, "GOOD", "BAD", "BAD", "GOOD"));
-  };
+  let numReps = props.numReps;
+  let repStatsList = props.repStatsList;
+  let summaryStatus = props.summaryStatus;
+
+  // for(let i = 0; i < props.repCount; i++) {
+  //     rows.push(createData(i+1, "GOOD", "BAD", "BAD", "GOOD"));
+  // };
+
+  if (summaryStatus) {
+      console.log('AHA!');
+      for (let i = 0; i < numReps; i++) {
+        rows.push(createData(i+1, repStatsList[i][0].toString(), repStatsList[i][1].toString(), repStatsList[i][2].toString(), repStatsList[i][3].toString()));
+      }
+    }
+
+    summaryStatus = false;
+
 
   return (
     <Paper style={{ height: 400, width: '100%' }}>

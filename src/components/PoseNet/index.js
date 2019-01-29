@@ -47,6 +47,12 @@ let startingAvgLeftKneeY = 0;
 let distanceLeftHipFromStarting = 0;
 let distanceRightHipFromStarting = 0;
 
+let goodSD = false;
+let goodSA = false;
+let goodFW = false;
+let goodKA = false;
+let repStatsList = [];
+
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
   return result;
@@ -329,6 +335,14 @@ class PoseNet extends React.Component {
               shouldersSet = false;
             }
 
+            if (analyzeKneeAngle(keypoints)) {
+              this.onChangeKA(true);
+              goodKA = true;
+            } else {
+              this.onChangeKA(false);
+              goodKA = false;
+            }
+
             if (feetSet && shouldersSet) {
               calibrationConfidenceLevel++;
               startingLeftHipX.push(keypoints[11].position.x);
@@ -388,29 +402,24 @@ class PoseNet extends React.Component {
               600
             );
 
+            //Assume that FW and SA will be "good" for all repetitions
+            goodFW = true;
+            goodSA = true;
+
             // fetch the results of the knee angle analysis
             this.onChangeKA(false);
-            var kneeAngleResults = analyzeKneeAngle(keypoints);
 
             if (analyzeSquatDepth(keypoints) == "good") {
               this.onChangeSD("good");
               goodDepth = true;
-
-              if (kneeAngleResults) {
-                this.onChangeKA(true);
-              } else {
-                this.onChangeKA(false);
-              }
+              goodSD = true;
+              goodKA = true;
             }
             if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
               this.onChangeSD("okay");
               goodDepth = false;
-
-              if (kneeAngleResults) {
-                this.onChangeKA(true);
-              } else {
-                this.onChangeKA(false);
-              }
+              goodSD = false;
+              goodKA = false;
             }
 
             distanceLeftHipFromStarting = distanceFormula(
@@ -430,6 +439,11 @@ class PoseNet extends React.Component {
               //play good rep sound
               this.playRepSound("good");
               console.log("Good reps: " + goodRepCounter);
+
+              var repStats = [goodSD, goodSA, goodFW, goodKA];
+              repStatsList.push(repStats);
+              console.log(repStats);
+
               goodDepth = false;
               startedRep = false;
               this.onChangeSD("bad");
@@ -440,6 +454,11 @@ class PoseNet extends React.Component {
               this.onChangeBadRep(true);
               this.onChangeBadRep(false);
               console.log("Bad reps: " + badRepCounter);
+
+              var repStats = [goodSD, goodSA, goodFW, goodKA];
+              repStatsList.push(repStats);
+              console.log(repStats);
+
               startedRep = false;
             }
           }
@@ -584,7 +603,11 @@ class PoseNet extends React.Component {
             onClose={this.hideSummary.bind(this)}
           >
             <div>Summary</div>
-            <SummaryTable repCount={10} />
+            <SummaryTable
+            repCount={10}
+            numReps={goodRepCounter + badRepCounter}
+            repStatsList={repStatsList}
+            summaryStatus={this.state.summaryVisible}/>
           </Rodal>
         </div>
       </div>
