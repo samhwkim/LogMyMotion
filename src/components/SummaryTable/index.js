@@ -180,7 +180,7 @@ function ReactVirtualizedTable(props) {
   let repStatsList = props.repStatsList;
   let summaryStatus = props.summaryStatus;
 
-  if (summaryStatus) {
+  if (summaryStatus && repStatsList.length != 0) {
       var greenCircle = <i class="fa fa-circle text-success" aria-hidden="true"></i>;
       var yellowCircle = <i class="fa fa-circle text-warning" aria-hidden="true"></i>;
       var redCircle = <i class="fa fa-circle text-danger" aria-hidden="true"></i>;
@@ -190,28 +190,28 @@ function ReactVirtualizedTable(props) {
       let kneeAngleColor;
 
       for (let i = 0; i < props.numReps; i++) {
-        if(repStatsList[i][0]) {
+        if(repStatsList[i] && repStatsList[i][0]) {
           //SQUAT DEPTH
           squatDepthColor = greenCircle;
         } else {
           squatDepthColor = redCircle;
         }
 
-        if(repStatsList[i][1]) {
+        if(repStatsList[i] && repStatsList[i][1]) {
           //SHOULDER ALIGNMENT
           shoulderAlignmentColor = greenCircle;
         } else {
           shoulderAlignmentColor = redCircle;
         }
 
-        if(repStatsList[i][2]) {
+        if(repStatsList[i] && repStatsList[i][2]) {
           //FEET WIDTH
           feetWidthColor = greenCircle;
         } else {
           feetWidthColor = redCircle;
         }
 
-        if(repStatsList[i][3]) {
+        if(repStatsList[i] && repStatsList[i][3]) {
           //KNEE ANGLE
           kneeAngleColor = greenCircle;
         } else {
