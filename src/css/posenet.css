@@ -71,6 +71,11 @@
 
 .calibration-container {
   font: 3.5em "Raleway", Sans-serif;
+  color: yellow;
+  position: absolute;
+  top: 0;
+  left: 45%;
+  z-index: 1;
 }
 
 .rep-container {

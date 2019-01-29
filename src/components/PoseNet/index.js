@@ -442,11 +442,7 @@ class PoseNet extends React.Component {
               console.log("Bad reps: " + badRepCounter);
               startedRep = false;
             }
-
           }
-
-
-
 
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
@@ -531,13 +527,16 @@ class PoseNet extends React.Component {
           id="posenetVideo"
           playsInline
           ref={this.getVideo}
-          style={{ scale: 1, height: "75%", width: "85%" }}
+          style={{ scale: 1, height: "75%", width: "100%" }}
         />
         <div className="videoOverlay-Good">
           <div id="good-rep">
             <div>Good Rep:</div>
             {this.state.goodCounter}
           </div>
+        </div>
+        <div className="calibration-container">
+          <div>{this.state.calibrationState}</div>
         </div>
         <div className="videoOverlay-Bad">
           <div id="bad-rep">
@@ -548,7 +547,7 @@ class PoseNet extends React.Component {
         <canvas
           id="posenetCanvas"
           ref={this.getCanvas}
-          style={{ scale: 1, width: "85%" }}
+          style={{ scale: 1, width: "100%" }}
         />
         <div className="videocueinfo">
           <div id="video-info-SD">Squat Depth:</div>
@@ -568,9 +567,6 @@ class PoseNet extends React.Component {
             {textKA}
           </div>
         </div>
-        <div className="calibration-container">
-          <div>{this.state.calibrationState}</div>
-        </div>
         <div className="rep-container">
           <div id="good-rep">
             <div>Good Rep:</div>
@@ -588,7 +584,7 @@ class PoseNet extends React.Component {
             onClose={this.hideSummary.bind(this)}
           >
             <div>Summary</div>
-            <SummaryTable repCount={10}/>
+            <SummaryTable repCount={10} />
           </Rodal>
         </div>
       </div>
