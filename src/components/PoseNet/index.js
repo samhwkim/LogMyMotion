@@ -51,7 +51,7 @@ let distanceRightHipFromStarting = 0;
 
 let goodSD = false;
 // let goodSA = false;
-// let goodFW = false;
+let goodFW = false;
 let goodKA = false;
 let straightUpAndDownRep = true;
 let repStatsList = [];
@@ -413,6 +413,8 @@ class PoseNet extends React.Component {
               straightUpAndDownRep = false;
             }
 
+            goodFW = true;
+
             if (analyzeSquatDepth(keypoints) == "good") {
               this.onChangeSD("good");
               goodDepth = true;
@@ -446,7 +448,7 @@ class PoseNet extends React.Component {
               this.playRepSound("good");
               console.log("Good reps: " + goodRepCounter);
 
-              var repStats = [goodSD, straightUpAndDownRep, goodKA];
+              var repStats = [goodSD, goodFW, straightUpAndDownRep, goodKA];
               repStatsList.push(repStats);
               console.log(repStats);
 
@@ -462,7 +464,7 @@ class PoseNet extends React.Component {
               this.onChangeBadRep(false);
               console.log("Bad reps: " + badRepCounter);
 
-              var repStats = [goodSD, straightUpAndDownRep, goodKA];
+              var repStats = [goodSD, goodFW, straightUpAndDownRep, goodKA];
               repStatsList.push(repStats);
               console.log(repStats);
 
