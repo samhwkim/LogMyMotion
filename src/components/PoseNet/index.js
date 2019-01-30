@@ -20,6 +20,8 @@ import "rodal/lib/rodal.css";
 let shouldersSet = false;
 let feetSet = false;
 let calibrationConfidenceLevel = 0;
+let currentCalibrationCounter = 0;
+let maxCalibrationConfidenceLevel = 75;
 let calibrationComplete = false;
 let goodDepth = false;
 let startedRep = false;
@@ -48,9 +50,10 @@ let distanceLeftHipFromStarting = 0;
 let distanceRightHipFromStarting = 0;
 
 let goodSD = false;
-let goodSA = false;
-let goodFW = false;
+// let goodSA = false;
+// let goodFW = false;
 let goodKA = false;
+let straightUpAndDownRep = true;
 let repStatsList = [];
 
 function distanceFormula(x1, y1, x2, y2) {
@@ -335,16 +338,10 @@ class PoseNet extends React.Component {
               shouldersSet = false;
             }
 
-            if (analyzeKneeAngle(keypoints)) {
-              this.onChangeKA(true);
-              goodKA = true;
-            } else {
-              this.onChangeKA(false);
-              goodKA = false;
-            }
-
             if (feetSet && shouldersSet) {
               calibrationConfidenceLevel++;
+              console.log(calibrationConfidenceLevel);
+              currentCalibrationCounter++;
               startingLeftHipX.push(keypoints[11].position.x);
               startingLeftHipY.push(keypoints[11].position.y);
               startingRightHipX.push(keypoints[12].position.x);
@@ -353,7 +350,12 @@ class PoseNet extends React.Component {
               startingRightShoulderX.push(keypoints[6].position.x);
               startingLeftKneeY.push(keypoints[13].position.y);
             } else {
+              currentCalibrationCounter++;
+            }
+
+            if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10) {
               calibrationConfidenceLevel = 0;
+              currentCalibrationCounter = 0;
               startingLeftHipX = [];
               startingLeftHipY = [];
               startingRightHipX = [];
@@ -363,9 +365,10 @@ class PoseNet extends React.Component {
               startingLeftKneeY = [];
             }
 
-            if (calibrationConfidenceLevel > 75) {
+            if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10) {
+              console.log(calibrationConfidenceLevel);
               calibrationComplete = true;
-              for (var i = 0; i < 75; i++) {
+              for (var i = 0; i < calibrationConfidenceLevel; i++) {
                 startingAvgLeftHipX += startingLeftHipX[i];
                 startingAvgLeftHipY += startingLeftHipY[i];
                 startingAvgRightHipX += startingRightHipX[i];
@@ -375,18 +378,22 @@ class PoseNet extends React.Component {
                 startingAvgLeftKneeY += startingLeftKneeY[i];
               }
 
-              startingAvgLeftHipX /= 75;
-              startingAvgLeftHipY /= 75;
-              startingAvgRightHipX /= 75;
-              startingAvgRightHipY /= 75;
-              startingAvgLeftShoulderX /= 75;
-              startingAvgRightShoulderX /= 75;
-              startingAvgLeftKneeY /= 75;
+              startingAvgLeftHipX /= calibrationConfidenceLevel;
+              startingAvgLeftHipY /= calibrationConfidenceLevel;
+              startingAvgRightHipX /= calibrationConfidenceLevel;
+              startingAvgRightHipY /= calibrationConfidenceLevel;
+              startingAvgLeftShoulderX /= calibrationConfidenceLevel;
+              startingAvgRightShoulderX /= calibrationConfidenceLevel;
+              startingAvgLeftKneeY /= calibrationConfidenceLevel;
               this.onChangeCalibrationState(true);
               // this.props.startListening();
               console.log("Calibration complete");
             }
+
           } else {
+            // console.log(startingAvgLeftShoulderX);
+            // console.log(startingAvgRightShoulderX);
+
             drawShoulderAlignmentLines(
               startingAvgLeftShoulderX,
               startingAvgRightShoulderX,
@@ -402,12 +409,9 @@ class PoseNet extends React.Component {
               600
             );
 
-            //Assume that FW and SA will be "good" for all repetitions
-            goodFW = true;
-            goodSA = true;
-
-            // fetch the results of the knee angle analysis
-            this.onChangeKA(false);
+            if (keypoints[5].position.x > startingAvgLeftShoulderX + 10 || keypoints[6].position.x < startingAvgRightShoulderX - 10) {
+              straightUpAndDownRep = false;
+            }
 
             if (analyzeSquatDepth(keypoints) == "good") {
               this.onChangeSD("good");
@@ -415,6 +419,7 @@ class PoseNet extends React.Component {
               goodSD = true;
               goodKA = true;
             }
+
             if (analyzeSquatDepth(keypoints) == "okay" && !goodDepth) {
               this.onChangeSD("okay");
               goodDepth = false;
@@ -428,6 +433,7 @@ class PoseNet extends React.Component {
               keypoints[11].position.x,
               keypoints[11].position.y
             );
+
             if (distanceLeftHipFromStarting > 25) {
               startedRep = true;
             }
@@ -440,12 +446,13 @@ class PoseNet extends React.Component {
               this.playRepSound("good");
               console.log("Good reps: " + goodRepCounter);
 
-              var repStats = [goodSD, goodSA, goodFW, goodKA];
+              var repStats = [goodSD, straightUpAndDownRep, goodKA];
               repStatsList.push(repStats);
               console.log(repStats);
 
               goodDepth = false;
               startedRep = false;
+              straightUpAndDownRep = true;
               this.onChangeSD("bad");
             }
 
@@ -455,11 +462,12 @@ class PoseNet extends React.Component {
               this.onChangeBadRep(false);
               console.log("Bad reps: " + badRepCounter);
 
-              var repStats = [goodSD, goodSA, goodFW, goodKA];
+              var repStats = [goodSD, straightUpAndDownRep, goodKA];
               repStatsList.push(repStats);
               console.log(repStats);
 
               startedRep = false;
+              straightUpAndDownRep = true;
             }
           }
 
