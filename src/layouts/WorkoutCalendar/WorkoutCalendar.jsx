@@ -10,7 +10,7 @@ import { style } from "../../variables/Variables.jsx";
 import dashboardRoutes from "../../constants/dashboard.jsx";
 
 
-class Dashboard extends Component {
+class WorkoutCalendar extends Component {
   constructor(props) {
     super(props);
     this.componentDidMount = this.componentDidMount.bind(this);
@@ -55,4 +55,4 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+export default WorkoutCalendar;

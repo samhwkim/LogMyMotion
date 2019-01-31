@@ -4,4 +4,4 @@ export const LOG_IN = '/login';
 export const HOME = '/home';
 export const POSENET = '/posenetdemo';
 export const ANALYZER = '/analyzer';
-export const LOG = '/log';
+export const CALENDAR = '/calendar';
