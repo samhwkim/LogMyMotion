@@ -7,6 +7,12 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Paper from '@material-ui/core/Paper';
 import { AutoSizer, Column, SortDirection, Table } from 'react-virtualized';
 
+const cueGradeEnum = {
+  GOOD: 'good',
+  OKAY: 'okay',
+  BAD: 'bad'
+}
+
 const styles = theme => ({
   table: {
     fontFamily: theme.typography.fontFamily,
@@ -190,9 +196,11 @@ function ReactVirtualizedTable(props) {
       let kneeAngleColor;
 
       for (let i = 0; i < props.numReps; i++) {
-        if(repStatsList[i] && repStatsList[i][0]) {
+        if(repStatsList[i] && repStatsList[i][0] === cueGradeEnum.GOOD) {
           //SQUAT DEPTH
           squatDepthColor = greenCircle;
+        } else if(repStatsList[i] && repStatsList[i][0] === cueGradeEnum.OKAY) {
+          squatDepthColor = yellowCircle;
         } else {
           squatDepthColor = redCircle;
         }
