@@ -53,9 +53,10 @@ const cueGradeEnum = {
 }
 
 let goodSD = cueGradeEnum.BAD;
-let goodSA = false;
+// let goodSA = false;
 let goodFW = false;
 let goodKA = false;
+let straightUpAndDown = true;
 let repScore = 0;
 let repStatsList = [];
 
@@ -408,9 +409,12 @@ class PoseNet extends React.Component {
               600
             );
 
+            if (keypoints[5].position.x > startingAvgLeftShoulderX + 10 || keypoints[6].position.x < startingAvgRightShoulderX - 10) {
+              straightUpAndDown = false;
+            }
             //Assume that FW and SA will be "good" for all repetitions
             goodFW = true;
-            goodSA = true;
+            //goodSA = true;
 
             // fetch the results of the knee angle analysis
             this.onChangeKA(false);
@@ -467,13 +471,14 @@ class PoseNet extends React.Component {
                 console.log("Bad reps: " + badRepCounter);
               }
 
-              var repStats = [goodSD, goodSA, goodFW, goodKA];
+              var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
               repStatsList.push(repStats);
               console.log(repStats);
 
               goodDepth = false;
               goodSD = cueGradeEnum.BAD;
               goodKA = false;
+              straightUpAndDown = true;
               startedRep = false;
               repScore = 0;
               this.onChangeSD("bad");
