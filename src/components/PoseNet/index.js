@@ -417,8 +417,6 @@ class PoseNet extends React.Component {
             //goodSA = true;
 
             // fetch the results of the knee angle analysis
-            this.onChangeKA(false);
-
             if (analyzeSquatDepth(keypoints) === "good") {
               this.onChangeSD("good");
               goodDepth = true;
@@ -426,7 +424,7 @@ class PoseNet extends React.Component {
               if(analyzeKneeAngle(keypoints)) {
                 //repScore += 2;
                 goodKA = true;
-                this.onChangeKA;
+                this.onChangeKA(goodKA);
               }
             }
             if (analyzeSquatDepth(keypoints) === "okay" && !goodDepth) {
@@ -482,6 +480,7 @@ class PoseNet extends React.Component {
               startedRep = false;
               repScore = 0;
               this.onChangeSD("bad");
+              this.onChangeKA(false);
             }
           }
 
