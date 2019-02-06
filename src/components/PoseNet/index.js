@@ -1,6 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
-import Rodal from "rodal";
+import Rodal from "rodal"
+import BarChart from "react-bar-chart";
 import SpeechRecognition from "react-speech-recognition";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
@@ -57,7 +58,7 @@ let goodFW = false;
 let goodKA = false;
 let straightUpAndDown = true;
 let repScore = 0;
-let setScore = 0;
+let setScore = 0.0;
 let repStatsList = [];
 
 function distanceFormula(x1, y1, x2, y2) {
@@ -98,7 +99,8 @@ class PoseNet extends React.Component {
       goodCounter: 0,
       badCounter: 0,
       summaryVisible: false,
-      badCounter: 0
+      badCounter: 0,
+      setScore: 0
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -176,6 +178,10 @@ class PoseNet extends React.Component {
     if (inputEntry) {
       this.setState({ calibrationState: "Calibration Complete" });
     }
+  }
+
+  onChangeSetScore(inputEntry) {
+    this.setState({setScore: inputEntry});
   }
 
   getCanvas = elem => {
@@ -459,6 +465,7 @@ class PoseNet extends React.Component {
                 repScore += 2;
               }
               setScore += repScore;
+              this.onChangeSetScore(setScore);
               if(repScore >= 4) {
                 goodRepCounter++;
                 this.onChangeGoodRep(true);
@@ -472,7 +479,7 @@ class PoseNet extends React.Component {
                 this.onChangeBadRep(false);
                 console.log("Bad reps: " + badRepCounter);
               }
-
+              this.onChangeSetScore((setScore/(goodRepCounter + badRepCounter))/6);
               var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
               repStatsList.push(repStats);
               console.log(repStats);
@@ -628,7 +635,7 @@ class PoseNet extends React.Component {
             height={80}
             onClose={this.hideSummary.bind(this)}
           >
-            <div>Summary</div>
+              <div align="center">Score: {this.state.setScore * 100} % </div>
             <SummaryTable
             repCount={10}
             numReps={goodRepCounter + badRepCounter}
