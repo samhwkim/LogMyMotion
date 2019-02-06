@@ -23,7 +23,6 @@ let calibrationConfidenceLevel = 0;
 let calibrationComplete = false;
 let goodDepth = false;
 let startedRep = false;
-let goodRep = 0;
 let goodRepCounter = 0;
 let badRepCounter = 0;
 
@@ -58,6 +57,7 @@ let goodFW = false;
 let goodKA = false;
 let straightUpAndDown = true;
 let repScore = 0;
+let setScore = 0;
 let repStatsList = [];
 
 function distanceFormula(x1, y1, x2, y2) {
@@ -135,11 +135,11 @@ class PoseNet extends React.Component {
   }
 
   onChangeSD(inputEntry) {
-    if (inputEntry == "good") {
+    if (inputEntry === "good") {
       this.setState({ backgroundcolorSD: "green" });
-    } else if (inputEntry == "okay") {
+    } else if (inputEntry === "okay") {
       this.setState({ backgroundcolorSD: "yellow" });
-    } else if (inputEntry == "bad") {
+    } else if (inputEntry === "bad") {
       this.setState({ backgroundcolorSD: "red" });
     }
   }
@@ -455,7 +455,11 @@ class PoseNet extends React.Component {
               if(goodKA) {
                 repScore += 2;
               }
-              if(repScore >= 3) {
+              if(straightUpAndDown) {
+                repScore += 2;
+              }
+              setScore += repScore;
+              if(repScore >= 4) {
                 goodRepCounter++;
                 this.onChangeGoodRep(true);
                 this.onChangeGoodRep(false);
@@ -534,7 +538,7 @@ class PoseNet extends React.Component {
     let textKA;
     if (backgroundcolorSD === "red") {
       textSD = "Bad";
-    } else if (backgroundcolorSD == "yellow") {
+    } else if (backgroundcolorSD === "yellow") {
       textSD = "Okay";
     } else {
       textSD = "Good";

@@ -187,45 +187,46 @@ function ReactVirtualizedTable(props) {
   let summaryStatus = props.summaryStatus;
 
   if (summaryStatus && repStatsList.length != 0) {
-      var greenCircle = <i class="fa fa-circle text-success" aria-hidden="true"></i>;
-      var yellowCircle = <i class="fa fa-circle text-warning" aria-hidden="true"></i>;
-      var redCircle = <i class="fa fa-circle text-danger" aria-hidden="true"></i>;
-      let squatDepthColor;
-      let shoulderAlignmentColor;
-      let feetWidthColor;
-      let kneeAngleColor;
+      var goodCue = <i class="fa fa-check text-success" aria-hidden="true"></i>;
+      var okayCue = <i class="fa fa-circle text-warning" aria-hidden="true"></i>;
+      var badCue = <i class="fa fa-times text-danger" aria-hidden="true"></i>;
+
+      let squatDepthStatus;
+      let shoulderAlignmentStatus;
+      let feetWidthStatus;
+      let kneeAngleStatus;
 
       for (let i = 0; i < props.numReps; i++) {
         if(repStatsList[i] && repStatsList[i][0] === cueGradeEnum.GOOD) {
           //SQUAT DEPTH
-          squatDepthColor = greenCircle;
+          squatDepthStatus = goodCue;
         } else if(repStatsList[i] && repStatsList[i][0] === cueGradeEnum.OKAY) {
-          squatDepthColor = yellowCircle;
+          squatDepthStatus = okayCue;
         } else {
-          squatDepthColor = redCircle;
+          squatDepthStatus = badCue;
         }
 
         if(repStatsList[i] && repStatsList[i][1]) {
           //SHOULDER ALIGNMENT
-          shoulderAlignmentColor = greenCircle;
+          shoulderAlignmentStatus = goodCue;
         } else {
-          shoulderAlignmentColor = redCircle;
+          shoulderAlignmentStatus = badCue;
         }
 
         if(repStatsList[i] && repStatsList[i][2]) {
           //FEET WIDTH
-          feetWidthColor = greenCircle;
+          feetWidthStatus = goodCue;
         } else {
-          feetWidthColor = redCircle;
+          feetWidthStatus = badCue;
         }
 
         if(repStatsList[i] && repStatsList[i][3]) {
           //KNEE ANGLE
-          kneeAngleColor = greenCircle;
+          kneeAngleStatus = goodCue;
         } else {
-          kneeAngleColor = redCircle;
+          kneeAngleStatus = badCue;
         }
-        rows.push(createData(i+1, squatDepthColor, shoulderAlignmentColor, feetWidthColor, kneeAngleColor));
+        rows.push(createData(i+1, squatDepthStatus, shoulderAlignmentStatus, feetWidthStatus, kneeAngleStatus));
       }
     }
 
