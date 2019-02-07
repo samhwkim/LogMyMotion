@@ -31,9 +31,27 @@ class Firebase {
 
   // *** User API ***
 
-  user = uid => this.db.ref(`users/${uid}`);
+  user = uid => this.db.ref(`users/${uid}/userInfo`);
 
   users = () => this.db.ref('users');
+
+  getCurrentUserUid = () => this.auth.currentUser.uid;
+
+  // *** Workout API ***
+
+  addSet = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
+
+  addSetScore = (uid, date, setId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${setId}`);
+
+  sets = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
+
+  addRep = (uid, date, set) => this.db.ref(`users/${uid}/workoutHistory/${date}/${set}`);
+
+  addCueGrade = (uid, date, set, rep) => this.db.ref(`users/${uid}/workoutHistory/${date}/${set}`);
+
+  workout = (uid) => this.db.ref(`users/${uid}/workoutHistory`);
+
+  workouts = () => this.db.ref('workouts');
 
 }
 

@@ -85,7 +85,7 @@ export function analyzeKneeAngle(keypoints) {
     let rightLegRad = Math.acos(rightLegFraction);
     let rightLegAngle = rightLegRad * 180 / Math.PI;
 
-    console.log(leftLegAngle);
+    // console.log(leftLegAngle);
 
     if (leftLegAngle <= 140 || rightLegAngle <= 140) {
       return true;

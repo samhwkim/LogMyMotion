@@ -1,13 +1,16 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import Rodal from "rodal"
-import BarChart from "react-bar-chart";
+// import BarChart from "react-bar-chart";
 import SpeechRecognition from "react-speech-recognition";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
 import Firebase from "../Firebase";
+import { FirebaseContext, withFirebase } from '../Firebase';
+import { Link, withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -51,6 +54,11 @@ const cueGradeEnum = {
   OKAY: 'okay',
   BAD: 'bad'
 }
+
+const INITIAL_STATE = {
+  repData: "testing",
+  error: null,
+};
 
 let goodSD = cueGradeEnum.BAD;
 // let goodSA = false;
@@ -100,7 +108,8 @@ class PoseNet extends React.Component {
       badCounter: 0,
       summaryVisible: false,
       badCounter: 0,
-      setScore: 0
+      setScore: 0,
+      repData: [],
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -111,6 +120,7 @@ class PoseNet extends React.Component {
     this.onChangeSD = this.onChangeSD.bind(this);
     this.playRepSound = this.playRepSound.bind(this);
     this.goodRepSound = new Audio(GoodRepSound);
+    this.writeToDatabase = this.writeToDatabase.bind(this);
   }
 
   playRepSound(inputEntry) {
@@ -126,6 +136,108 @@ class PoseNet extends React.Component {
 
   hideSummary() {
     this.setState({ summaryVisible: false });
+  }
+
+  fetchCurrentDate() {
+    let today = new Date();
+    let dd = today.getDate();
+    let mm = today.getMonth() + 1; // January is 0!
+    let yyyy = today.getFullYear();
+
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+
+    today = mm + '-' + dd + '-' + yyyy;
+
+    return today.toString();
+  }
+
+  /* checkNextSetNumber */
+  /* Experimental function to test reading from Firebase */
+  checkNextSetNumber(currentUserUid, date) {
+    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
+    let defaultSetNum = 0;
+    // Attach an asynchronous callback to read the data at our posts reference
+    ref.on("value", function(snapshot) {
+      let firstSetExists = snapshot.exists();
+      if (firstSetExists) {
+        console.log("first set exists!");
+        snapshot.forEach((child) => {
+          console.log(child.key);
+          let currentSetNum = child.key.toString();
+          console.log(`snapshot: ${currentSetNum}`);
+          currentSetNum = currentSetNum.substr(-1);
+          console.log(`last set #: ${currentSetNum}`);
+          defaultSetNum = Number(currentSetNum) + 1;
+          console.log(`new set #: ${defaultSetNum}`);
+          return defaultSetNum;
+        });
+      } else {
+        console.log("no sets!");
+      }
+    });
+  }
+
+  getNumberOfChildren() {
+    let date = this.fetchCurrentDate();
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+
+    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
+
+    ref.on("value", function(snapshot) {
+      let firstSetExists = snapshot.exists();
+      let numKids = snapshot.numChildren();
+      return numKids;
+    });
+  }
+
+  readFromDatabase() {
+    let date = this.fetchCurrentDate();
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
+
+    ref.on("value", function(snapshot) {
+      let firstSetExists = snapshot.exists();
+      if (firstSetExists) {
+        console.log("sets found!");
+        snapshot.forEach((child) => {
+          console.log(child.key, child.val());
+          let i;
+          for (i = 0; i < child.val().length; i++) {
+            console.log(`rep: ${child.val()[i]}`);
+          }
+        });
+      } else {
+        console.log("no sets!");
+      }
+    });
+  }
+
+  writeToDatabase(setData, score) {
+    let date = this.fetchCurrentDate();
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+    let setString = "set_"
+    let setId = Math.random().toString(36).substr(2, 5); // generate a unique ID for the latest set
+    let setTitle = setString + setId;
+
+    // modify score to reflect percentage displayed on summary page
+    // limit decimal to to hundreths place
+    score = (score/(goodRepCounter + badRepCounter))/6;
+    score *= 100;
+    score = score.toFixed(2);
+
+    this.props.firebase.addSet(currentUserUid, date).update({
+      [setTitle]: setData,
+    });
+
+    this.props.firebase.addSetScore(currentUserUid, date, setTitle).update({
+      setScore: score,
+    });
   }
 
   onChangeSA(inputEntry) {
@@ -397,7 +509,7 @@ class PoseNet extends React.Component {
               startingAvgLeftKneeY /= 75;
               this.onChangeCalibrationState(true);
               // this.props.startListening();
-              console.log("Calibration complete");
+              // console.log("Calibration complete");
             }
           } else {
             drawShoulderAlignmentLines(
@@ -471,18 +583,18 @@ class PoseNet extends React.Component {
                 this.onChangeGoodRep(true);
                 this.onChangeGoodRep(false);
                 this.playRepSound("good");
-                console.log("Good reps: " + goodRepCounter);
+                // console.log("Good reps: " + goodRepCounter);
               }
               else {
                 badRepCounter++;
                 this.onChangeBadRep(true);
                 this.onChangeBadRep(false);
-                console.log("Bad reps: " + badRepCounter);
+                // console.log("Bad reps: " + badRepCounter);
               }
               this.onChangeSetScore((setScore/(goodRepCounter + badRepCounter))/6);
               var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
               repStatsList.push(repStats);
-              console.log(repStats);
+              // console.log(repStats);
 
               goodDepth = false;
               goodSD = cueGradeEnum.BAD;
@@ -569,6 +681,9 @@ class PoseNet extends React.Component {
     if (this.props.transcript.includes("done")) {
       this.showSummary();
       this.props.resetTranscript();
+      this.setState({ repData: repStatsList });
+      this.writeToDatabase(repStatsList, setScore);
+      // this.readFromDatabase();
     }
 
     return (
@@ -635,7 +750,7 @@ class PoseNet extends React.Component {
             height={80}
             onClose={this.hideSummary.bind(this)}
           >
-              <div align="center">Score: {this.state.setScore * 100} % </div>
+              <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
             <SummaryTable
             repCount={10}
             numReps={goodRepCounter + badRepCounter}
@@ -653,4 +768,15 @@ const speechRecognitionOptions = {
 };
 
 // export default SpeechRecognition(speechRecognitionOptions)(PoseNet);
-export default SpeechRecognition(PoseNet);
+const PoseNetDataTest = withRouter(withFirebase(PoseNet));
+
+// export default SpeechRecognition(PoseNet);
+// export { PoseNetDataTest };
+
+const PoseNetForm = compose(
+  withRouter,
+  withFirebase,
+  SpeechRecognition,
+)(PoseNet);
+
+export default PoseNetForm;
