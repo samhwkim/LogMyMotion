@@ -1,7 +1,6 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import Rodal from "rodal"
-// import BarChart from "react-bar-chart";
 import SpeechRecognition from "react-speech-recognition";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
@@ -682,9 +681,14 @@ class PoseNet extends React.Component {
       this.showSummary();
       this.props.resetTranscript();
       this.setState({ repData: repStatsList });
-      this.writeToDatabase(repStatsList, setScore);
+      //this.writeToDatabase(repStatsList, setScore);
       // this.readFromDatabase();
     }
+
+    const styles = {
+      overflowY: "scroll",
+      backgroundColor: "red"
+    };
 
     return (
       <div className="PoseNet">
@@ -749,13 +753,17 @@ class PoseNet extends React.Component {
             width={80}
             height={80}
             onClose={this.hideSummary.bind(this)}
+            customStyles={styles}
           >
               <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
+              <div style={{width: '50%'}}>
+            </div>
             <SummaryTable
             repCount={10}
             numReps={goodRepCounter + badRepCounter}
             repStatsList={repStatsList}
             summaryStatus={this.state.summaryVisible}/>
+            <button type="submit" onClick={() => {this.writeToDatabase(repStatsList, setScore) }}>Write to Database</button>
           </Rodal>
         </div>
       </div>
