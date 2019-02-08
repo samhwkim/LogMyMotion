@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { FormGroup, ControlLabel, FormControl, Row } from "react-bootstrap";
+import { FormGroup, ControlLabel, FormControl } from "react-bootstrap";
 
 function FieldGroup({ label, ...props }) {
   return (
@@ -20,7 +20,7 @@ export class FormInputs extends Component {
         </div>
       );
     }
-    return <Row>{row}</Row>;
+    return <div className="row">{row}</div>;
   }
 }
 

@@ -30,19 +30,20 @@
         top: 50%;
         margin-top: -15px;
     }
-
+    [data-notify="icon"][class*="pe-"] ~ [data-notify="message"]{
+        padding-left: 50px;
+    }
     button.close{
         position: absolute;
         right: 10px;
-        top: 50%;
+        top: 50%!important;
         margin-top: -13px;
         z-index: 1033;
         background-color: #FFFFFF;
         display: block;
         border-radius: 50%;
         opacity: .4;
-        line-height: 20px;
-        font-size: 12px;
+        line-height: 11px;
         width: 25px;
         height: 25px;
         outline: 0 !important;
@@ -67,10 +68,6 @@
 
     &.alert-with-icon{
         padding-left: 65px;
-    }
-    a, a:hover, a:focus{
-        text-decoration: underline;
-        color: white;
     }
 }
 .alert-info{

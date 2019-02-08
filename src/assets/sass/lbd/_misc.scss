@@ -1,10 +1,40 @@
 /*     General overwrite     */
+#loader{
+    position: absolute;
+    display: block;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
+    @include transform-translate-y(-50%);
+    text-align: center;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    top: 50%;
+}
+.main-panel-maps{
+    > div{
+    height: 100%;
+    }
+
+    .map{
+       position: relative;
+       width: 100%;
+       height: calc(100% - 60px);
+   }
+}
 body,
 .wrapper{
     min-height: 100vh;
     position: relative;
-    background-color: white;
 }
+
+body{
+    background-color: $smoke-bg;
+}
+
 a{
   color: $info-color;
 
@@ -31,16 +61,35 @@ input:focus {
 }
 
 /*           Animations              */
+
+.animation-transition-general{
+    @include transition($general-transition-time, $transition-linear);
+}
+
+.animation-transition-fast,
+.sidebar .nav .collapse a > span,
+.sidebar .sidebar-wrapper > .nav p,
+.sidebar .user .info > a > span,
+.sidebar .logo a.logo-normal,
+.sidebar .user .info .collapse .nav a > span {
+    @include transition($fast-transition-time, $transition-linear);
+}
+
+.animation-transition-ultra-fast{
+    @include transition($ultra-fast-transition-time, $transition-ease-in);
+}
+
 .form-control,
 .input-group-addon,
 .tagsinput,
-.navbar,
-.navbar .alert{
+.navbar .alert,
+.panel-collapse.collapse-hover,{
     @include transition($general-transition-time, $transition-linear);
 }
 
 .sidebar .nav a,
-.table > tbody > tr .td-actions .btn{
+.table > tbody > tr .td-actions .btn,
+.caret{
     @include transition($fast-transition-time, $transition-ease-in);
 }
 
@@ -55,8 +104,38 @@ input:focus {
     margin-top: 50px;
 }
 
-.wrapper{
-    position: relative;
-    top: 0;
-    height: 100vh;
+a[aria-selected="true"][aria-expanded="true"] .caret,
+a[data-toggle="collapse"][aria-expanded="true"] .caret,
+a[aria-expanded="true"] .caret,
+.btn[data-toggle="collapse"][aria-expanded="true"] .caret,
+a.dropdown-toggle[aria-expanded="true"] .caret,
+.rotate-180{
+    @include rotate-180();
+}
+
+legend{
+    font-size: $font-size-h4;
+    font-weight: $font-weight-light;
+}
+
+.full-screen-map{
+    position:relative;
+    width:100%;
+    height: calc(100% - 60px);
+}
+
+#loader{
+    position: absolute;
+    display: block;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 1;
+    @include transform-translate-y(-50%);
+    text-align: center;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    top: 50%;
 }

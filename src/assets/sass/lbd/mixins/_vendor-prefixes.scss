@@ -45,6 +45,14 @@
         transform: translate3d($value, 0, 0);
 }
 
+@mixin transform-translate-y($value){
+     -webkit-transform:  translate3d(0, $value, 0);
+        -moz-transform: translate3d(0, $value, 0);
+        -o-transform: translate3d(0, $value, 0);
+        -ms-transform: translate3d(0, $value, 0);
+        transform: translate3d(0, $value, 0);
+}
+
 @mixin transform-origin($coordinates){
       -webkit-transform-origin: $coordinates;
         -moz-transform-origin: $coordinates;
@@ -53,7 +61,7 @@
         transform-origin: $coordinates;
 }
 
-@mixin icon-gradient ($top-color, $bottom-color){
+@mixin line-gradient($top-color, $bottom-color){
     background: $top-color;
     background: -moz-linear-gradient(top,  $top-color 0%, $bottom-color 100%);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$top-color), color-stop(100%,$bottom-color));
@@ -164,7 +172,7 @@
     }
 }
 
-@mixin bottombar-back-rotation{
+@mixin bottombar-back-rotation(){
     @keyframes bottombar-back {
       0% { bottom: 6px;transform: rotate(-135deg);}
       45% { transform: rotate(10deg);}

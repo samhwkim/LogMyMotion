@@ -1,11 +1,19 @@
 import React, { Component } from "react";
-import { Grid } from "react-bootstrap";
 
 class Footer extends Component {
   render() {
     return (
-      <footer className="footer">
-        <Grid fluid>
+      <footer
+        className={
+          "footer" +
+          (this.props.transparent !== undefined ? " footer-transparent" : "")
+        }
+      >
+        <div
+          className={
+            "container" + (this.props.fluid !== undefined ? "-fluid" : "")
+          }
+        >
           <nav className="pull-left">
             <ul>
               <li>
@@ -23,12 +31,13 @@ class Footer extends Component {
             </ul>
           </nav>
           <p className="copyright pull-right">
-            &copy; {new Date().getFullYear()}{" "} LogMyMotion
+            &copy; {1900 + new Date().getYear()}{" "}
+            <a href="https://www.creative-tim.com">Creative Tim</a>, made with{" "}
+            <i className="fa fa-heart heart" /> for a better web
           </p>
-        </Grid>
+        </div>
       </footer>
     );
   }
 }
-
 export default Footer;

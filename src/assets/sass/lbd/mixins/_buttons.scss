@@ -7,6 +7,10 @@
   &:focus,
   &:active,
   &.active,
+  &:active:focus,
+  &:active:hover,
+  &.active:focus,
+  &.active:hover,
   .open > &.dropdown-toggle {
     background-color: $transparent-bg;
     color: $btn-states-color;

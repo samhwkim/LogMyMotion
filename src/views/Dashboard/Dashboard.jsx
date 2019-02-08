@@ -1,134 +1,242 @@
 import React, { Component } from "react";
 import ChartistGraph from "react-chartist";
 import { Grid, Row, Col } from "react-bootstrap";
+// react components used to create a SVG / Vector map
+import { VectorMap } from "react-jvectormap";
 
-import { Card } from "../../components/Card/Card.jsx";
+import Card from "../../components/Card/Card.jsx";
 import { StatsCard } from "../../components/StatsCard/StatsCard.jsx";
 import { Tasks } from "../../components/Tasks/Tasks.jsx";
 import {
   dataPie,
-  legendPie,
   dataSales,
   optionsSales,
   responsiveSales,
-  legendSales,
   dataBar,
   optionsBar,
   responsiveBar,
-  legendBar
+  table_data
 } from "../../variables/Variables.jsx";
 import { AuthUserContext, withAuthorization } from '../../components/Session';
 
-class Dashboard extends Component {
-  constructor(props) {
-    super(props);
-  }
+var mapData = {
+  AU: 760,
+  BR: 550,
+  CA: 120,
+  DE: 1300,
+  FR: 540,
+  GB: 690,
+  GE: 200,
+  IN: 200,
+  RO: 600,
+  RU: 300,
+  US: 2920
+};
 
-  createLegend(json) {
-    var legend = [];
-    for (var i = 0; i < json["names"].length; i++) {
-      var type = "fa fa-circle text-" + json["types"][i];
-      legend.push(<i className={type} key={i} />);
-      legend.push(" ");
-      legend.push(json["names"][i]);
+
+class Dashboard extends Component {
+  createTableData() {
+    var tableRows = [];
+    for (var i = 0; i < table_data.length; i++) {
+      tableRows.push(
+        <tr key={i}>
+          <td>
+            <div className="flag">
+              <img src={table_data[i].flag} alt="us_flag" />
+            </div>
+          </td>
+          <td>{table_data[i].country}</td>
+          <td className="text-right">{table_data[i].count}</td>
+          <td className="text-right">{table_data[i].percentage}</td>
+        </tr>
+      );
     }
-    return legend;
+    return tableRows;
   }
   render() {
     return (
-
-      <AuthUserContext.Consumer>
-          {authUser => (
-            <div className="content">
-              <Grid fluid>
-                <Row>
-                  <Col md={8}>
-                    <Card
-                      statsIcon="fa fa-history"
-                      id="chartHours"
-                      title="Workout History"
-                      category="Past two weeks performance"
-                      stats="Updated 3 minutes ago"
-                      content={
-                        <div className="ct-chart">
-                          <ChartistGraph
-                            data={dataSales}
-                            type="Line"
-                            options={optionsSales}
-                            responsiveOptions={responsiveSales}
-                          />
-                        </div>
-                      }
-                      legend={
-                        <div className="legend">{this.createLegend(legendSales)}</div>
-                      }
-                    />
-                  </Col>
-                  <Col md={4}>
-                    <Card
-                      statsIcon="fa fa-clock-o"
-                      title="Email Statistics"
-                      category="Last Campaign Performance"
-                      stats="Campaign sent 2 days ago"
-                      content={
-                        <div
-                          id="chartPreferences"
-                          className="ct-chart ct-perfect-fourth"
-                        >
-                          <ChartistGraph data={dataPie} type="Pie" />
-                        </div>
-                      }
-                      legend={
-                        <div className="legend">{this.createLegend(legendPie)}</div>
-                      }
-                    />
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col md={6}>
-                    <Card
-                      id="chartActivity"
-                      title="2014 Sales"
-                      category="All products including Taxes"
-                      stats="Data information certified"
-                      statsIcon="fa fa-check"
-                      content={
-                        <div className="ct-chart">
-                          <ChartistGraph
-                            data={dataBar}
-                            type="Bar"
-                            options={optionsBar}
-                            responsiveOptions={responsiveBar}
-                          />
-                        </div>
-                      }
-                      legend={
-                        <div className="legend">{this.createLegend(legendBar)}</div>
-                      }
-                    />
-                  </Col>
-
-                  <Col md={6}>
-                    <Card
-                      title="Tasks"
-                      category="Backend development"
-                      stats="Updated 3 minutes ago"
-                      statsIcon="fa fa-history"
-                      content={
-                        <div className="table-full-width">
-                          <table className="table">
-                            <Tasks />
-                          </table>
-                        </div>
-                      }
-                    />
-                  </Col>
-                </Row>
-              </Grid>
-            </div>
-          )}
-        </AuthUserContext.Consumer>
+      <div className="main-content">
+        <Grid fluid>
+          <Row>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-server text-warning" />}
+                statsText="Capacity"
+                statsValue="105GB"
+                statsIcon={<i className="fa fa-refresh" />}
+                statsIconText="Updated now"
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-wallet text-success" />}
+                statsText="Revenue"
+                statsValue="$1,345"
+                statsIcon={<i className="fa fa-calendar-o" />}
+                statsIconText="Last day"
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="pe-7s-graph1 text-danger" />}
+                statsText="Errors"
+                statsValue="23"
+                statsIcon={<i className="fa fa-clock-o" />}
+                statsIconText="In the last hour"
+              />
+            </Col>
+            <Col lg={3} sm={6}>
+              <StatsCard
+                bigIcon={<i className="fa fa-twitter text-info" />}
+                statsText="Followers"
+                statsValue="+45"
+                statsIcon={<i className="fa fa-refresh" />}
+                statsIconText="Updated now"
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={12}>
+              <Card
+                title="Global Sales by Top Locations"
+                category="All products that were shipped"
+                content={
+                  <Row>
+                    <Col md={5}>
+                      <div className="table-responsive">
+                        <table className="table">
+                          <tbody>{this.createTableData()}</tbody>
+                        </table>
+                      </div>
+                    </Col>
+                    <Col md={6} mdOffset={1}>
+                      <VectorMap
+                        map={"world_mill"}
+                        backgroundColor="transparent"
+                        zoomOnScroll={false}
+                        containerStyle={{
+                          width: "100%",
+                          height: "280px"
+                        }}
+                        containerClassName="map"
+                        regionStyle={{
+                          initial: {
+                            fill: "#e4e4e4",
+                            "fill-opacity": 0.9,
+                            stroke: "none",
+                            "stroke-width": 0,
+                            "stroke-opacity": 0
+                          }
+                        }}
+                        series={{
+                          regions: [
+                            {
+                              values: mapData,
+                              scale: ["#AAAAAA", "#444444"],
+                              normalizeFunction: "polynomial"
+                            }
+                          ]
+                        }}
+                      />
+                    </Col>
+                  </Row>
+                }
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={4}>
+              <Card
+                title="Email Statistics"
+                category="Last Campaign Performance"
+                content={<ChartistGraph data={dataPie} type="Pie" />}
+                legend={
+                  <div>
+                    <i className="fa fa-circle text-info" /> Open
+                    <i className="fa fa-circle text-danger" /> Bounce
+                    <i className="fa fa-circle text-warning" /> Unsubscribe
+                  </div>
+                }
+                stats={
+                  <div>
+                    <i className="fa fa-clock-o" /> Campaign sent 2 days ago
+                  </div>
+                }
+              />
+            </Col>
+            <Col md={8}>
+              <Card
+                title="Users Behavior"
+                category="24 Hours performance"
+                content={
+                  <ChartistGraph
+                    data={dataSales}
+                    type="Line"
+                    options={optionsSales}
+                    responsiveOptions={responsiveSales}
+                  />
+                }
+                legend={
+                  <div>
+                    <i className="fa fa-circle text-info" /> Open
+                    <i className="fa fa-circle text-danger" /> Click
+                    <i className="fa fa-circle text-warning" /> Click Second
+                    Time
+                  </div>
+                }
+                stats={
+                  <div>
+                    <i className="fa fa-history" /> Updated 3 minutes ago
+                  </div>
+                }
+              />
+            </Col>
+          </Row>
+          <Row>
+            <Col md={6}>
+              <Card
+                title="2014 Sales"
+                category="All products including Taxes"
+                content={
+                  <ChartistGraph
+                    data={dataBar}
+                    type="Bar"
+                    options={optionsBar}
+                    responsiveOptions={responsiveBar}
+                  />
+                }
+                legend={
+                  <div>
+                    <i className="fa fa-circle text-info" /> Tesla Model S
+                    <i className="fa fa-circle text-danger" /> BMW 5 Series
+                  </div>
+                }
+                stats={
+                  <div>
+                    <i className="fa fa-check" /> Data information certified
+                  </div>
+                }
+              />
+            </Col>
+            <Col md={6}>
+              <Card
+                title="Tasks"
+                category="Backend development"
+                content={
+                  <table className="table">
+                    <Tasks />
+                  </table>
+                }
+                stats={
+                  <div>
+                    <i className="fa fa-history" /> Updated 3 minutes ago
+                  </div>
+                }
+              />
+            </Col>
+          </Row>
+        </Grid>
+      </div>
     );
   }
 }
