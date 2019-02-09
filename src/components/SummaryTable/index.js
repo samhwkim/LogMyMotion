@@ -186,7 +186,7 @@ function ReactVirtualizedTable(props) {
   let repStatsList = props.repStatsList;
   let summaryStatus = props.summaryStatus;
 
-  if (summaryStatus && repStatsList.length != 0) {
+  if (summaryStatus && repStatsList.length !== 0) {
       var goodCue = <i class="fa fa-check text-success" aria-hidden="true"></i>;
       var okayCue = <i class="fa fa-circle text-warning" aria-hidden="true"></i>;
       var badCue = <i class="fa fa-times text-danger" aria-hidden="true"></i>;

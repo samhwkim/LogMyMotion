@@ -1,12 +1,16 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
+import Col from "react-bootstrap";
 import Rodal from "rodal"
 import SpeechRecognition from "react-speech-recognition";
+import ChartistGraph from "react-chartist";
+import Card from "../Card/Card.jsx";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
 import Firebase from "../Firebase";
+
 import { FirebaseContext, withFirebase } from '../Firebase';
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
@@ -60,10 +64,13 @@ const INITIAL_STATE = {
 };
 
 let goodSD = cueGradeEnum.BAD;
-// let goodSA = false;
 let goodFW = false;
 let goodKA = false;
 let straightUpAndDown = true;
+let SDcount = 0;
+let FWcount = 0;
+let KAcount = 0;
+let SAcount = 0;
 let repScore = 0;
 let setScore = 0.0;
 let repStatsList = [];
@@ -539,7 +546,6 @@ class PoseNet extends React.Component {
               goodDepth = true;
               goodSD = cueGradeEnum.GOOD;
               if(analyzeKneeAngle(keypoints)) {
-                //repScore += 2;
                 goodKA = true;
                 this.onChangeKA(goodKA);
               }
@@ -549,7 +555,6 @@ class PoseNet extends React.Component {
               goodDepth = false;
               goodSD = cueGradeEnum.OKAY;
               goodKA = false;
-              //repScore += 1;
             }
 
             distanceLeftHipFromStarting = distanceFormula(
@@ -563,17 +568,21 @@ class PoseNet extends React.Component {
             }
 
             if (startedRep && distanceLeftHipFromStarting < 10) {
+              FWcount++;
               if(goodSD === cueGradeEnum.GOOD) {
                 repScore += 2;
+                SDcount++;
               }
               else if(goodSD === cueGradeEnum.OKAY) {
                 repScore += 1;
               }
               if(goodKA) {
                 repScore += 2;
+                KAcount++;
               }
               if(straightUpAndDown) {
                 repScore += 2;
+                SAcount++;
               }
               setScore += repScore;
               this.onChangeSetScore(setScore);
@@ -690,6 +699,41 @@ class PoseNet extends React.Component {
       backgroundColor: "red"
     };
 
+    const graph_data = {
+      type: "Bar",
+      data: {
+        labels: [
+          "Squat Depth",
+          "Feet Width",
+          "Shoulder Alignment",
+          "Knee Angle"
+        ],
+        series: [[SDcount,FWcount,SAcount,KAcount]]
+      },
+      options: {
+        seriesBarDistance: 10,
+        classNames: {
+          bar: "ct-bar ct-azure"
+        },
+        axisX: {
+          showGrid: false
+        }
+      },
+      responsiveOptions: [
+    [
+      "screen and (max-width: 640px)",
+      {
+        seriesBarDistance: 5,
+        axisX: {
+          labelInterpolationFnc: function(value) {
+            return value[0];
+          }
+        }
+      }
+    ]
+  ]
+};
+
     return (
       <div className="PoseNet">
         {loading}
@@ -756,8 +800,18 @@ class PoseNet extends React.Component {
             customStyles={styles}
           >
               <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
-              <div style={{width: '50%'}}>
-            </div>
+                  <Card
+                    title={"Cue Performance"}
+                    category={"Bar Chart"}
+                    content={
+                      <ChartistGraph
+                        data={graph_data.data}
+                        type={graph_data.type}
+                        options={graph_data.options}
+                        responsiveOptions={graph_data.responsiveOptions}
+                      />
+                    }
+                  />
             <SummaryTable
             repCount={10}
             numReps={goodRepCounter + badRepCounter}
