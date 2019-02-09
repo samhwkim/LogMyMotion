@@ -1,22 +1,22 @@
 import React, { Component } from "react";
 import { Switch, Route } from "react-router-dom";
 
-import Footer from "components/Footer/Footer.jsx";
-import PagesHeader from "components/Header/PagesHeader.jsx";
+import Footer from "../../components/Footer/Footer.jsx";
+import PagesHeader from "../../components/Header/PagesHeader.jsx";
 
 // dinamically create pages routes
-import pagesRoutes from "routes/pages.jsx";
+import pagesRoutes from "../../constants/pages.jsx";
 
-import bgImage from "assets/img/full-screen-image-3.jpg";
+import bgImage from "../../assets/img/full-screen-image-3.jpg";
 
 class Pages extends Component {
   getPageClass() {
     var pageClass = "";
     switch (this.props.location.pathname) {
-      case "/pages/login-page":
+      case "/login":
         pageClass = " login-page";
         break;
-      case "/pages/register-page":
+      case "/signup":
         pageClass = " register-page";
         break;
       case "/pages/lock-screen-page":
@@ -36,7 +36,6 @@ class Pages extends Component {
   render() {
     return (
       <div>
-        <PagesHeader />
         <div className="wrapper wrapper-full-page">
           <div
             className={"full-page" + this.getPageClass()}

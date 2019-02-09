@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "../../css/title.css";
+import pagesRoutes from "../../constants/pages.jsx";
 export default class title extends Component {
   render() {
     return (
@@ -27,13 +28,6 @@ export default class title extends Component {
         </section>
         <section className="groupmembers">
           <div id="pll"> by Pretty Little Leetcoders</div>
-        </section>
-        <section className="trynowsection">
-          <div className="trynowtext">
-            <a className="trynowlink" href="/posenetdemo">
-              Try Now!
-            </a>
-          </div>
         </section>
       </div>
     );

@@ -1,8 +1,7 @@
 import Dashboard from "../views/Dashboard/Dashboard";
-import WorkoutCalendar from "../views/WorkoutCalendar/WorkoutCalendar";
+import Calendar from "../views/Calendar/Calendar.jsx";
 import Typography from "../views/Typography/Typography";
 import Icons from "../views/Icons/Icons";
-import PoseNetDemo from "../components/MainPages/posenetdemo";
 
 
 const dashboardRoutes = [
@@ -16,8 +15,7 @@ const dashboardRoutes = [
     path: "/calendar",
     name: "Workout Calendar",
     icon: "pe-7s-date",
-    component: WorkoutCalendar
-
+    component: Calendar
   },
   {
     collapse: true,
@@ -30,7 +28,6 @@ const dashboardRoutes = [
         path: "/analyzer",
         name: "Squat",
         mini: "S",
-        // component: Buttons
       },
       { path: "/analyzer", name: "Bench Press", mini: "BP"},
        {path: "/analyzer", name: "Barbell Press", mini: "BP"},
@@ -41,7 +38,7 @@ const dashboardRoutes = [
     name: "Tutorial",
     icon: "pe-7s-bookmarks",
   },
-  { redirect: true, path: "/", to: "/home", name: "Home" }
+
 ];
 
 export default dashboardRoutes;

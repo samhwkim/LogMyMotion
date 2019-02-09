@@ -32,8 +32,7 @@ class Footer extends Component {
           </nav>
           <p className="copyright pull-right">
             &copy; {1900 + new Date().getYear()}{" "}
-            <a href="https://www.creative-tim.com">Creative Tim</a>, made with{" "}
-            <i className="fa fa-heart heart" /> for a better web
+            <a href="https://www.creative-tim.com">LogMyMotion</a>
           </p>
         </div>
       </footer>

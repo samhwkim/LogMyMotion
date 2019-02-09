@@ -7,11 +7,10 @@ import moment from "moment";
 // react component used to create alerts
 import SweetAlert from "react-bootstrap-sweetalert";
 
-import Card from "components/Card/Card.jsx";
+import Card from "../../components/Card/Card.jsx";
 
-import { events } from "variables/Variables.jsx";
-
-BigCalendar.setLocalizer(BigCalendar.momentLocalizer(moment));
+import { events } from "../../variables/Variables.jsx";
+const localizer = BigCalendar.momentLocalizer(moment);
 
 class Calendar extends Component {
   constructor(props) {
@@ -86,6 +85,7 @@ class Calendar extends Component {
                     onSelectEvent={event => this.selectedEvent(event)}
                     onSelectSlot={slotInfo => this.addNewEventAlert(slotInfo)}
                     eventPropGetter={this.eventColors}
+                    localizer={localizer}
                   />
                 }
               />

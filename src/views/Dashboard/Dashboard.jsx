@@ -61,10 +61,9 @@ class Dashboard extends Component {
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
-                statsText="Capacity"
-                statsValue="105GB"
+                statsText="10"
                 statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
+                statsIconText="Days since last workout"
               />
             </Col>
             <Col lg={3} sm={6}>
@@ -145,26 +144,7 @@ class Dashboard extends Component {
             </Col>
           </Row>
           <Row>
-            <Col md={4}>
-              <Card
-                title="Email Statistics"
-                category="Last Campaign Performance"
-                content={<ChartistGraph data={dataPie} type="Pie" />}
-                legend={
-                  <div>
-                    <i className="fa fa-circle text-info" /> Open
-                    <i className="fa fa-circle text-danger" /> Bounce
-                    <i className="fa fa-circle text-warning" /> Unsubscribe
-                  </div>
-                }
-                stats={
-                  <div>
-                    <i className="fa fa-clock-o" /> Campaign sent 2 days ago
-                  </div>
-                }
-              />
-            </Col>
-            <Col md={8}>
+            <Col lg={150}>
               <Card
                 title="Users Behavior"
                 category="24 Hours performance"

@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { Grid, Row, Col, Media, FormControl, FormGroup } from "react-bootstrap";
 
-import Card from "components/Card/Card.jsx";
+import Card from "../../components/Card/Card.jsx";
 
-import Button from "components/CustomButton/CustomButton.jsx";
+import Button from "../../components/CustomButton/CustomButton.jsx";
 
 class RegisterPage extends Component {
   render() {
@@ -12,8 +12,8 @@ class RegisterPage extends Component {
         <Row>
           <Col md={8} mdOffset={2}>
             <div className="header-text">
-              <h2>Light Bootstrap Dashboard PRO</h2>
-              <h4>Register for free and experience the dashboard today</h4>
+              <h2>LogMyMotion</h2>
+              <h4>Your Personal Virtual Fitness Trainer</h4>
               <hr />
             </div>
           </Col>

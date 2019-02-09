@@ -21,6 +21,7 @@
     "react": "^16.6.3",
     "react-big-calendar": "^0.20.3",
     "react-bootstrap": "0.32.1",
+    "react-bootstrap-sweetalert": "4.2.3",
     "react-calendar": "^2.18.1",
     "react-chartist": "0.13.1",
     "react-dom": "^16.6.3",
