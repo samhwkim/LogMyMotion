@@ -98,7 +98,7 @@ class PoseNet extends React.Component {
     imageScaleFactor: 0.5,
     skeletonColor: "aqua",
     skeletonLineWidth: 2,
-    loadingText: "Loading pose detector..."
+    loadingText: "Loading pose detector...",
   };
 
   constructor(props) {
@@ -189,19 +189,6 @@ class PoseNet extends React.Component {
     });
   }
 
-  getNumberOfChildren() {
-    let date = this.fetchCurrentDate();
-    let currentUserUid = this.props.firebase.getCurrentUserUid();
-
-    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
-
-    ref.on("value", function(snapshot) {
-      let firstSetExists = snapshot.exists();
-      let numKids = snapshot.numChildren();
-      return numKids;
-    });
-  }
-
   readFromDatabase() {
     let date = this.fetchCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
@@ -224,14 +211,28 @@ class PoseNet extends React.Component {
     });
   }
 
-  writeToDatabase(setData, score) {
+  async getNumChildrenAtRef(dbRef) {
+    let numChildren;
+
+    let snapshot = await dbRef.once("value");
+    if(snapshot.exists()) {
+        numChildren = snapshot.numChildren();
+    }
+
+    return numChildren;
+  }
+
+  async writeToDatabase(setData, score) {
     let date = this.fetchCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
-    let setString = "set_";
-    let setId = Math.random()
-      .toString(36)
-      .substr(2, 5); // generate a unique ID for the latest set
+    let setString = "set_"
+
+    let urlRef = this.props.firebase.sets(currentUserUid, date);
+    let setId = await this.getNumChildrenAtRef(urlRef);
+    setId++;
+
     let setTitle = setString + setId;
+
 
     // modify score to reflect percentage displayed on summary page
     // limit decimal to to hundreths place

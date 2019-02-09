@@ -72,7 +72,7 @@ class Calendar extends Component {
         {this.state.alert}
         <Grid fluid>
           <Row>
-            <Col md={10} mdOffset={1}>
+            <Col md={13} mdOffset={0}>
               <Card
                 calendar
                 content={
