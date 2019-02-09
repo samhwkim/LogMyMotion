@@ -2,8 +2,13 @@
 @import url("https://fonts.googleapis.com/css?family=Raleway");
 
 .videocueinfo {
-  padding-right: 5%;
-  font: 2.5em "Raleway", Sans-serif;
+  font: 2em "Raleway", Sans-serif;
+  background-color: gray;
+  border-radius: 10px;
+  padding: 5px;
+  position: absolute;
+  top: 17.5%;
+  right: 1%;
 }
 
 .videocueinfo #video-info-SD {
@@ -73,9 +78,12 @@
   font: 3.5em "Raleway", Sans-serif;
   color: yellow;
   position: absolute;
-  top: 0;
-  left: 45%;
+  top: 2.5%;
+  left: 40%;
   z-index: 1;
+  background-color: gray;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .rep-container {
@@ -84,20 +92,26 @@
 
 .videoOverlay-Good {
   font: 2.5em "Raleway", Sans-serif;
-  color: green;
+  color: white;
   position: absolute;
-  top: 0;
-  left: 0;
+  top: 2.5%;
+  left: 2.5%;
   z-index: 1;
+  background-color: gray;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .videoOverlay-Bad {
   font: 2.5em "Raleway", Sans-serif;
-  color: red;
+  color: white;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: 2.5%;
+  right: 2.5%;
   z-index: 1;
+  background-color: gray;
+  border-radius: 10px;
+  padding: 5px;
 }
 
 .PoseNet #posenetVideo {

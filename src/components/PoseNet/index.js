@@ -1,7 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import Col from "react-bootstrap";
-import Rodal from "rodal"
+import Rodal from "rodal";
 import SpeechRecognition from "react-speech-recognition";
 import ChartistGraph from "react-chartist";
 import Card from "../Card/Card.jsx";
@@ -11,9 +11,9 @@ import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
 import Firebase from "../Firebase";
 
-import { FirebaseContext, withFirebase } from '../Firebase';
-import { Link, withRouter } from 'react-router-dom';
-import { compose } from 'recompose';
+import { FirebaseContext, withFirebase } from "../Firebase";
+import { Link, withRouter } from "react-router-dom";
+import { compose } from "recompose";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -53,14 +53,14 @@ let distanceLeftHipFromStarting = 0;
 let distanceRightHipFromStarting = 0;
 
 const cueGradeEnum = {
-  GOOD: 'good',
-  OKAY: 'okay',
-  BAD: 'bad'
-}
+  GOOD: "good",
+  OKAY: "okay",
+  BAD: "bad"
+};
 
 const INITIAL_STATE = {
   repData: "testing",
-  error: null,
+  error: null
 };
 
 let goodSD = cueGradeEnum.BAD;
@@ -115,7 +115,7 @@ class PoseNet extends React.Component {
       summaryVisible: false,
       badCounter: 0,
       setScore: 0,
-      repData: [],
+      repData: []
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -151,14 +151,14 @@ class PoseNet extends React.Component {
     let yyyy = today.getFullYear();
 
     if (dd < 10) {
-      dd = '0' + dd;
+      dd = "0" + dd;
     }
 
     if (mm < 10) {
-      mm = '0' + mm;
+      mm = "0" + mm;
     }
 
-    today = mm + '-' + dd + '-' + yyyy;
+    today = mm + "-" + dd + "-" + yyyy;
 
     return today.toString();
   }
@@ -173,7 +173,7 @@ class PoseNet extends React.Component {
       let firstSetExists = snapshot.exists();
       if (firstSetExists) {
         console.log("first set exists!");
-        snapshot.forEach((child) => {
+        snapshot.forEach(child => {
           console.log(child.key);
           let currentSetNum = child.key.toString();
           console.log(`snapshot: ${currentSetNum}`);
@@ -211,7 +211,7 @@ class PoseNet extends React.Component {
       let firstSetExists = snapshot.exists();
       if (firstSetExists) {
         console.log("sets found!");
-        snapshot.forEach((child) => {
+        snapshot.forEach(child => {
           console.log(child.key, child.val());
           let i;
           for (i = 0; i < child.val().length; i++) {
@@ -227,22 +227,24 @@ class PoseNet extends React.Component {
   writeToDatabase(setData, score) {
     let date = this.fetchCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
-    let setString = "set_"
-    let setId = Math.random().toString(36).substr(2, 5); // generate a unique ID for the latest set
+    let setString = "set_";
+    let setId = Math.random()
+      .toString(36)
+      .substr(2, 5); // generate a unique ID for the latest set
     let setTitle = setString + setId;
 
     // modify score to reflect percentage displayed on summary page
     // limit decimal to to hundreths place
-    score = (score/(goodRepCounter + badRepCounter))/6;
+    score = score / (goodRepCounter + badRepCounter) / 6;
     score *= 100;
     score = score.toFixed(2);
 
     this.props.firebase.addSet(currentUserUid, date).update({
-      [setTitle]: setData,
+      [setTitle]: setData
     });
 
     this.props.firebase.addSetScore(currentUserUid, date, setTitle).update({
-      setScore: score,
+      setScore: score
     });
   }
 
@@ -299,7 +301,7 @@ class PoseNet extends React.Component {
   }
 
   onChangeSetScore(inputEntry) {
-    this.setState({setScore: inputEntry});
+    this.setState({ setScore: inputEntry });
   }
 
   getCanvas = elem => {
@@ -533,7 +535,10 @@ class PoseNet extends React.Component {
               600
             );
 
-            if (keypoints[5].position.x > startingAvgLeftShoulderX + 10 || keypoints[6].position.x < startingAvgRightShoulderX - 10) {
+            if (
+              keypoints[5].position.x > startingAvgLeftShoulderX + 10 ||
+              keypoints[6].position.x < startingAvgRightShoulderX - 10
+            ) {
               straightUpAndDown = false;
             }
             //Assume that FW and SA will be "good" for all repetitions
@@ -545,7 +550,7 @@ class PoseNet extends React.Component {
               this.onChangeSD("good");
               goodDepth = true;
               goodSD = cueGradeEnum.GOOD;
-              if(analyzeKneeAngle(keypoints)) {
+              if (analyzeKneeAngle(keypoints)) {
                 goodKA = true;
                 this.onChangeKA(goodKA);
               }
@@ -569,37 +574,37 @@ class PoseNet extends React.Component {
 
             if (startedRep && distanceLeftHipFromStarting < 10) {
               FWcount++;
-              if(goodSD === cueGradeEnum.GOOD) {
+              if (goodSD === cueGradeEnum.GOOD) {
                 repScore += 2;
                 SDcount++;
-              }
-              else if(goodSD === cueGradeEnum.OKAY) {
+              } else if (goodSD === cueGradeEnum.OKAY) {
                 repScore += 1;
               }
-              if(goodKA) {
+              if (goodKA) {
                 repScore += 2;
                 KAcount++;
               }
-              if(straightUpAndDown) {
+              if (straightUpAndDown) {
                 repScore += 2;
                 SAcount++;
               }
               setScore += repScore;
               this.onChangeSetScore(setScore);
-              if(repScore >= 4) {
+              if (repScore >= 4) {
                 goodRepCounter++;
                 this.onChangeGoodRep(true);
                 this.onChangeGoodRep(false);
                 this.playRepSound("good");
                 // console.log("Good reps: " + goodRepCounter);
-              }
-              else {
+              } else {
                 badRepCounter++;
                 this.onChangeBadRep(true);
                 this.onChangeBadRep(false);
                 // console.log("Bad reps: " + badRepCounter);
               }
-              this.onChangeSetScore((setScore/(goodRepCounter + badRepCounter))/6);
+              this.onChangeSetScore(
+                setScore / (goodRepCounter + badRepCounter) / 6
+              );
               var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
               repStatsList.push(repStats);
               // console.log(repStats);
@@ -708,7 +713,7 @@ class PoseNet extends React.Component {
           "Shoulder Alignment",
           "Knee Angle"
         ],
-        series: [[SDcount,FWcount,SAcount,KAcount]]
+        series: [[SDcount, FWcount, SAcount, KAcount]]
       },
       options: {
         seriesBarDistance: 10,
@@ -720,19 +725,19 @@ class PoseNet extends React.Component {
         }
       },
       responsiveOptions: [
-    [
-      "screen and (max-width: 640px)",
-      {
-        seriesBarDistance: 5,
-        axisX: {
-          labelInterpolationFnc: function(value) {
-            return value[0];
+        [
+          "screen and (max-width: 640px)",
+          {
+            seriesBarDistance: 5,
+            axisX: {
+              labelInterpolationFnc: function(value) {
+                return value[0];
+              }
+            }
           }
-        }
-      }
-    ]
-  ]
-};
+        ]
+      ]
+    };
 
     return (
       <div className="PoseNet">
@@ -782,14 +787,6 @@ class PoseNet extends React.Component {
           </div>
         </div>
         <div className="rep-container">
-          <div id="good-rep">
-            <div>Good Rep:</div>
-            {this.state.goodCounter}
-          </div>
-          <div id="bad-rep">
-            <div>Bad Rep:</div>
-            {this.state.badCounter}
-          </div>
           <span>{transcript}</span>
           <Rodal
             visible={this.state.summaryVisible}
@@ -799,25 +796,35 @@ class PoseNet extends React.Component {
             onClose={this.hideSummary.bind(this)}
             customStyles={styles}
           >
-              <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
-                  <Card
-                    title={"Cue Performance"}
-                    category={"Bar Chart"}
-                    content={
-                      <ChartistGraph
-                        data={graph_data.data}
-                        type={graph_data.type}
-                        options={graph_data.options}
-                        responsiveOptions={graph_data.responsiveOptions}
-                      />
-                    }
-                  />
+            <div align="center">
+              Score: {(this.state.setScore * 100).toFixed(2)} %{" "}
+            </div>
+            <Card
+              title={"Cue Performance"}
+              category={"Bar Chart"}
+              content={
+                <ChartistGraph
+                  data={graph_data.data}
+                  type={graph_data.type}
+                  options={graph_data.options}
+                  responsiveOptions={graph_data.responsiveOptions}
+                />
+              }
+            />
             <SummaryTable
-            repCount={10}
-            numReps={goodRepCounter + badRepCounter}
-            repStatsList={repStatsList}
-            summaryStatus={this.state.summaryVisible}/>
-            <button type="submit" onClick={() => {this.writeToDatabase(repStatsList, setScore) }}>Write to Database</button>
+              repCount={10}
+              numReps={goodRepCounter + badRepCounter}
+              repStatsList={repStatsList}
+              summaryStatus={this.state.summaryVisible}
+            />
+            <button
+              type="submit"
+              onClick={() => {
+                this.writeToDatabase(repStatsList, setScore);
+              }}
+            >
+              Write to Database
+            </button>
           </Rodal>
         </div>
       </div>
@@ -838,7 +845,7 @@ const PoseNetDataTest = withRouter(withFirebase(PoseNet));
 const PoseNetForm = compose(
   withRouter,
   withFirebase,
-  SpeechRecognition,
+  SpeechRecognition
 )(PoseNet);
 
 export default PoseNetForm;
