@@ -90,6 +90,26 @@
   font: 3.5em "Raleway", Sans-serif;
 }
 
+.rep-container #save-workout {
+  font-size: 30px;
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+  margin-left: 50px;
+}
+
+.rep-container #return-to-dash {
+  font-size: 30px;
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+  margin-left: 250px;
+}
+
 .videoOverlay-Good {
   font: 2.5em "Raleway", Sans-serif;
   color: white;

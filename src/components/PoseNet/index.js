@@ -10,10 +10,10 @@ import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
 import Firebase from "../Firebase";
-
-import { FirebaseContext, withFirebase } from "../Firebase";
-import { Link, withRouter } from "react-router-dom";
-import { compose } from "recompose";
+import { FirebaseContext, withFirebase } from '../Firebase';
+import { Link, withRouter } from 'react-router-dom';
+import * as ROUTES from '../../constants/routes';
+import { compose } from 'recompose';
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -239,14 +239,21 @@ class PoseNet extends React.Component {
     score = score / (goodRepCounter + badRepCounter) / 6;
     score *= 100;
     score = score.toFixed(2);
-
+    // write the set data to DB
     this.props.firebase.addSet(currentUserUid, date).update({
       [setTitle]: setData
     });
-
+    // write the set score to DB
     this.props.firebase.addSetScore(currentUserUid, date, setTitle).update({
       setScore: score
     });
+
+    // this.props.history.push(ROUTES.ANALYZER);
+    window.location.reload();
+  }
+
+  returnToDashboard() {
+    this.props.history.push(ROUTES.HOME);
   }
 
   onChangeSA(inputEntry) {
@@ -702,7 +709,7 @@ class PoseNet extends React.Component {
 
     const styles = {
       overflowY: "scroll",
-      backgroundColor: "red"
+      backgroundColor: "grey"
     };
 
     const graph_data = {
@@ -813,19 +820,12 @@ class PoseNet extends React.Component {
               }
             />
             <SummaryTable
-              repCount={10}
-              numReps={goodRepCounter + badRepCounter}
-              repStatsList={repStatsList}
-              summaryStatus={this.state.summaryVisible}
-            />
-            <button
-              type="submit"
-              onClick={() => {
-                this.writeToDatabase(repStatsList, setScore);
-              }}
-            >
-              Write to Database
-            </button>
+            repCount={10}
+            numReps={goodRepCounter + badRepCounter}
+            repStatsList={repStatsList}
+            summaryStatus={this.state.summaryVisible}/>
+            <button id="save-workout" type="submit" onClick={() => {this.writeToDatabase(repStatsList, setScore) }}>Record Another Set!</button>
+            <button id="return-to-dash" type="submit" onClick={() => {this.returnToDashboard() }}>Back To Dashboard!</button>
           </Rodal>
         </div>
       </div>
