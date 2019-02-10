@@ -13,6 +13,12 @@ const cueGradeEnum = {
   BAD: 'bad'
 }
 
+const kneeAngleEnum = {
+  GOOD: 'good',
+  NEUTRAL: 'neutral',
+  BAD: 'bad'
+}
+
 const styles = theme => ({
   table: {
     fontFamily: theme.typography.fontFamily,
@@ -189,6 +195,7 @@ function ReactVirtualizedTable(props) {
   if (summaryStatus && repStatsList.length !== 0) {
       var goodCue = <i class="fa fa-check text-success" aria-hidden="true"></i>;
       var okayCue = <i class="fa fa-circle text-warning" aria-hidden="true"></i>;
+      var neutralCue = <i class="fa fa-minus text-muted" aria-hidden="true"></i>;
       var badCue = <i class="fa fa-times text-danger" aria-hidden="true"></i>;
 
       let squatDepthStatus;
@@ -220,9 +227,11 @@ function ReactVirtualizedTable(props) {
           feetWidthStatus = badCue;
         }
 
-        if(repStatsList[i] && repStatsList[i][3]) {
+        if(repStatsList[i] && repStatsList[i][3] === kneeAngleEnum.GOOD) {
           //KNEE ANGLE
           kneeAngleStatus = goodCue;
+        } else if(repStatsList[i] && repStatsList[i][3] === kneeAngleEnum.NEUTRAL) {
+          kneeAngleStatus = neutralCue;
         } else {
           kneeAngleStatus = badCue;
         }
