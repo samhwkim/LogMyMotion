@@ -39,19 +39,19 @@ class Firebase {
 
   // *** Workout API ***
 
-  addSet = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
+  addWorkout = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
 
-  addSetScore = (uid, date, setId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${setId}`);
+  workouts = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
 
-  sets = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
+  addSet = (uid, date, workoutId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${workoutId}`);
+
+  addSetScore = (uid, date, workoutId, setId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${workoutId}/${setId}`);
+
+  sets = (uid, date, workoutId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${workoutId}`);
 
   addRep = (uid, date, set) => this.db.ref(`users/${uid}/workoutHistory/${date}/${set}`);
 
   addCueGrade = (uid, date, set, rep) => this.db.ref(`users/${uid}/workoutHistory/${date}/${set}`);
-
-  workout = (uid) => this.db.ref(`users/${uid}/workoutHistory`);
-
-  workouts = () => this.db.ref('workouts');
 
 }
 

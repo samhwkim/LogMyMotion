@@ -14,6 +14,8 @@ import { FirebaseContext, withFirebase } from '../Firebase';
 import { Link, withRouter } from 'react-router-dom';
 import * as ROUTES from '../../constants/routes';
 import { compose } from 'recompose';
+import Button from '../CustomButton/CustomButton.jsx';
+
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -51,6 +53,9 @@ let startingAvgLeftKneeY = 0;
 
 let distanceLeftHipFromStarting = 0;
 let distanceRightHipFromStarting = 0;
+
+let workoutInProgress = false;
+let workoutTitle = "";
 
 const cueGradeEnum = {
   GOOD: 'good',
@@ -150,7 +155,7 @@ class PoseNet extends React.Component {
     this.setState({ summaryVisible: false });
   }
 
-  fetchCurrentDate() {
+  getCurrentDate() {
     let today = new Date();
     let dd = today.getDate();
     let mm = today.getMonth() + 1; // January is 0!
@@ -209,7 +214,7 @@ class PoseNet extends React.Component {
   }
 
   readFromDatabase() {
-    let date = this.fetchCurrentDate();
+    let date = this.getCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
     let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
 
@@ -230,18 +235,85 @@ class PoseNet extends React.Component {
     });
   }
 
+<<<<<<< Updated upstream
   writeToDatabase(setData, score) {
     let date = this.fetchCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
     let setString = "set_"
     let setId = Math.random().toString(36).substr(2, 5); // generate a unique ID for the latest set
     let setTitle = setString + setId;
+=======
+  clearForNewSet() {
+    shouldersSet = false;
+    feetSet = false;
+    calibrationConfidenceLevel = 0;
+    calibrationComplete = false;
+    goodDepth = false;
+    startedRep = false;
+    goodRepCounter = 0;
+    badRepCounter = 0;
+
+    startingLeftHipX = [];
+    startingLeftHipY = [];
+    startingRightHipX = [];
+    startingRightHipY = [];
+    startingLeftShoulderX = [];
+    startingRightShoulderX = [];
+    startingLeftKneeY = [];
+
+    startingAvgLeftHipX = 0;
+    startingAvgLeftHipY = 0;
+    startingAvgRightHipX = 0;
+    startingAvgRightHipY = 0;
+    startingAvgLeftShoulderX = 0;
+    startingAvgRightShoulderX = 0;
+    startingAvgLeftKneeY = 0;
+
+    distanceLeftHipFromStarting = 0;
+    distanceRightHipFromStarting = 0;
+
+    goodSD = cueGradeEnum.BAD;
+    goodFW = false;
+    goodKA = false;
+    straightUpAndDown = true;
+    SDcount = 0;
+    FWcount = 0;
+    KAcount = 0;
+    SAcount = 0;
+    repScore = 0;
+    setScore = 0.0;
+
+    repStatsList = [];
+    this.setState({ summaryVisible: false });
+    this.canvas.getContext("2d").clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
+    this.canvas.getContext("2d").beginPath();
+    this.onChangeClear();
+  }
+
+  async getNumChildrenAtRef(dbRef) {
+    let numChildren;
+
+    let snapshot = await dbRef.once("value");
+    if(snapshot.exists()) {
+        numChildren = snapshot.numChildren();
+    } else {
+      numChildren = 0;
+    }
+
+    return numChildren;
+  }
+
+  async writeToDatabase(setData, score, isFinalSet) {
+    let date = this.getCurrentDate();
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+>>>>>>> Stashed changes
 
     // modify score to reflect percentage displayed on summary page
     // limit decimal to to hundreths place
     score = (score/(goodRepCounter + badRepCounter))/6;
     score *= 100;
     score = score.toFixed(2);
+<<<<<<< Updated upstream
     // write the set data to DB
     this.props.firebase.addSet(currentUserUid, date).update({
       [setTitle]: setData,
@@ -250,13 +322,64 @@ class PoseNet extends React.Component {
     this.props.firebase.addSetScore(currentUserUid, date, setTitle).update({
       setScore: score,
     });
+=======
+
+    // create a new workout when they decide to use the analyzer
+    let workoutString = "workout_";
+    let workoutId = 0;
+
+    if (workoutInProgress === false) {
+      console.log("NEW WORKOUT!!!")
+      workoutInProgress = true; // keep track of all sets under one workout
+      let woRef = this.props.firebase.workouts(currentUserUid, date);
+      workoutId = await this.getNumChildrenAtRef(woRef);
+      workoutId++;
+      workoutTitle = workoutString + workoutId;
+
+      let setTitle = "set_1"; // first set of the workout
+
+      this.props.firebase.addWorkout(currentUserUid, date).update({
+        [workoutTitle]: {
+          [setTitle]: {
+            setData,
+            setScore: score,
+          },
+        }
+      });
+    } else {
+      let setString = "set_";
+      let urlRef = this.props.firebase.sets(currentUserUid, date, workoutTitle);
+      let setId = await this.getNumChildrenAtRef(urlRef);
+      setId++;
+
+      let setTitle = setString + setId;
+
+      // write the set data to DB
+      this.props.firebase.addSet(currentUserUid, date, workoutTitle).update({
+        [setTitle]: setData
+      });
+      // write the set score to DB
+      this.props.firebase.addSetScore(currentUserUid, date, workoutTitle, setTitle).update({
+        setScore: score
+      });
+
+    }
+>>>>>>> Stashed changes
 
     // this.props.history.push(ROUTES.ANALYZER);
-    window.location.reload();
+    // refresh the analyzer page to record a new set
+    // window.location.reload();
+
+    // CLEAR DATA FOR NEW SET!
+    if (!isFinalSet) {
+      this.clearForNewSet();
+    }
   }
 
-  returnToDashboard() {
+  finishWorkout(setData, score) {
+    this.writeToDatabase(setData, score, true);
     this.props.history.push(ROUTES.HOME);
+    workoutInProgress = false;
   }
 
   onChangeSA(inputEntry) {
@@ -316,6 +439,16 @@ class PoseNet extends React.Component {
 
   onChangeSetScore(inputEntry) {
     this.setState({setScore: inputEntry});
+  }
+
+  onChangeClear() {
+    this.setState({ backgroundcolorSA: "red" });
+    this.setState({ backgroundcolorSD: "red" });
+    this.setState({ backgroundcolorFW: "red" });
+    this.setState({ backgroundcolorKA: "red" });
+    this.setState({ goodCounter: 0});
+    this.setState({ badCounter: 0});
+    this.setState({ calibrationState: "Calibrating" });
   }
 
   getCanvas = elem => {
@@ -840,8 +973,8 @@ class PoseNet extends React.Component {
             numReps={goodRepCounter + badRepCounter}
             repStatsList={repStatsList}
             summaryStatus={this.state.summaryVisible}/>
-            <button id="save-workout" type="submit" onClick={() => {this.writeToDatabase(repStatsList, setScore) }}>Record Another Set!</button>
-            <button id="return-to-dash" type="submit" onClick={() => {this.returnToDashboard() }}>Back To Dashboard!</button>
+            <Button onClick={() => {this.writeToDatabase(repStatsList, setScore, false) }} bsStyle="primary" bsSize="lg">Record Another Set</Button>
+            <Button onClick={() => {this.finishWorkout(repStatsList, setScore) }} bsStyle="success" bsSize="lg">Finish Workout</Button>
           </Rodal>
         </div>
       </div>
