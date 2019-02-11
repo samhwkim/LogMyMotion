@@ -18,6 +18,7 @@ import { compose } from 'recompose';
 
 var ps;
 let events = [];
+let savedUid = "";
 
 
 class Dashboard extends Component {
@@ -51,10 +52,21 @@ class Dashboard extends Component {
     }
   }
 
-  componentDidMount() {
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  async componentDidMount() {
     events = [];
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel);
+    }
+
+    if (this.props.firebase.auth.currentUser === null) {
+      console.log("user is null");
+      await this.sleep(2000);
+    } else {
+      console.log("user identified");
     }
 
     let currentUserUid = this.props.firebase.getCurrentUserUid();
