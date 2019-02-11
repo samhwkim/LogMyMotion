@@ -12,8 +12,12 @@ import Sidebar from "../../components/Sidebar/Sidebar";
 import { style } from "../../variables/Variables.jsx";
 
 import dashboardRoutes from "../../constants/dashboard.jsx";
+import { FirebaseContext, withFirebase } from '../../components/Firebase';
+import { Link, withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
 
 var ps;
+let events = [];
 
 
 class Dashboard extends Component {
@@ -22,10 +26,40 @@ class Dashboard extends Component {
     this.componentDidMount = this.componentDidMount.bind(this);
   }
 
+  async readFromDatabase(dbRef) {
+    let snapshot = await dbRef.once("value");
+    if(snapshot.exists()) {
+      snapshot.forEach((child) => {
+        let dateArr = child.key.split("-");
+        for(let i = 0; i < child.numChildren(); i++) {
+          //child.key is date
+          var event = {
+            title: "Workout " + (i+1),
+            allDay: true,
+            start: new Date(dateArr[2], dateArr[0]-1, dateArr[1]),
+            end: new Date(dateArr[2], dateArr[0]-1, dateArr[1]),
+            color: "default"
+          };
+
+          events.push(event);
+
+        }
+
+      });
+    } else {
+      console.log("No Dates Found");
+    }
+  }
+
   componentDidMount() {
+    events = [];
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel);
     }
+
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+    let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
+    this.readFromDatabase(workoutHistoryRef);
   }
 
   componentWillUnmount() {
@@ -93,6 +127,16 @@ class Dashboard extends Component {
                   return (
                     <Redirect from={prop.path} to={prop.pathTo} key={key} />
                   );
+                else if(prop.events) {
+                    return (
+                      <Route
+                        path={prop.path}
+                        render={(props) => <prop.component {...props} events={events}/>}
+                        key={key}
+
+                      />
+                    );
+                }
                 else
                   return (
                     <Route
@@ -111,4 +155,10 @@ class Dashboard extends Component {
   }
 }
 
-export default Dashboard;
+const DashboardFirebase = compose(
+  withRouter,
+  withFirebase
+)(Dashboard)
+
+export default DashboardFirebase;
+// export default Dashboard;

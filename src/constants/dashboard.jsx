@@ -15,7 +15,8 @@ const dashboardRoutes = [
     path: "/calendar",
     name: "Workout Calendar",
     icon: "pe-7s-date",
-    component: Calendar
+    component: Calendar,
+    events: true
   },
   {
     collapse: true,

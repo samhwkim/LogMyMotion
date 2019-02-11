@@ -55,6 +55,8 @@ class Dashboard extends Component {
   }
   render() {
     return (
+      <AuthUserContext.Consumer>
+        {authUser => (
       <div className="main-content">
         <Grid fluid>
           <Row>
@@ -217,6 +219,8 @@ class Dashboard extends Component {
           </Row>
         </Grid>
       </div>
+      )}
+      </AuthUserContext.Consumer>
     );
   }
 }

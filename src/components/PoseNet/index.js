@@ -34,6 +34,7 @@ let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
+let events = [];
 
 let startingLeftHipX = [];
 let startingLeftHipY = [];
@@ -161,13 +162,13 @@ class PoseNet extends React.Component {
     let mm = today.getMonth() + 1; // January is 0!
     let yyyy = today.getFullYear();
 
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
+    // if (dd < 10) {
+    //   dd = '0' + dd;
+    // }
+    //
+    // if (mm < 10) {
+    //   mm = '0' + mm;
+    // }
 
     today = mm + '-' + dd + '-' + yyyy;
 
@@ -200,49 +201,35 @@ class PoseNet extends React.Component {
     });
   }
 
-  getNumberOfChildren() {
-    let date = this.fetchCurrentDate();
-    let currentUserUid = this.props.firebase.getCurrentUserUid();
+  // async readFromDatabase(dbRef) {
+  //   let snapshot = await dbRef.once("value");
+  //   if(snapshot.exists()) {
+  //     snapshot.forEach((child) => {
+  //       console.log(child.key);
+  //       console.log(child.numChildren());
+  //       let dateArr = child.key.split("-");
+  //       for(let i = 0; i < child.numChildren(); i++) {
+  //         //child.key is date
+  //         var event = {
+  //           title: "Workout " + (i+1),
+  //           allDay: true,
+  //           start: new Date(dateArr[2], dateArr[0]-1, dateArr[1]),
+  //           end: new Date(dateArr[2], dateArr[0]-1, dateArr[1]),
+  //           color: "default"
+  //         };
+  //
+  //         events.push(event);
+  //
+  //       }
+  //
+  //     });
+  //     console.log(events);
+  //   } else {
+  //     console.log("No Dates Found");
+  //   }
+  // }
 
-    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
 
-    ref.on("value", function(snapshot) {
-      let firstSetExists = snapshot.exists();
-      let numKids = snapshot.numChildren();
-      return numKids;
-    });
-  }
-
-  readFromDatabase() {
-    let date = this.getCurrentDate();
-    let currentUserUid = this.props.firebase.getCurrentUserUid();
-    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
-
-    ref.on("value", function(snapshot) {
-      let firstSetExists = snapshot.exists();
-      if (firstSetExists) {
-        console.log("sets found!");
-        snapshot.forEach((child) => {
-          console.log(child.key, child.val());
-          let i;
-          for (i = 0; i < child.val().length; i++) {
-            console.log(`rep: ${child.val()[i]}`);
-          }
-        });
-      } else {
-        console.log("no sets!");
-      }
-    });
-  }
-
-<<<<<<< Updated upstream
-  writeToDatabase(setData, score) {
-    let date = this.fetchCurrentDate();
-    let currentUserUid = this.props.firebase.getCurrentUserUid();
-    let setString = "set_"
-    let setId = Math.random().toString(36).substr(2, 5); // generate a unique ID for the latest set
-    let setTitle = setString + setId;
-=======
   clearForNewSet() {
     shouldersSet = false;
     feetSet = false;
@@ -284,7 +271,8 @@ class PoseNet extends React.Component {
     setScore = 0.0;
 
     repStatsList = [];
-    this.setState({ summaryVisible: false });
+    this.hideSummary();
+    //this.setState({ summaryVisible: false });
     this.canvas.getContext("2d").clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
     this.canvas.getContext("2d").beginPath();
     this.onChangeClear();
@@ -306,30 +294,18 @@ class PoseNet extends React.Component {
   async writeToDatabase(setData, score, isFinalSet) {
     let date = this.getCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
->>>>>>> Stashed changes
 
     // modify score to reflect percentage displayed on summary page
     // limit decimal to to hundreths place
     score = (score/(goodRepCounter + badRepCounter))/6;
     score *= 100;
     score = score.toFixed(2);
-<<<<<<< Updated upstream
-    // write the set data to DB
-    this.props.firebase.addSet(currentUserUid, date).update({
-      [setTitle]: setData,
-    });
-    // write the set score to DB
-    this.props.firebase.addSetScore(currentUserUid, date, setTitle).update({
-      setScore: score,
-    });
-=======
 
     // create a new workout when they decide to use the analyzer
     let workoutString = "workout_";
     let workoutId = 0;
 
     if (workoutInProgress === false) {
-      console.log("NEW WORKOUT!!!")
       workoutInProgress = true; // keep track of all sets under one workout
       let woRef = this.props.firebase.workouts(currentUserUid, date);
       workoutId = await this.getNumChildrenAtRef(woRef);
@@ -364,8 +340,6 @@ class PoseNet extends React.Component {
       });
 
     }
->>>>>>> Stashed changes
-
     // this.props.history.push(ROUTES.ANALYZER);
     // refresh the analyzer page to record a new set
     // window.location.reload();
@@ -380,6 +354,10 @@ class PoseNet extends React.Component {
     this.writeToDatabase(setData, score, true);
     this.props.history.push(ROUTES.HOME);
     workoutInProgress = false;
+
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+    let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
+    // this.readFromDatabase(workoutHistoryRef);
   }
 
   onChangeSA(inputEntry) {
@@ -986,11 +964,6 @@ const speechRecognitionOptions = {
   autoStart: false
 };
 
-// export default SpeechRecognition(speechRecognitionOptions)(PoseNet);
-const PoseNetDataTest = withRouter(withFirebase(PoseNet));
-
-// export default SpeechRecognition(PoseNet);
-// export { PoseNetDataTest };
 
 const PoseNetForm = compose(
   withRouter,

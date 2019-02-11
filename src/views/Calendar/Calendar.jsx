@@ -6,10 +6,9 @@ import BigCalendar from "react-big-calendar";
 import moment from "moment";
 // react component used to create alerts
 import SweetAlert from "react-bootstrap-sweetalert";
-
+import { events } from "../../variables/Variables";
 import Card from "../../components/Card/Card.jsx";
 
-import { events } from "../../variables/Variables.jsx";
 const localizer = BigCalendar.momentLocalizer(moment);
 
 class Calendar extends Component {
@@ -24,6 +23,7 @@ class Calendar extends Component {
   selectedEvent(event) {
     alert(event.title);
   }
+
   addNewEventAlert(slotInfo) {
     this.setState({
       alert: (
@@ -78,7 +78,7 @@ class Calendar extends Component {
                 content={
                   <BigCalendar
                     selectable
-                    events={this.state.events}
+                    events={this.props.events}
                     defaultView="month"
                     scrollToTime={new Date(1970, 1, 1, 6)}
                     defaultDate={new Date()}
