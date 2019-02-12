@@ -25,6 +25,7 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.componentDidMount = this.componentDidMount.bind(this);
+    this.sleep = this.sleep.bind(this);
   }
 
   async readFromDatabase(dbRef) {
@@ -72,6 +73,7 @@ class Dashboard extends Component {
     let currentUserUid = this.props.firebase.getCurrentUserUid();
     let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
     this.readFromDatabase(workoutHistoryRef);
+
   }
 
   componentWillUnmount() {

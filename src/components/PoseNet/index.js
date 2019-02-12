@@ -1,7 +1,7 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
 import Col from "react-bootstrap";
-import Rodal from "rodal"
+import Rodal from "rodal";
 import SpeechRecognition from "react-speech-recognition";
 import ChartistGraph from "react-chartist";
 import Card from "../Card/Card.jsx";
@@ -947,7 +947,6 @@ class PoseNet extends React.Component {
                     }
                   />
             <SummaryTable
-            repCount={10}
             numReps={goodRepCounter + badRepCounter}
             repStatsList={repStatsList}
             summaryStatus={this.state.summaryVisible}/>

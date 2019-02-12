@@ -8,7 +8,14 @@ import moment from "moment";
 import SweetAlert from "react-bootstrap-sweetalert";
 import { events } from "../../variables/Variables";
 import Card from "../../components/Card/Card.jsx";
+import Rodal from "rodal";
+import { FirebaseContext, withFirebase } from '../../components/Firebase';
+import { Link, withRouter } from 'react-router-dom';
+import { compose } from 'recompose';
+import { PanelGroup, Panel } from 'react-bootstrap';
 
+
+import "rodal/lib/rodal.css";
 const localizer = BigCalendar.momentLocalizer(moment);
 
 class Calendar extends Component {
@@ -16,13 +23,25 @@ class Calendar extends Component {
     super(props);
     this.state = {
       events: events,
-      alert: null
+      alert: null,
+      summaryVisible: false,
     };
     this.hideAlert = this.hideAlert.bind(this);
   }
+
   selectedEvent(event) {
-    alert(event.title);
+
+    this.showSummary();
   }
+
+  showSummary() {
+    this.setState({ summaryVisible: true });
+  }
+
+  hideSummary() {
+    this.setState({ summaryVisible: false });
+  }
+
 
   addNewEventAlert(slotInfo) {
     this.setState({
@@ -70,6 +89,16 @@ class Calendar extends Component {
     return (
       <div className="main-content">
         {this.state.alert}
+        <Rodal
+          visible={this.state.summaryVisible}
+          onClose={this.hideSummary.bind(this)}
+          measure={"%"}
+          width={80}
+          height={80}
+          >
+          <div>Content</div>
+        </Rodal>
+
         <Grid fluid>
           <Row>
             <Col md={13} mdOffset={0}>
@@ -97,4 +126,11 @@ class Calendar extends Component {
   }
 }
 
-export default Calendar;
+// export default Calendar;
+
+const CalendarFirebase = compose(
+  withRouter,
+  withFirebase
+)(Calendar)
+
+export default CalendarFirebase;
