@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Grid, Row, Col } from "react-bootstrap";
+import { PanelGroup, Panel, Nav, NavItem, Tab, Grid, Row, Col } from 'react-bootstrap';
 // react component used to create a calendar with events on it
 import BigCalendar from "react-big-calendar";
 // dependency plugin for react-big-calendar
@@ -10,9 +10,10 @@ import { events } from "../../variables/Variables";
 import Card from "../../components/Card/Card.jsx";
 import Rodal from "rodal";
 import { FirebaseContext, withFirebase } from '../../components/Firebase';
+import SummaryTable from "../../components/SummaryTable";
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
-import { PanelGroup, Panel } from 'react-bootstrap';
+import ChartistGraph from "react-chartist";
 
 import "rodal/lib/rodal.css";
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -85,6 +86,7 @@ class Calendar extends Component {
   }
 
 
+
   addNewEventAlert(slotInfo) {
     this.setState({
       alert: (
@@ -128,19 +130,111 @@ class Calendar extends Component {
     });
   }
   render() {
-    return (
-      <div className="main-content">
-        {this.state.alert}
+
+    const graph_data = {
+      type: "Bar",
+      data: {
+        labels: [
+          "Squat Depth",
+          "Feet Width",
+          "Shoulder Alignment",
+          "Knee Angle"
+        ],
+        series: [[10,15,20,2]]
+      },
+      options: {
+        seriesBarDistance: 10,
+        classNames: {
+          bar: "ct-bar ct-azure"
+        },
+        axisX: {
+          showGrid: false
+        }
+      },
+      responsiveOptions: [
+    [
+      "screen and (max-width: 640px)",
+      {
+        seriesBarDistance: 5,
+        axisX: {
+          labelInterpolationFnc: function(value) {
+            return value[0];
+          }
+        }
+      }
+    ]
+  ]
+};
+
+
+    const styles = {
+      overflowY: "scroll",
+      backgroundColor: "white"
+    };
+
+    const tabs = (
+      <Tab.Container id="tabs-with-dropdown" defaultActiveKey="set_1">
+        <Row className="clearfix">
+          <Col sm={12}>
+            <Nav bsStyle="tabs">
+              <NavItem eventKey="set_1">Set #1</NavItem>
+              <NavItem eventKey="set_2">Set #2</NavItem>
+              <NavItem eventKey="set_3">Set #3</NavItem>
+              <NavItem eventKey="set_4">Set #4</NavItem>
+            </Nav>
+          </Col>
+          <Col sm={12}>
+            <Tab.Content animation>
+              <Tab.Pane eventKey="set_1">
+                <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
+                    <Card
+                      title={"Cue Performance"}
+                      category={"Bar Chart"}
+                      content={
+                        <ChartistGraph
+                          data={graph_data.data}
+                          type={graph_data.type}
+                          options={graph_data.options}
+                          responsiveOptions={graph_data.responsiveOptions}
+                        />
+                      }
+                    />
+                <SummaryTable/>
+              </Tab.Pane>
+              <Tab.Pane eventKey="set_2">
+                <SummaryTable/>
+              </Tab.Pane>
+              <Tab.Pane eventKey="set_3">
+                <SummaryTable/>
+              </Tab.Pane>
+              <Tab.Pane eventKey="set_4">
+                <SummaryTable/>
+              </Tab.Pane>
+            </Tab.Content>
+          </Col>
+        </Row>
+      </Tab.Container>
+    );
+    let workoutSummary;
+    if(this.state.summaryVisible) {
+      workoutSummary = (
         <Rodal
           visible={this.state.summaryVisible}
           onClose={this.hideSummary.bind(this)}
           measure={"%"}
           width={80}
           height={80}
-          >
-          <div>Content</div>
+          customStyles={styles}>
+          <div>{tabs}</div>
         </Rodal>
+      );
+    }
 
+
+    return (
+      <div className="main-content">
+        {this.state.alert}
+        {workoutSummary}
         <Grid fluid>
           <Row>
             <Col md={13} mdOffset={0}>
