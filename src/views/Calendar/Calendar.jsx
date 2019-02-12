@@ -14,9 +14,14 @@ import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import { PanelGroup, Panel } from 'react-bootstrap';
 
-
 import "rodal/lib/rodal.css";
 const localizer = BigCalendar.momentLocalizer(moment);
+
+// listOfSetData:
+// each element will be a set
+// each set will be a list of reps
+// each rep will be a list of cue grades
+let listOfSetData = [];
 
 class Calendar extends Component {
   constructor(props) {
@@ -29,7 +34,44 @@ class Calendar extends Component {
     this.hideAlert = this.hideAlert.bind(this);
   }
 
+  async getSets(ref) {
+    let snapshot = await ref.once("value");
+    if (snapshot.exists()) {
+      snapshot.forEach((child) => {
+
+        let set = {
+          setData: child.val().setData,
+          setScore: child.val().setScore,
+        };
+
+        listOfSetData.push(set);
+      });
+    } else {
+      console.log("no sets found");
+    }
+  }
+
   selectedEvent(event) {
+    // Clear the main set list before population
+    listOfSetData = [];
+    // Retrieve the current user uid
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+
+    // Retrieve and format the Firebase date title
+    let date = event.start;
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear();
+    let workoutDate = month + "-" + day + "-" + year;
+
+    // Retrieve and format the Firebase workout title
+    let workoutNum = (event.title).toString().slice(-1);
+    let workoutTitle = "workout_" + workoutNum;
+
+    let setsRef = this.props.firebase.sets(currentUserUid, workoutDate, workoutTitle);
+    this.getSets(setsRef);
+
+    console.log(listOfSetData);
 
     this.showSummary();
   }

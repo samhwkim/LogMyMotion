@@ -332,7 +332,9 @@ class PoseNet extends React.Component {
 
       // write the set data to DB
       this.props.firebase.addSet(currentUserUid, date, workoutTitle).update({
-        [setTitle]: setData
+        [setTitle]: {
+          setData: setData
+        }
       });
       // write the set score to DB
       this.props.firebase.addSetScore(currentUserUid, date, workoutTitle, setTitle).update({
