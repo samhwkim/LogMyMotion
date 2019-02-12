@@ -52,7 +52,7 @@ class Calendar extends Component {
     }
   }
 
-  selectedEvent(event) {
+  async selectedEvent(event) {
     // Clear the main set list before population
     listOfSetData = [];
     // Retrieve the current user uid
@@ -70,7 +70,7 @@ class Calendar extends Component {
     let workoutTitle = "workout_" + workoutNum;
 
     let setsRef = this.props.firebase.sets(currentUserUid, workoutDate, workoutTitle);
-    this.getSets(setsRef);
+    await this.getSets(setsRef);
 
     console.log(listOfSetData);
 
@@ -172,7 +172,14 @@ class Calendar extends Component {
       backgroundColor: "white"
     };
 
-    const tabs = (
+    let tabs;
+    if (listOfSetData === undefined || listOfSetData.length == 0) {
+    // array empty or does not exist
+        console.log("NULL");
+      tabs = null;
+    } else {
+      console.log("CREATING SUMM PAGE");
+      tabs = (
       <Tab.Container id="tabs-with-dropdown" defaultActiveKey="set_1">
         <Row className="clearfix">
           <Col sm={12}>
@@ -186,7 +193,7 @@ class Calendar extends Component {
           <Col sm={12}>
             <Tab.Content animation>
               <Tab.Pane eventKey="set_1">
-                <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
+                <div align="center">Score: {(listOfSetData[0].setScore)} % </div>
                     <Card
                       title={"Cue Performance"}
                       category={"Bar Chart"}
@@ -199,7 +206,10 @@ class Calendar extends Component {
                         />
                       }
                     />
-                <SummaryTable/>
+                <SummaryTable
+                  numReps={listOfSetData[0].setData.length}
+                  repStatsList={listOfSetData[0].setData}
+                  summaryStatus={this.state.summaryVisible}/>
               </Tab.Pane>
               <Tab.Pane eventKey="set_2">
                 <SummaryTable/>
@@ -215,6 +225,8 @@ class Calendar extends Component {
         </Row>
       </Tab.Container>
     );
+  }
+
     let workoutSummary;
     if(this.state.summaryVisible) {
       workoutSummary = (
@@ -229,7 +241,6 @@ class Calendar extends Component {
         </Rodal>
       );
     }
-
 
     return (
       <div className="main-content">

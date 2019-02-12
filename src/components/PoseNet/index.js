@@ -647,20 +647,22 @@ class PoseNet extends React.Component {
               // console.log("Calibration complete");
             }
           } else {
-            drawShoulderAlignmentLines(
-              startingAvgLeftShoulderX,
-              startingAvgRightShoulderX,
-              keypoints[5].position.x,
-              keypoints[6].position.x,
-              this.canvas.getContext("2d"),
-              400
-            );
-            drawSquatDepthLine(
-              startingAvgLeftKneeY,
-              keypoints[11].position.y,
-              this.canvas.getContext("2d"),
-              600
-            );
+            if(this.canvas != null) {
+              drawShoulderAlignmentLines(
+                startingAvgLeftShoulderX,
+                startingAvgRightShoulderX,
+                keypoints[5].position.x,
+                keypoints[6].position.x,
+                this.canvas.getContext("2d"),
+                400
+              );
+              drawSquatDepthLine(
+                startingAvgLeftKneeY,
+                keypoints[11].position.y,
+                this.canvas.getContext("2d"),
+                600
+              );
+            }
 
             if (keypoints[5].position.x > startingAvgLeftShoulderX + 10 || keypoints[6].position.x < startingAvgRightShoulderX - 10) {
               straightUpAndDown = false;
