@@ -422,13 +422,12 @@ class PoseNet extends React.Component {
   }
 
   onChangeClear() {
-    this.setState({ backgroundcolorSA: "red" });
-    this.setState({ backgroundcolorSD: "red" });
-    this.setState({ backgroundcolorFW: "red" });
-    this.setState({ backgroundcolorKA: "red" });
-    this.setState({ goodCounter: 0});
-    this.setState({ badCounter: 0});
+    this.onChangeSA(false);
+    this.onChangeSD("bad");
+    this.onChangeFW(false);
+    this.onChangeKA(kneeAngleEnum.BAD);
     this.setState({ calibrationState: "Calibrating" });
+    this.onChangeSetScore(0.0);
   }
 
   getCanvas = elem => {
@@ -853,8 +852,12 @@ class PoseNet extends React.Component {
         classNames: {
           bar: "ct-bar ct-azure"
         },
+        width: '100%',
         axisX: {
           showGrid: false
+        },
+        axisY: {
+          onlyInteger: true
         }
       },
       responsiveOptions: [
@@ -871,6 +874,40 @@ class PoseNet extends React.Component {
     ]
   ]
 };
+
+    let workoutSummary;
+    if(this.state.summaryVisible) {
+      workoutSummary = (
+        <Rodal
+          visible={this.state.summaryVisible}
+          measure={"%"}
+          width={80}
+          height={80}
+          onClose={this.hideSummary.bind(this)}
+          customStyles={styles}
+        >
+            <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
+                <Card
+                  title={"Cue Performance"}
+                  category={"Bar Chart"}
+                  content={
+                    <ChartistGraph
+                      data={graph_data.data}
+                      type={graph_data.type}
+                      options={graph_data.options}
+                      responsiveOptions={graph_data.responsiveOptions}
+                    />
+                  }
+                />
+          <SummaryTable
+          numReps={goodRepCounter + badRepCounter}
+          repStatsList={repStatsList}
+          summaryStatus={this.state.summaryVisible}/>
+          <Button onClick={() => {this.writeToDatabase(repStatsList, setScore, false) }} bsStyle="primary" bsSize="lg">Record Another Set</Button>
+          <Button onClick={() => {this.finishWorkout(repStatsList, setScore) }} bsStyle="success" bsSize="lg">Finish Workout</Button>
+        </Rodal>
+      );
+    }
 
     return (
       <div className="PoseNet">
@@ -929,34 +966,7 @@ class PoseNet extends React.Component {
             {this.state.badCounter}
           </div>
           <span>{transcript}</span>
-          <Rodal
-            visible={this.state.summaryVisible}
-            measure={"%"}
-            width={80}
-            height={80}
-            onClose={this.hideSummary.bind(this)}
-            customStyles={styles}
-          >
-              <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
-                  <Card
-                    title={"Cue Performance"}
-                    category={"Bar Chart"}
-                    content={
-                      <ChartistGraph
-                        data={graph_data.data}
-                        type={graph_data.type}
-                        options={graph_data.options}
-                        responsiveOptions={graph_data.responsiveOptions}
-                      />
-                    }
-                  />
-            <SummaryTable
-            numReps={goodRepCounter + badRepCounter}
-            repStatsList={repStatsList}
-            summaryStatus={this.state.summaryVisible}/>
-            <Button onClick={() => {this.writeToDatabase(repStatsList, setScore, false) }} bsStyle="primary" bsSize="lg">Record Another Set</Button>
-            <Button onClick={() => {this.finishWorkout(repStatsList, setScore) }} bsStyle="success" bsSize="lg">Finish Workout</Button>
-          </Rodal>
+          {workoutSummary}
         </div>
       </div>
     );

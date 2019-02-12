@@ -85,8 +85,6 @@ class Calendar extends Component {
     this.setState({ summaryVisible: false });
   }
 
-
-
   addNewEventAlert(slotInfo) {
     this.setState({
       alert: (
@@ -149,6 +147,9 @@ class Calendar extends Component {
         },
         axisX: {
           showGrid: false
+        },
+        axisY: {
+          onlyInteger: true
         }
       },
       responsiveOptions: [
