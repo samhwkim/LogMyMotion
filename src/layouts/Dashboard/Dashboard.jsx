@@ -68,11 +68,11 @@ class Dashboard extends Component {
       await this.sleep(2000);
     } else {
       console.log("user identified");
+      let currentUserUid = this.props.firebase.getCurrentUserUid();
+      let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
+      this.readFromDatabase(workoutHistoryRef);
     }
 
-    let currentUserUid = this.props.firebase.getCurrentUserUid();
-    let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
-    this.readFromDatabase(workoutHistoryRef);
 
   }
 

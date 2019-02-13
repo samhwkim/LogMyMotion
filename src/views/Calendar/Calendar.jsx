@@ -14,6 +14,7 @@ import SummaryTable from "../../components/SummaryTable";
 import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ChartistGraph from "react-chartist";
+import Button from '../../components/CustomButton/CustomButton.jsx';
 
 import "rodal/lib/rodal.css";
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -29,10 +30,9 @@ class Calendar extends Component {
     super(props);
     this.state = {
       events: events,
-      alert: null,
       summaryVisible: false,
+      exerciseChooserVisible: false,
     };
-    this.hideAlert = this.hideAlert.bind(this);
   }
 
   async getSets(ref) {
@@ -53,6 +53,7 @@ class Calendar extends Component {
   }
 
   async selectedEvent(event) {
+    this.showExerciseChooser();
     // Clear the main set list before population
     listOfSetData = [];
     // Retrieve the current user uid
@@ -72,9 +73,7 @@ class Calendar extends Component {
     let setsRef = this.props.firebase.sets(currentUserUid, workoutDate, workoutTitle);
     await this.getSets(setsRef);
 
-    console.log(listOfSetData);
-
-    this.showSummary();
+    // this.showSummary();
   }
 
   showSummary() {
@@ -85,34 +84,20 @@ class Calendar extends Component {
     this.setState({ summaryVisible: false });
   }
 
-  addNewEventAlert(slotInfo) {
-    this.setState({
-      alert: (
-        <SweetAlert
-          input
-          showCancel
-          style={{ display: "block", marginTop: "-100px" }}
-          title="Input something"
-          onConfirm={e => this.addNewEvent(e, slotInfo)}
-          onCancel={() => this.hideAlert()}
-          confirmBtnBsStyle="info"
-          cancelBtnBsStyle="danger"
-        />
-      )
-    });
+  hideExerciseChooser() {
+    this.setState({ exerciseChooserVisible: false });
+    this.showSummary();
   }
-  addNewEvent(e, slotInfo) {
-    var newEvents = this.state.events;
-    newEvents.push({
-      title: e,
-      start: slotInfo.start,
-      end: slotInfo.end
-    });
-    this.setState({
-      alert: null,
-      events: newEvents
-    });
+
+  exitExerciseChooser() {
+    this.setState({ exerciseChooserVisible: false });
   }
+
+  showExerciseChooser() {
+    this.setState({ exerciseChooserVisible: true });
+  }
+
+
   eventColors(event, start, end, isSelected) {
     var backgroundColor = "rbc-event-";
     event.color
@@ -122,11 +107,8 @@ class Calendar extends Component {
       className: backgroundColor
     };
   }
-  hideAlert() {
-    this.setState({
-      alert: null
-    });
-  }
+
+
   render() {
 
     const graph_data = {
@@ -174,6 +156,7 @@ class Calendar extends Component {
     };
 
     let tabs;
+    let opt = {};
     if (listOfSetData === undefined || listOfSetData.length == 0) {
     // array empty or does not exist
         console.log("NULL");
@@ -185,42 +168,41 @@ class Calendar extends Component {
         <Row className="clearfix">
           <Col sm={12}>
             <Nav bsStyle="tabs">
-              <NavItem eventKey="set_1">Set #1</NavItem>
-              <NavItem eventKey="set_2">Set #2</NavItem>
-              <NavItem eventKey="set_3">Set #3</NavItem>
-              <NavItem eventKey="set_4">Set #4</NavItem>
+
+              {listOfSetData.map((prop, key) => {
+                opt['eventKey'] = `set_${key+1}`;
+                return <NavItem {...opt}>Set #{key+1}</NavItem>;
+              })}
+
             </Nav>
           </Col>
           <Col sm={12}>
             <Tab.Content animation>
-              <Tab.Pane eventKey="set_1">
-                <div align="center">Score: {(listOfSetData[0].setScore)} % </div>
-                    <Card
-                      title={"Cue Performance"}
-                      category={"Bar Chart"}
-                      content={
-                        <ChartistGraph
-                          data={graph_data.data}
-                          type={graph_data.type}
-                          options={graph_data.options}
-                          responsiveOptions={graph_data.responsiveOptions}
+              {listOfSetData.map((prop, key) => {
+                opt = {};
+                opt['eventKey'] = `set_${key+1}`;
+                return (
+                  <Tab.Pane {...opt}>
+                    <div align="center">Score: {(listOfSetData[key].setScore)} % </div>
+                        <Card
+                          title={"Cue Performance"}
+                          category={"Bar Chart"}
+                          content={
+                            <ChartistGraph
+                              data={graph_data.data}
+                              type={graph_data.type}
+                              options={graph_data.options}
+                              responsiveOptions={graph_data.responsiveOptions}
+                            />
+                          }
                         />
-                      }
-                    />
-                <SummaryTable
-                  numReps={listOfSetData[0].setData.length}
-                  repStatsList={listOfSetData[0].setData}
-                  summaryStatus={this.state.summaryVisible}/>
-              </Tab.Pane>
-              <Tab.Pane eventKey="set_2">
-                <SummaryTable/>
-              </Tab.Pane>
-              <Tab.Pane eventKey="set_3">
-                <SummaryTable/>
-              </Tab.Pane>
-              <Tab.Pane eventKey="set_4">
-                <SummaryTable/>
-              </Tab.Pane>
+                    <SummaryTable
+                      numReps={listOfSetData[key].setData.length}
+                      repStatsList={listOfSetData[key].setData}
+                      summaryStatus={this.state.summaryVisible}/>
+                  </Tab.Pane>
+                );
+              })}
             </Tab.Content>
           </Col>
         </Row>
@@ -243,9 +225,29 @@ class Calendar extends Component {
       );
     }
 
+    let exerciseChooser;
+    if(this.state.exerciseChooserVisible) {
+      exerciseChooser = (
+        <Rodal
+          visible={this.state.exerciseChooserVisible}
+          onClose={this.exitExerciseChooser.bind(this)}
+          measure={"%"}
+          width={80}
+          height={80}
+          customStyles={styles}>
+          <div>
+            <h1>Choose Your Exercise.</h1>
+            <button onClick={this.hideExerciseChooser.bind(this)}>Squat</button>
+            <button>Bench Press</button>
+            <button>Barbell Rows</button>
+          </div>
+        </Rodal>
+      );
+    }
+
     return (
       <div className="main-content">
-        {this.state.alert}
+        {exerciseChooser}
         {workoutSummary}
         <Grid fluid>
           <Row>
@@ -260,7 +262,6 @@ class Calendar extends Component {
                     scrollToTime={new Date(1970, 1, 1, 6)}
                     defaultDate={new Date()}
                     onSelectEvent={event => this.selectedEvent(event)}
-                    onSelectSlot={slotInfo => this.addNewEventAlert(slotInfo)}
                     eventPropGetter={this.eventColors}
                     localizer={localizer}
                   />
