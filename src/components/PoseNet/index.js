@@ -1,6 +1,6 @@
 import * as posenet from "@tensorflow-models/posenet";
 import * as React from "react";
-import Col from "react-bootstrap";
+import { Grid, Row, Col } from "react-bootstrap";
 import Rodal from "rodal";
 import SpeechRecognition from "react-speech-recognition";
 import ChartistGraph from "react-chartist";
@@ -80,6 +80,7 @@ let goodFW = false;
 let goodKA = kneeAngleEnum.NEUTRAL;
 let straightUpAndDown = true;
 let SDcount = 0;
+let SDokayCount = 0;
 let FWcount = 0;
 let KAcount = 0;
 let SAcount = 0;
@@ -264,6 +265,7 @@ class PoseNet extends React.Component {
     goodKA = false;
     straightUpAndDown = true;
     SDcount = 0;
+    SDokayCount = 0;
     FWcount = 0;
     KAcount = 0;
     SAcount = 0;
@@ -709,6 +711,7 @@ class PoseNet extends React.Component {
               }
               else if(goodSD === cueGradeEnum.OKAY) {
                 repScore += 1;
+                SDokayCount++;
               }
               if(goodKA === kneeAngleEnum.GOOD) {
                 repScore += 2;
@@ -836,7 +839,7 @@ class PoseNet extends React.Component {
       backgroundColor: "grey"
     };
 
-    const graph_data = {
+    const RepChartData = {
       type: "Bar",
       data: {
         labels: [
@@ -875,6 +878,61 @@ class PoseNet extends React.Component {
   ]
 };
 
+  const setScoreData = {
+    type: "Pie",
+    data: {
+      labels: ["Set Score", "Bad Set Score"],
+      series: [this.state.setScore, 1-this.state.setScore]
+    },
+    options: {
+      donut: true
+    }
+  };
+
+  const sdDonutData = {
+    type: "Pie",
+    data: {
+      labels: ["Good Reps", "Okay Reps", "Bad Reps"],
+      series: [SDcount, goodRepCounter + badRepCounter - SDcount - SDokayCount, SDokayCount,]
+    },
+    options: {
+      donut: true
+    }
+  };
+
+  const fwDonutData = {
+    type: "Pie",
+    data: {
+      labels: ["Good Reps", "Bad Reps"],
+      series: [FWcount, goodRepCounter + badRepCounter - FWcount]
+    },
+    options: {
+      donut: true
+    }
+  };
+
+  const saDonutData = {
+    type: "Pie",
+    data: {
+      labels: ["Good Reps", "Bad Reps"],
+      series: [SAcount, goodRepCounter + badRepCounter - SAcount]
+    },
+    options: {
+      donut: true
+    }
+  };
+
+  const kaDonutData = {
+    type: "Pie",
+    data: {
+      labels: ["Good Reps", "Bad Reps"],
+      series: [KAcount, goodRepCounter + badRepCounter - KAcount]
+    },
+    options: {
+      donut: true
+    }
+  };
+
     let workoutSummary;
     if(this.state.summaryVisible) {
       workoutSummary = (
@@ -887,18 +945,61 @@ class PoseNet extends React.Component {
           customStyles={styles}
         >
             <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
+            <Grid fluid>
+              <Row>
                 <Card
                   title={"Cue Performance"}
                   category={"Bar Chart"}
                   content={
                     <ChartistGraph
-                      data={graph_data.data}
-                      type={graph_data.type}
-                      options={graph_data.options}
-                      responsiveOptions={graph_data.responsiveOptions}
-                    />
-                  }
-                />
+                      data={RepChartData.data}
+                      type={RepChartData.type}
+                      options={RepChartData.options}
+                      responsiveOptions={RepChartData.responsiveOptions} /> } />
+              </Row>
+              <Row>
+                <Col lg={3} sm={6}>
+                  <Card
+                    title={"Squat Depth"}
+                    category={"Donut"}
+                    content = {
+                      <ChartistGraph
+                        data={sdDonutData.data}
+                        type={sdDonutData.type}
+                        options={sdDonutData.options} /> } />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <Card
+                    title={"Feet Width"}
+                    category={"Donut"}
+                    content = {
+                      <ChartistGraph
+                        data={fwDonutData.data}
+                        type={fwDonutData.type}
+                        options={fwDonutData.options} /> } />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <Card
+                    title={"Shoulder Alignment"}
+                    category={"Donut"}
+                    content = {
+                      <ChartistGraph
+                        data={saDonutData.data}
+                        type={saDonutData.type}
+                        options={saDonutData.options} /> } />
+                </Col>
+                <Col lg={3} sm={6}>
+                  <Card
+                    title={"Knee Angle"}
+                    category={"Donut"}
+                    content = {
+                      <ChartistGraph
+                        data={kaDonutData.data}
+                        type={kaDonutData.type}
+                        options={kaDonutData.options} /> } />
+                </Col>
+              </Row>
+            </Grid>
           <SummaryTable
           numReps={goodRepCounter + badRepCounter}
           repStatsList={repStatsList}
