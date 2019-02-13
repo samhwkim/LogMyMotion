@@ -15,6 +15,10 @@ import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ChartistGraph from "react-chartist";
 import Button from '../../components/CustomButton/CustomButton.jsx';
+import squatIMG from "../../assets/img/squat.png";
+import benchpressIMG from "../../assets/img/benchpress.png";
+import barbellrowIMG from "../../assets/img/barbellrow.png";
+
 
 import "rodal/lib/rodal.css";
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -72,8 +76,6 @@ class Calendar extends Component {
 
     let setsRef = this.props.firebase.sets(currentUserUid, workoutDate, workoutTitle);
     await this.getSets(setsRef);
-
-    // this.showSummary();
   }
 
   showSummary() {
@@ -235,11 +237,29 @@ class Calendar extends Component {
           width={80}
           height={80}
           customStyles={styles}>
-          <div>
-            <h1>Choose Your Exercise.</h1>
-            <button onClick={this.hideExerciseChooser.bind(this)}>Squat</button>
-            <button>Bench Press</button>
-            <button>Barbell Rows</button>
+          <div className="main-content">
+            <Grid fluid>
+              <Row className="text-center">
+                <Col>
+                  <h1>Choose Your Exercise.</h1>
+                </Col>
+              </Row>
+            <br />
+              <Row>
+                <Col sm={4} className="text-center" style={{overflow: "auto"}}>
+                  <Button onClick={this.hideExerciseChooser.bind(this)} bsSize="lg">Squat</Button>
+                  <img src={squatIMG} className="img-responsive" style={{marginTop: "5%"}} />
+                </Col>
+                <Col sm={4} className="text-center">
+                  <Button bsSize="lg">Bench Press</Button>
+                  <img src={benchpressIMG} className="img-responsive" style={{marginTop: "5%"}}/>
+                </Col>
+                <Col sm={4} className="text-center">
+                  <Button bsSize="lg">Barbell Rows</Button>
+                  <img src={barbellrowIMG} className="img-responsive" style={{marginTop: "5%"}} />
+                </Col>
+              </Row>
+            </Grid>
           </div>
         </Rodal>
       );

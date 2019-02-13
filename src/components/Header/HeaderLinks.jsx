@@ -16,16 +16,6 @@ class HeaderLinks extends Component {
   render() {
     return (
       <div>
-        <Navbar.Form pullLeft className="navbar-search-form">
-          <FormGroup>
-            <InputGroup>
-              <InputGroup.Addon>
-                <i className="fa fa-search" />
-              </InputGroup.Addon>
-              <FormControl type="text" placeholder="Search..." />
-            </InputGroup>
-          </FormGroup>
-        </Navbar.Form>
         <Nav pullRight>
           <NavItem eventKey={3} href="#">
             <i className="fa fa-line-chart" />
