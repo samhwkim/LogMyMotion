@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ChartistGraph from "react-chartist";
-import { Grid, Row, Col } from "react-bootstrap";
+import { PanelGroup, Panel, Nav, NavItem, Tab, Grid, Row, Col } from 'react-bootstrap';
+
 // react components used to create a SVG / Vector map
 import { VectorMap } from "react-jvectormap";
 
@@ -34,6 +35,9 @@ var mapData = {
 };
 
 
+
+
+
 class Dashboard extends Component {
   createTableData() {
     var tableRows = [];
@@ -54,6 +58,34 @@ class Dashboard extends Component {
     return tableRows;
   }
   render() {
+
+    let cueHistoryGraph = (workout, eventKey ) => (
+      <Tab.Pane eventKey={eventKey}>
+        <Card
+          title={workout}
+          content={
+            <ChartistGraph
+              data={dataBar}
+              type="Bar"
+              options={optionsBar}
+              responsiveOptions={responsiveBar}
+            />
+          }
+          legend={
+            <div>
+              <i className="fa fa-circle text-info" /> Good Cue
+              <i className="fa fa-circle text-danger" /> Bad Cue
+            </div>
+          }
+          stats={
+            <div>
+              <i className="fa fa-check" /> Data information certified
+            </div>
+          }
+        />
+      </Tab.Pane>
+    );
+
     return (
       <AuthUserContext.Consumer>
         {authUser => (
@@ -97,55 +129,6 @@ class Dashboard extends Component {
             </Col>
           </Row>
           <Row>
-            <Col md={12}>
-              <Card
-                title="Global Sales by Top Locations"
-                category="All products that were shipped"
-                content={
-                  <Row>
-                    <Col md={5}>
-                      <div className="table-responsive">
-                        <table className="table">
-                          <tbody>{this.createTableData()}</tbody>
-                        </table>
-                      </div>
-                    </Col>
-                    <Col md={6} mdOffset={1}>
-                      <VectorMap
-                        map={"world_mill"}
-                        backgroundColor="transparent"
-                        zoomOnScroll={false}
-                        containerStyle={{
-                          width: "100%",
-                          height: "280px"
-                        }}
-                        containerClassName="map"
-                        regionStyle={{
-                          initial: {
-                            fill: "#e4e4e4",
-                            "fill-opacity": 0.9,
-                            stroke: "none",
-                            "stroke-width": 0,
-                            "stroke-opacity": 0
-                          }
-                        }}
-                        series={{
-                          regions: [
-                            {
-                              values: mapData,
-                              scale: ["#AAAAAA", "#444444"],
-                              normalizeFunction: "polynomial"
-                            }
-                          ]
-                        }}
-                      />
-                    </Col>
-                  </Row>
-                }
-              />
-            </Col>
-          </Row>
-          <Row>
             <Col lg={150}>
               <Card
                 title="Users Behavior"
@@ -176,29 +159,22 @@ class Dashboard extends Component {
           </Row>
           <Row>
             <Col md={6}>
-              <Card
-                title="2014 Sales"
-                category="All products including Taxes"
-                content={
-                  <ChartistGraph
-                    data={dataBar}
-                    type="Bar"
-                    options={optionsBar}
-                    responsiveOptions={responsiveBar}
-                  />
-                }
-                legend={
-                  <div>
-                    <i className="fa fa-circle text-info" /> Tesla Model S
-                    <i className="fa fa-circle text-danger" /> BMW 5 Series
-                  </div>
-                }
-                stats={
-                  <div>
-                    <i className="fa fa-check" /> Data information certified
-                  </div>
-                }
-              />
+              <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
+                <Row className="clearfix">
+                  <Col sm={12}>
+                    <Nav bsStyle="tabs">
+                      <NavItem eventKey="1">Squat</NavItem>
+                      <NavItem eventKey="2">Bench Press</NavItem>
+                      <NavItem eventKey="3">Barbell Rows</NavItem>
+                    </Nav>
+                  </Col>
+                  <Col sm={12}>
+                    <Tab.Content animation>
+                      {cueHistoryGraph("Squat Cue History", "1")}
+                    </Tab.Content>
+                  </Col>
+                </Row>
+              </Tab.Container>
             </Col>
             <Col md={6}>
               <Card

@@ -651,22 +651,14 @@ var responsiveSales = [
 // Data for Bar Chart
 var dataBar = {
   labels: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "Mai",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec"
+    "Squat Depth",
+    "Feet Width",
+    "Shoulder Alignment",
+    "Knee Angle",
   ],
   series: [
-    [542, 443, 320, 780, 553, 453, 326, 434, 568, 610, 756, 895],
-    [412, 243, 280, 580, 453, 353, 300, 364, 368, 410, 636, 695]
+    [542, 443, 320, 780],
+    [412, 243, 280, 580]
   ]
 };
 var optionsBar = {
