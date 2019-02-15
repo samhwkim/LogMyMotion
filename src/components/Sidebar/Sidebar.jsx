@@ -73,7 +73,7 @@ class Sidebar extends Component {
         <div className="sidebar-background" style={bgImage} />
         <div className="logo">
           <a
-            href="https://www.creative-tim.com"
+            href="/home"
             className="simple-text logo-mini"
           >
             <div className="logo-img">
@@ -81,10 +81,10 @@ class Sidebar extends Component {
             </div>
           </a>
           <a
-            href="https://www.creative-tim.com"
+            href="/home"
             className="simple-text logo-normal"
           >
-            Creative Tim
+            LogMyMotion
           </a>
         </div>
         <div className="sidebar-wrapper" ref="sidebarWrapper">

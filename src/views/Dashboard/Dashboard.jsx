@@ -3,7 +3,6 @@ import ChartistGraph from "react-chartist";
 import { PanelGroup, Panel, Nav, NavItem, Tab, Grid, Row, Col } from 'react-bootstrap';
 
 // react components used to create a SVG / Vector map
-import { VectorMap } from "react-jvectormap";
 
 import Card from "../../components/Card/Card.jsx";
 import { StatsCard } from "../../components/StatsCard/StatsCard.jsx";
@@ -39,24 +38,6 @@ var mapData = {
 
 
 class Dashboard extends Component {
-  createTableData() {
-    var tableRows = [];
-    for (var i = 0; i < table_data.length; i++) {
-      tableRows.push(
-        <tr key={i}>
-          <td>
-            <div className="flag">
-              <img src={table_data[i].flag} alt="us_flag" />
-            </div>
-          </td>
-          <td>{table_data[i].country}</td>
-          <td className="text-right">{table_data[i].count}</td>
-          <td className="text-right">{table_data[i].percentage}</td>
-        </tr>
-      );
-    }
-    return tableRows;
-  }
   render() {
 
     let cueHistoryGraph = (workout, eventKey ) => (
@@ -75,11 +56,6 @@ class Dashboard extends Component {
             <div>
               <i className="fa fa-circle text-info" /> Good Cue
               <i className="fa fa-circle text-danger" /> Bad Cue
-            </div>
-          }
-          stats={
-            <div>
-              <i className="fa fa-check" /> Data information certified
             </div>
           }
         />
@@ -131,7 +107,7 @@ class Dashboard extends Component {
           <Row>
             <Col lg={150}>
               <Card
-                title="Users Behavior"
+                title="Workout History"
                 category="24 Hours performance"
                 content={
                   <ChartistGraph
@@ -177,20 +153,34 @@ class Dashboard extends Component {
               </Tab.Container>
             </Col>
             <Col md={6}>
-              <Card
-                title="Tasks"
-                category="Backend development"
-                content={
-                  <table className="table">
-                    <Tasks />
-                  </table>
-                }
-                stats={
-                  <div>
-                    <i className="fa fa-history" /> Updated 3 minutes ago
-                  </div>
-                }
-              />
+              <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
+                <Row className="clearfix">
+                  <Col sm={12}>
+                    <Nav bsStyle="tabs">
+                      <NavItem eventKey="1">Squat</NavItem>
+                      <NavItem eventKey="2">Bench Press</NavItem>
+                      <NavItem eventKey="3">Barbell Rows</NavItem>
+                    </Nav>
+                  </Col>
+                  <Col sm={12}>
+                    <Tab.Content animation>
+                      <Tab.Pane eventKey="1">
+                        <Card
+                          title="Squat Challenges"
+                          category="Complete the challenges below"
+                          content={
+                            <table className="table">
+                              <Tasks />
+                            </table>
+                          }
+
+                        />
+                      </Tab.Pane>
+                    </Tab.Content>
+                  </Col>
+                </Row>
+              </Tab.Container>
+
             </Col>
           </Row>
         </Grid>

@@ -656,6 +656,9 @@ var dataBar = {
     "Shoulder Alignment",
     "Knee Angle",
   ],
+
+  //First array is for good cues
+  //Second array is for bad cues
   series: [
     [542, 443, 320, 780],
     [412, 243, 280, 580]
@@ -663,8 +666,11 @@ var dataBar = {
 };
 var optionsBar = {
   seriesBarDistance: 10,
+  axisY: {
+    showGrid: true
+  },
   axisX: {
-    showGrid: false
+    showGrid: true
   },
   height: "245px"
 };
