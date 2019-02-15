@@ -48,6 +48,8 @@ class Dashboard extends Component {
         }
 
       });
+
+      this.setState({ a: 1 });
     } else {
       console.log("No Dates Found");
     }
@@ -63,6 +65,7 @@ class Dashboard extends Component {
       ps = new PerfectScrollbar(this.refs.mainPanel);
     }
 
+
     if (this.props.firebase.auth.currentUser === null) {
       console.log("user is null");
       await this.sleep(2000);
@@ -72,8 +75,6 @@ class Dashboard extends Component {
       let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
       this.readFromDatabase(workoutHistoryRef);
     }
-
-
   }
 
   componentWillUnmount() {

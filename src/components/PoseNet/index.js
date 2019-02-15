@@ -443,6 +443,8 @@ class PoseNet extends React.Component {
   async componentWillMount() {
     // Loads the pre-trained PoseNet model
     this.net = await posenet.load(this.props.mobileNetArchitecture);
+
+    this.setState({a: 1});
   }
 
   async componentDidMount() {
@@ -454,7 +456,15 @@ class PoseNet extends React.Component {
       this.setState({ loading: false });
     }
 
-    this.detectPose();
+    // this.detectPose();
+  }
+
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.net && !this.netInitialized) {
+      this.netInitialized = true;
+      this.detectPose();
+    }
   }
 
   async setupCamera() {
