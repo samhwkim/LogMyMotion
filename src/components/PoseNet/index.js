@@ -85,6 +85,12 @@ const kneeAngleEnum = {
   BAD: "bad"
 };
 
+const feetWidthEnum = {
+  GOOD: "good",
+  WIDE: "wide",
+  NARROW: "narrow"
+}
+
 const INITIAL_STATE = {
   repData: "testing",
   error: null
@@ -631,7 +637,7 @@ class PoseNet extends React.Component {
       poses.forEach(({ score, keypoints }) => {
         if (score >= minPoseConfidence) {
           if (!calibrationComplete) {
-            if (analyzeFeetWidth(keypoints)) {
+            if (analyzeFeetWidth(keypoints) === feetWidthEnum.GOOD) {
               this.onChangeFW(true);
               feetSet = true;
               feetWidthSoundConfidenceLevel = 0;
@@ -640,13 +646,12 @@ class PoseNet extends React.Component {
               feetSet = false;
               feetWidthSoundConfidenceLevel++;
               if (feetWidthSoundConfidenceLevel === 30) {
-                // TODO: figure out how to know if feet should be narrower or wider
-                // if (wide) {
-                //   this.narrowStance.play();
-                // }
-                // else {
-                //   this.widerStance.play();
-                // }
+                if (analyzeFeetWidth(keypoints) === feetWidthEnum.WIDE) {
+                  this.narrowStance.play();
+                }
+                else if (analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW){
+                  this.widerStance.play();
+                }
               }
             }
 

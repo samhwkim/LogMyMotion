@@ -11,6 +11,12 @@ let rightAnkleY = 0;
 let shoulderWidth = 0;
 let feetWidth = 0;
 
+const feetWidthEnum = {
+  GOOD: "good",
+  WIDE: "wide",
+  NARROW: "narrow"
+}
+
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
   return result;
@@ -42,10 +48,10 @@ export const analyzeFeetWidth = keypoints => {
   feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
 
   if (feetWidth < 0.5 * shoulderWidth) {
-    return false;
+    return feetWidthEnum.NARROW;
   } else if (feetWidth > 1.5 * shoulderWidth) {
-    return false;
+    return feetWidthEnum.WIDE;
   } else {
-    return true;
+    return feetWidthEnum.GOOD;
   }
 };
