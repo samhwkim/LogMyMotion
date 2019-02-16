@@ -786,6 +786,9 @@ class PoseNet extends React.Component {
                 if (goodSD === cueGradeEnum.GOOD) {
                   repScore += 2;
                   SDcount++;
+                  if(goodKA === kneeAngleEnum.BAD) {
+                    this.angleFeetOutwardsSound.play();
+                  }
                 } else if (goodSD === cueGradeEnum.OKAY) {
                   repScore += 1;
                   SDokayCount++;
@@ -834,9 +837,6 @@ class PoseNet extends React.Component {
               if(goodSD === cueGradeEnum.OKAY) {
                 repScore += 1;
                 this.littleDeeperSound.play();
-                if(goodKA === kneeAngleEnum.BAD) {
-                  this.angleFeetOutwardsSound.play();
-                }
               } else if(goodSD === cueGradeEnum.BAD){
                 // TODO: Play go a lot deeper
                 this.littleDeeperSound.play();
