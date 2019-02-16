@@ -837,8 +837,9 @@ class PoseNet extends React.Component {
                 if(goodKA === kneeAngleEnum.BAD) {
                   this.angleFeetOutwardsSound.play();
                 }
-              } else {
+              } else if(goodSD === cueGradeEnum.BAD){
                 // TODO: Play go a lot deeper
+                this.littleDeeperSound.play();
               }
 
               if(goodKA === kneeAngleEnum.GOOD) {
