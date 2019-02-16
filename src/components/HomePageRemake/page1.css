@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+.blue-accents {
+  color: #99ccff;
+  font-weight: 1000;
+}
+
+.title-container .main-title .title-text {
+  font: 7.5em "Raleway", sans-serif;
+  text-align: center;
+  padding-bottom: 5%;
+}
+
+.title-container .main-title .title-tagline {
+  font: 2.6em "Raleway", sans-serif;
+  text-align: center;
+  padding-bottom: 20%;
+}

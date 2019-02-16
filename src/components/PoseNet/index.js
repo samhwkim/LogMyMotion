@@ -10,11 +10,11 @@ import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
 import Firebase from "../Firebase";
-import { FirebaseContext, withFirebase } from '../Firebase';
-import { Link, withRouter } from 'react-router-dom';
-import * as ROUTES from '../../constants/routes';
-import { compose } from 'recompose';
-import Button from '../CustomButton/CustomButton.jsx';
+import { FirebaseContext, withFirebase } from "../Firebase";
+import { Link, withRouter } from "react-router-dom";
+import * as ROUTES from "../../constants/routes";
+import { compose } from "recompose";
+import Button from "../CustomButton/CustomButton.jsx";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -60,20 +60,20 @@ let workoutTitle = "";
 let startRepTimer = null;
 
 const cueGradeEnum = {
-  GOOD: 'good',
-  OKAY: 'okay',
-  BAD: 'bad'
-}
+  GOOD: "good",
+  OKAY: "okay",
+  BAD: "bad"
+};
 
 const kneeAngleEnum = {
-  GOOD: 'good',
-  NEUTRAL: 'neutral',
-  BAD: 'bad'
-}
+  GOOD: "good",
+  NEUTRAL: "neutral",
+  BAD: "bad"
+};
 
 const INITIAL_STATE = {
   repData: "testing",
-  error: null,
+  error: null
 };
 
 let goodSD = cueGradeEnum.BAD;
@@ -123,13 +123,15 @@ class PoseNet extends React.Component {
       backgroundcolorSD: "red",
       backgroundcolorFW: "red",
       backgroundcolorKA: "white",
+      backgroundcolorGood: "white",
+      backgroundcolorBad: "white",
       calibrationState: "Calibrating",
       goodCounter: 0,
       badCounter: 0,
       summaryVisible: false,
       badCounter: 0,
       setScore: 0,
-      repData: [],
+      repData: []
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -141,6 +143,8 @@ class PoseNet extends React.Component {
     this.playRepSound = this.playRepSound.bind(this);
     this.goodRepSound = new Audio(GoodRepSound);
     this.writeToDatabase = this.writeToDatabase.bind(this);
+    this.changeTextColorGood = this.changeTextColorGood.bind(this);
+    this.changeTextColorBad = this.changeTextColorBad.bind(this);
   }
 
   playRepSound(inputEntry) {
@@ -172,7 +176,7 @@ class PoseNet extends React.Component {
     //   mm = '0' + mm;
     // }
 
-    today = mm + '-' + dd + '-' + yyyy;
+    today = mm + "-" + dd + "-" + yyyy;
 
     return today.toString();
   }
@@ -187,7 +191,7 @@ class PoseNet extends React.Component {
       let firstSetExists = snapshot.exists();
       if (firstSetExists) {
         console.log("first set exists!");
-        snapshot.forEach((child) => {
+        snapshot.forEach(child => {
           console.log(child.key);
           let currentSetNum = child.key.toString();
           console.log(`snapshot: ${currentSetNum}`);
@@ -231,7 +235,6 @@ class PoseNet extends React.Component {
   //   }
   // }
 
-
   clearForNewSet() {
     shouldersSet = false;
     feetSet = false;
@@ -269,7 +272,9 @@ class PoseNet extends React.Component {
 
     repStatsList = [];
     this.hideSummary();
-    this.canvas.getContext("2d").clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
+    this.canvas
+      .getContext("2d")
+      .clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
     this.canvas.getContext("2d").beginPath();
     this.resetRepVariables();
     this.onChangeClear();
@@ -279,8 +284,8 @@ class PoseNet extends React.Component {
     let numChildren;
 
     let snapshot = await dbRef.once("value");
-    if(snapshot.exists()) {
-        numChildren = snapshot.numChildren();
+    if (snapshot.exists()) {
+      numChildren = snapshot.numChildren();
     } else {
       numChildren = 0;
     }
@@ -294,7 +299,7 @@ class PoseNet extends React.Component {
 
     // modify score to reflect percentage displayed on summary page
     // limit decimal to to hundreths place
-    score = (score/(goodRepCounter + badRepCounter))/6;
+    score = score / (goodRepCounter + badRepCounter) / 6;
     score *= 100;
     score = score.toFixed(2);
 
@@ -315,8 +320,8 @@ class PoseNet extends React.Component {
         [workoutTitle]: {
           [setTitle]: {
             setData,
-            setScore: score,
-          },
+            setScore: score
+          }
         }
       });
     } else {
@@ -334,10 +339,11 @@ class PoseNet extends React.Component {
         }
       });
       // write the set score to DB
-      this.props.firebase.addSetScore(currentUserUid, date, workoutTitle, setTitle).update({
-        setScore: score
-      });
-
+      this.props.firebase
+        .addSetScore(currentUserUid, date, workoutTitle, setTitle)
+        .update({
+          setScore: score
+        });
     }
     // this.props.history.push(ROUTES.ANALYZER);
     // refresh the analyzer page to record a new set
@@ -400,10 +406,9 @@ class PoseNet extends React.Component {
   onChangeKA(inputEntry) {
     if (inputEntry === kneeAngleEnum.GOOD) {
       this.setState({ backgroundcolorKA: "green" });
-    } else if(inputEntry === kneeAngleEnum.NEUTRAL) {
+    } else if (inputEntry === kneeAngleEnum.NEUTRAL) {
       this.setState({ backgroundcolorKA: "white" });
-    }
-    else if(inputEntry === kneeAngleEnum.BAD) {
+    } else if (inputEntry === kneeAngleEnum.BAD) {
       this.setState({ backgroundcolorKA: "red" });
     }
   }
@@ -427,7 +432,7 @@ class PoseNet extends React.Component {
   }
 
   onChangeSetScore(inputEntry) {
-    this.setState({setScore: inputEntry});
+    this.setState({ setScore: inputEntry });
   }
 
   onChangeClear() {
@@ -439,6 +444,23 @@ class PoseNet extends React.Component {
     this.onChangeSetScore(0.0);
   }
 
+  changeTextColorGood(inputEntry) {
+    if (inputEntry) {
+      this.setState({ backgroundcolorGood: "green" });
+    } else {
+      this.setState({ backgroundcolorGood: "white" });
+    }
+  }
+
+  changeTextColorBad(inputEntry) {
+    if (inputEntry) {
+      this.setState({ backgroundcolorBad: "red" });
+    } else {
+      this.setState({ backgroundcolorBad: "white" });
+    }
+  }
+
+  donothing() {}
   getCanvas = elem => {
     this.canvas = elem;
   };
@@ -451,7 +473,7 @@ class PoseNet extends React.Component {
     // Loads the pre-trained PoseNet model
     this.net = await posenet.load(this.props.mobileNetArchitecture);
 
-    this.setState({a: 1});
+    this.setState({ a: 1 });
   }
 
   async componentDidMount() {
@@ -465,7 +487,6 @@ class PoseNet extends React.Component {
 
     // this.detectPose();
   }
-
 
   componentDidUpdate(prevProps, prevState) {
     if (this.net && !this.netInitialized) {
@@ -665,7 +686,7 @@ class PoseNet extends React.Component {
               // console.log("Calibration complete");
             }
           } else {
-            if(this.canvas != null) {
+            if (this.canvas != null) {
               drawShoulderAlignmentLines(
                 startingAvgLeftShoulderX,
                 startingAvgRightShoulderX,
@@ -682,7 +703,10 @@ class PoseNet extends React.Component {
               );
             }
 
-            if (keypoints[5].position.x > startingAvgLeftShoulderX + 10 || keypoints[6].position.x < startingAvgRightShoulderX - 10) {
+            if (
+              keypoints[5].position.x > startingAvgLeftShoulderX + 10 ||
+              keypoints[6].position.x < startingAvgRightShoulderX - 10
+            ) {
               straightUpAndDown = false;
             }
             //Assume that FW and SA will be "good" for all repetitions
@@ -694,11 +718,10 @@ class PoseNet extends React.Component {
               this.onChangeSD("good");
               goodDepth = true;
               goodSD = cueGradeEnum.GOOD;
-              if(analyzeKneeAngle(keypoints)) {
+              if (analyzeKneeAngle(keypoints)) {
                 goodKA = kneeAngleEnum.GOOD;
                 this.onChangeKA(goodKA);
-              }
-              else {
+              } else {
                 goodKA = kneeAngleEnum.BAD;
                 this.onChangeKA(goodKA);
               }
@@ -718,58 +741,66 @@ class PoseNet extends React.Component {
             );
             if (distanceLeftHipFromStarting > 17) {
               startedRep = true;
-              if(startRepTimer == null) {
+              if (startRepTimer == null) {
                 startRepTimer = Date.now();
               }
             }
 
             if (startedRep && distanceLeftHipFromStarting < 10) {
               let finish = Date.now() - startRepTimer;
-              if(finish < 1500) {
+              if (finish < 1500) {
+                this.resetRepVariables();
+              } else {
+                FWcount++;
+                if (goodSD === cueGradeEnum.GOOD) {
+                  repScore += 2;
+                  SDcount++;
+                } else if (goodSD === cueGradeEnum.OKAY) {
+                  repScore += 1;
+                  SDokayCount++;
+                }
+                if (goodKA === kneeAngleEnum.GOOD) {
+                  repScore += 2;
+                  KAcount++;
+                }
+                if (straightUpAndDown) {
+                  repScore += 2;
+                  SAcount++;
+                }
+                setScore += repScore;
+                this.onChangeSetScore(setScore);
+                if (repScore >= 4) {
+                  goodRepCounter++;
+                  this.onChangeGoodRep(true);
+                  this.onChangeGoodRep(false);
+                  this.changeTextColorGood(true);
+                  //console.log(this.state.backgroundcolorGood);
+                  this.playRepSound("good");
+                  setTimeout(this.changeTextColorGood, 1000);
+
+                  //console.log(this.state.backgroundcolorGood);
+
+                  // console.log("Good reps: " + goodRepCounter);
+                } else {
+                  badRepCounter++;
+                  this.onChangeBadRep(true);
+                  this.onChangeBadRep(false);
+                  this.changeTextColorBad(true);
+                  setTimeout(this.changeTextColorBad, 1000);
+
+                  // console.log("Bad reps: " + badRepCounter);
+                }
+                this.onChangeSetScore(
+                  setScore / (goodRepCounter + badRepCounter) / 6
+                );
+                var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
+                repStatsList.push(repStats);
+                // console.log(repStats);
+
                 this.resetRepVariables();
               }
-              else {
-              FWcount++;
-              if(goodSD === cueGradeEnum.GOOD) {
-                repScore += 2;
-                SDcount++;
-              }
-              else if(goodSD === cueGradeEnum.OKAY) {
-                repScore += 1;
-                SDokayCount++;
-              }
-              if(goodKA === kneeAngleEnum.GOOD) {
-                repScore += 2;
-                KAcount++;
-              }
-              if(straightUpAndDown) {
-                repScore += 2;
-                SAcount++;
-              }
-              setScore += repScore;
-              this.onChangeSetScore(setScore);
-              if(repScore >= 4) {
-                goodRepCounter++;
-                this.onChangeGoodRep(true);
-                this.onChangeGoodRep(false);
-                this.playRepSound("good");
-                // console.log("Good reps: " + goodRepCounter);
-              }
-              else {
-                badRepCounter++;
-                this.onChangeBadRep(true);
-                this.onChangeBadRep(false);
-                // console.log("Bad reps: " + badRepCounter);
-              }
-              this.onChangeSetScore((setScore/(goodRepCounter + badRepCounter))/6);
-              var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
-              repStatsList.push(repStats);
-              // console.log(repStats);
-
-              this.resetRepVariables();
             }
           }
-        }
 
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);
@@ -797,7 +828,9 @@ class PoseNet extends React.Component {
       backgroundcolorSA,
       backgroundcolorFW,
       backgroundcolorSD,
-      backgroundcolorKA
+      backgroundcolorKA,
+      backgroundcolorGood,
+      backgroundcolorBad
     } = this.state;
     const {
       transcript,
@@ -838,12 +871,11 @@ class PoseNet extends React.Component {
     }
     if (backgroundcolorKA === "red") {
       textKA = "Bad";
-    } else if(backgroundcolorKA === "white"){
+    } else if (backgroundcolorKA === "white") {
       textKA = "Neutral";
     } else {
       textKA = "Good";
     }
-
 
     if (this.props.transcript.includes("done")) {
       this.showSummary();
@@ -867,14 +899,14 @@ class PoseNet extends React.Component {
           "Shoulder Alignment",
           "Knee Angle"
         ],
-        series: [[SDcount,FWcount,SAcount,KAcount]]
+        series: [[SDcount, FWcount, SAcount, KAcount]]
       },
       options: {
         seriesBarDistance: 10,
         classNames: {
           bar: "ct-bar ct-azure"
         },
-        width: '100%',
+        width: "100%",
         axisX: {
           showGrid: false
         },
@@ -883,77 +915,81 @@ class PoseNet extends React.Component {
         }
       },
       responsiveOptions: [
-    [
-      "screen and (max-width: 640px)",
-      {
-        seriesBarDistance: 5,
-        axisX: {
-          labelInterpolationFnc: function(value) {
-            return value[0];
+        [
+          "screen and (max-width: 640px)",
+          {
+            seriesBarDistance: 5,
+            axisX: {
+              labelInterpolationFnc: function(value) {
+                return value[0];
+              }
+            }
           }
-        }
+        ]
+      ]
+    };
+
+    const setScoreData = {
+      type: "Pie",
+      data: {
+        labels: ["Set Score", "Bad Set Score"],
+        series: [this.state.setScore, 1 - this.state.setScore]
+      },
+      options: {
+        donut: true
       }
-    ]
-  ]
-};
+    };
 
-  const setScoreData = {
-    type: "Pie",
-    data: {
-      labels: ["Set Score", "Bad Set Score"],
-      series: [this.state.setScore, 1-this.state.setScore]
-    },
-    options: {
-      donut: true
-    }
-  };
+    const sdDonutData = {
+      type: "Pie",
+      data: {
+        labels: ["Good Reps", "Okay Reps", "Bad Reps"],
+        series: [
+          SDcount,
+          goodRepCounter + badRepCounter - SDcount - SDokayCount,
+          SDokayCount
+        ]
+      },
+      options: {
+        donut: true
+      }
+    };
 
-  const sdDonutData = {
-    type: "Pie",
-    data: {
-      labels: ["Good Reps", "Okay Reps", "Bad Reps"],
-      series: [SDcount, goodRepCounter + badRepCounter - SDcount - SDokayCount, SDokayCount,]
-    },
-    options: {
-      donut: true
-    }
-  };
+    const fwDonutData = {
+      type: "Pie",
+      data: {
+        labels: ["Good Reps", "Bad Reps"],
+        series: [FWcount, goodRepCounter + badRepCounter - FWcount]
+      },
+      options: {
+        donut: true
+      }
+    };
 
-  const fwDonutData = {
-    type: "Pie",
-    data: {
-      labels: ["Good Reps", "Bad Reps"],
-      series: [FWcount, goodRepCounter + badRepCounter - FWcount]
-    },
-    options: {
-      donut: true
-    }
-  };
+    const saDonutData = {
+      type: "Pie",
+      data: {
+        labels: ["Good Reps", "Bad Reps"],
+        series: [SAcount, goodRepCounter + badRepCounter - SAcount]
+      },
+      options: {
+        donut: true
+      }
+    };
 
-  const saDonutData = {
-    type: "Pie",
-    data: {
-      labels: ["Good Reps", "Bad Reps"],
-      series: [SAcount, goodRepCounter + badRepCounter - SAcount]
-    },
-    options: {
-      donut: true
-    }
-  };
-
-  const kaDonutData = {
-    type: "Pie",
-    data: {
-      labels: ["Good Reps", "Bad Reps"],
-      series: [KAcount, goodRepCounter + badRepCounter - KAcount]
-    },
-    options: {
-      donut: true
-    }
-  };
+    const kaDonutData = {
+      type: "Pie",
+      data: {
+        labels: ["Good Reps", "Bad Reps"],
+        series: [KAcount, goodRepCounter + badRepCounter - KAcount]
+      },
+      options: {
+        donut: true
+      }
+    };
 
     let workoutSummary;
-    if(this.state.summaryVisible) {
+    if (this.state.summaryVisible) {
       workoutSummary = (
         <Rodal
           visible={this.state.summaryVisible}
@@ -963,68 +999,102 @@ class PoseNet extends React.Component {
           onClose={this.hideSummary.bind(this)}
           customStyles={styles}
         >
-            <div align="center">Score: {(this.state.setScore * 100).toFixed(2)} % </div>
-            <Grid fluid>
-              <Row>
+          <div align="center">
+            Score: {(this.state.setScore * 100).toFixed(2)} %{" "}
+          </div>
+          <Grid fluid>
+            <Row>
+              <Card
+                title={"Cue Performance"}
+                category={"Bar Chart"}
+                content={
+                  <ChartistGraph
+                    data={RepChartData.data}
+                    type={RepChartData.type}
+                    options={RepChartData.options}
+                    responsiveOptions={RepChartData.responsiveOptions}
+                  />
+                }
+              />
+            </Row>
+            <Row>
+              <Col lg={3} sm={6}>
                 <Card
-                  title={"Cue Performance"}
-                  category={"Bar Chart"}
+                  title={"Squat Depth"}
+                  category={"Donut"}
                   content={
                     <ChartistGraph
-                      data={RepChartData.data}
-                      type={RepChartData.type}
-                      options={RepChartData.options}
-                      responsiveOptions={RepChartData.responsiveOptions} /> } />
-              </Row>
-              <Row>
-                <Col lg={3} sm={6}>
-                  <Card
-                    title={"Squat Depth"}
-                    category={"Donut"}
-                    content = {
-                      <ChartistGraph
-                        data={sdDonutData.data}
-                        type={sdDonutData.type}
-                        options={sdDonutData.options} /> } />
-                </Col>
-                <Col lg={3} sm={6}>
-                  <Card
-                    title={"Feet Width"}
-                    category={"Donut"}
-                    content = {
-                      <ChartistGraph
-                        data={fwDonutData.data}
-                        type={fwDonutData.type}
-                        options={fwDonutData.options} /> } />
-                </Col>
-                <Col lg={3} sm={6}>
-                  <Card
-                    title={"Shoulder Alignment"}
-                    category={"Donut"}
-                    content = {
-                      <ChartistGraph
-                        data={saDonutData.data}
-                        type={saDonutData.type}
-                        options={saDonutData.options} /> } />
-                </Col>
-                <Col lg={3} sm={6}>
-                  <Card
-                    title={"Knee Angle"}
-                    category={"Donut"}
-                    content = {
-                      <ChartistGraph
-                        data={kaDonutData.data}
-                        type={kaDonutData.type}
-                        options={kaDonutData.options} /> } />
-                </Col>
-              </Row>
-            </Grid>
+                      data={sdDonutData.data}
+                      type={sdDonutData.type}
+                      options={sdDonutData.options}
+                    />
+                  }
+                />
+              </Col>
+              <Col lg={3} sm={6}>
+                <Card
+                  title={"Feet Width"}
+                  category={"Donut"}
+                  content={
+                    <ChartistGraph
+                      data={fwDonutData.data}
+                      type={fwDonutData.type}
+                      options={fwDonutData.options}
+                    />
+                  }
+                />
+              </Col>
+              <Col lg={3} sm={6}>
+                <Card
+                  title={"Shoulder Alignment"}
+                  category={"Donut"}
+                  content={
+                    <ChartistGraph
+                      data={saDonutData.data}
+                      type={saDonutData.type}
+                      options={saDonutData.options}
+                    />
+                  }
+                />
+              </Col>
+              <Col lg={3} sm={6}>
+                <Card
+                  title={"Knee Angle"}
+                  category={"Donut"}
+                  content={
+                    <ChartistGraph
+                      data={kaDonutData.data}
+                      type={kaDonutData.type}
+                      options={kaDonutData.options}
+                    />
+                  }
+                />
+              </Col>
+            </Row>
+          </Grid>
           <SummaryTable
-          numReps={goodRepCounter + badRepCounter}
-          repStatsList={repStatsList}
-          summaryStatus={this.state.summaryVisible}/>
-          <Button onClick={() => {this.writeToDatabase(repStatsList, setScore, false) }} bsStyle="primary" bsSize="lg">Record Another Set</Button>
-          <Button onClick={() => {this.finishWorkout(repStatsList, setScore) }} bsStyle="success" bsSize="lg">Finish Workout</Button>
+            numReps={goodRepCounter + badRepCounter}
+            repStatsList={repStatsList}
+            summaryStatus={this.state.summaryVisible}
+          />
+          <Button
+            onClick={() => {
+              this.writeToDatabase(repStatsList, setScore, false);
+            }}
+            bsStyle="primary"
+            bsSize="lg"
+          >
+            Record Another Set
+          </Button>
+          <Button
+            onClick={() => {
+              this.finishWorkout(repStatsList, setScore);
+            }}
+            bsStyle="success"
+            bsSize="lg"
+          >
+            Finish Workout
+          </Button>
         </Rodal>
       );
     }
@@ -1041,7 +1111,9 @@ class PoseNet extends React.Component {
         <div className="videoOverlay-Good">
           <div id="good-rep">
             <div>Good Rep:</div>
-            {this.state.goodCounter}
+            <div style={{ color: backgroundcolorGood }}>
+              {this.state.goodCounter}
+            </div>
           </div>
         </div>
         <div className="calibration-container">
@@ -1050,7 +1122,9 @@ class PoseNet extends React.Component {
         <div className="videoOverlay-Bad">
           <div id="bad-rep">
             <div>Bad Rep:</div>
-            {this.state.badCounter}
+            <div style={{ color: backgroundcolorBad }}>
+              {this.state.badCounter}
+            </div>
           </div>
         </div>
         <canvas
@@ -1097,11 +1171,10 @@ const speechRecognitionOptions = {
   autoStart: false
 };
 
-
 const PoseNetForm = compose(
   withRouter,
   withFirebase,
-  SpeechRecognition,
+  SpeechRecognition
   //SpeechRecognition(speechRecognitionOptions),
 )(PoseNet);
 
