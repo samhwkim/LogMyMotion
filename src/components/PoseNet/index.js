@@ -16,7 +16,6 @@ import * as ROUTES from '../../constants/routes';
 import { compose } from 'recompose';
 import Button from '../CustomButton/CustomButton.jsx';
 
-
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
 import { analyzeShoulderAlignment } from "./shoulder_align_cue";
@@ -57,6 +56,8 @@ let distanceRightHipFromStarting = 0;
 
 let workoutInProgress = false;
 let workoutTitle = "";
+
+let startRepTimer = null;
 
 const cueGradeEnum = {
   GOOD: 'good',
@@ -236,8 +237,6 @@ class PoseNet extends React.Component {
     feetSet = false;
     calibrationConfidenceLevel = 0;
     calibrationComplete = false;
-    goodDepth = false;
-    startedRep = false;
     goodRepCounter = 0;
     badRepCounter = 0;
 
@@ -260,23 +259,19 @@ class PoseNet extends React.Component {
     distanceLeftHipFromStarting = 0;
     distanceRightHipFromStarting = 0;
 
-    goodSD = cueGradeEnum.BAD;
     goodFW = false;
-    goodKA = false;
-    straightUpAndDown = true;
     SDcount = 0;
     SDokayCount = 0;
     FWcount = 0;
     KAcount = 0;
     SAcount = 0;
-    repScore = 0;
     setScore = 0.0;
 
     repStatsList = [];
     this.hideSummary();
-    //this.setState({ summaryVisible: false });
     this.canvas.getContext("2d").clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
     this.canvas.getContext("2d").beginPath();
+    this.resetRepVariables();
     this.onChangeClear();
   }
 
@@ -364,6 +359,18 @@ class PoseNet extends React.Component {
     // this.readFromDatabase(workoutHistoryRef);
   }
 
+  resetRepVariables() {
+    goodDepth = false;
+    goodSD = cueGradeEnum.BAD;
+    goodKA = kneeAngleEnum.NEUTRAL;
+    straightUpAndDown = true;
+    startedRep = false;
+    repScore = 0;
+    this.onChangeSD("bad");
+    this.onChangeKA(false);
+    startRepTimer = null;
+  }
+
   onChangeSA(inputEntry) {
     if (inputEntry) {
       this.setState({ backgroundcolorSA: "green" });
@@ -425,7 +432,7 @@ class PoseNet extends React.Component {
 
   onChangeClear() {
     this.onChangeSA(false);
-    this.onChangeSD("bad");
+    this.onChangeSD(cueGradeEnum.BAD);
     this.onChangeFW(false);
     this.onChangeKA(kneeAngleEnum.BAD);
     this.setState({ calibrationState: "Calibrating" });
@@ -711,9 +718,17 @@ class PoseNet extends React.Component {
             );
             if (distanceLeftHipFromStarting > 17) {
               startedRep = true;
+              if(startRepTimer == null) {
+                startRepTimer = Date.now();
+              }
             }
 
             if (startedRep && distanceLeftHipFromStarting < 10) {
+              let finish = Date.now() - startRepTimer;
+              if(finish < 1500) {
+                this.resetRepVariables();
+              }
+              else {
               FWcount++;
               if(goodSD === cueGradeEnum.GOOD) {
                 repScore += 2;
@@ -751,16 +766,10 @@ class PoseNet extends React.Component {
               repStatsList.push(repStats);
               // console.log(repStats);
 
-              goodDepth = false;
-              goodSD = cueGradeEnum.BAD;
-              goodKA = kneeAngleEnum.NEUTRAL;
-              straightUpAndDown = true;
-              startedRep = false;
-              repScore = 0;
-              this.onChangeSD("bad");
-              this.onChangeKA(false);
+              this.resetRepVariables();
             }
           }
+        }
 
           if (showPoints) {
             drawKeypoints(keypoints, minPartConfidence, skeletonColor, ctx);

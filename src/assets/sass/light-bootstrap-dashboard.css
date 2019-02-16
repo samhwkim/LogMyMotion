@@ -4841,6 +4841,7 @@ h1 .subtitle {
       -ms-transform: translate3d(0px, 0, 0);
       transform: translate3d(0px, 0, 0); }
     .sidebar .logo .simple-text {
+      text-transform: uppercase;
       padding: 5px 0px;
       display: inline-block;
       font-size: 18px;
