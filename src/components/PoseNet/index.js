@@ -400,7 +400,7 @@ class PoseNet extends React.Component {
     startedRep = false;
     repScore = 0;
     this.onChangeSD("bad");
-    this.onChangeKA(false);
+    this.onChangeKA(kneeAngleEnum.NEUTRAL);
     startRepTimer = null;
   }
 
@@ -753,9 +753,8 @@ class PoseNet extends React.Component {
               this.onChangeSD("good");
               goodDepth = true;
               goodSD = cueGradeEnum.GOOD;
-              if (analyzeKneeAngle(keypoints)) {
-                goodKA = kneeAngleEnum.GOOD;
-                this.onChangeKA(goodKA);
+              if (analyzeKneeAngle(keypoints) == true) {
+                this.onChangeKA(kneeAngleEnum.GOOD);
               } else {
                 goodKA = kneeAngleEnum.BAD;
                 this.onChangeKA(goodKA);
@@ -795,8 +794,12 @@ class PoseNet extends React.Component {
                     this.angleFeetOutwardsSound.play();
                   }
                 } else if (goodSD === cueGradeEnum.OKAY) {
+                  this.littleDeeperSound.play();
                   repScore += 1;
                   SDokayCount++;
+                } else if (goodSD === cueGradeEnum.BAD) {
+                  // TODO: We can add go even more deeper here if we want.
+                  this.littleDeeperSound.play();
                 }
                 if (goodKA === kneeAngleEnum.GOOD) {
                   repScore += 2;
@@ -841,12 +844,7 @@ class PoseNet extends React.Component {
 
               if(goodSD === cueGradeEnum.OKAY) {
                 repScore += 1;
-                this.littleDeeperSound.play();
-              } else if(goodSD === cueGradeEnum.BAD){
-                // TODO: Play go a lot deeper
-                this.littleDeeperSound.play();
               }
-
               if(goodKA === kneeAngleEnum.GOOD) {
                 repScore += 2;
                 KAcount++;
@@ -877,9 +875,9 @@ class PoseNet extends React.Component {
 
               straightUpAndDownSoundPlayed = false;
               // console.log(repStats);
-              if(goodSD == cueGradeEnum.GOOD) {
+              if(goodSD === cueGradeEnum.GOOD) {
                 console.log("Good squat depth");
-              } else if(goodSD == cueGradeEnum.NEUTRAL){
+              } else if(goodSD === cueGradeEnum.NEUTRAL){
                 console.log("Okay squat depth");
               } else {
                 console.log("Bad squat depth");
