@@ -774,14 +774,18 @@ class PoseNet extends React.Component {
               keypoints[11].position.x,
               keypoints[11].position.y
             );
-            if (distanceLeftHipFromStarting > 17) {
+            // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP STARTS. ADJUST THIS NUMBER TO INCREASE DISTANCE
+            // NEEDED TO REGISTER A STARTED REP STATE
+            if (distanceLeftHipFromStarting > 22) {
               startedRep = true;
               if (startRepTimer == null) {
                 startRepTimer = Date.now();
               }
             }
 
-            if (startedRep && distanceLeftHipFromStarting < 10) {
+            // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP ENDS. ADJUST THIS NUMBER TO CHANGE DISTANCE
+            // WITHIN STARTING POSITION TO REGISTER THE END OF A STARTED REP STATE
+            if (startedRep && distanceLeftHipFromStarting < 15) {
               let finish = Date.now() - startRepTimer;
               if (finish < 1500) {
                 this.resetRepVariables();
