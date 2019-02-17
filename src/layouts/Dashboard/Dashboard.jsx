@@ -18,6 +18,9 @@ import { compose } from 'recompose';
 
 var ps;
 let events = [];
+let goodScores = [];
+let badScores = [];
+let cueScoreSeries = [];
 let savedUid = "";
 
 
@@ -28,12 +31,12 @@ class Dashboard extends Component {
     this.sleep = this.sleep.bind(this);
   }
 
-  async readFromDatabase(dbRef) {
+  async fetchCalendarData(dbRef) {
     let snapshot = await dbRef.once("value");
-    if(snapshot.exists()) {
+    if (snapshot.exists()) {
       snapshot.forEach((child) => {
         let dateArr = child.key.split("-");
-        for(let i = 0; i < child.numChildren(); i++) {
+        for (let i = 0; i < child.numChildren(); i++) {
           //child.key is date
           var event = {
             title: "Workout " + (i+1),
@@ -44,15 +47,43 @@ class Dashboard extends Component {
           };
 
           events.push(event);
-
         }
-
       });
-
       this.setState({ a: 1 });
-    } else {
+    }
+    else {
       console.log("No Dates Found");
     }
+  }
+
+  async fetchBarGraphData(dbRef) {
+    let snapshot = await dbRef.once("value");
+    if (snapshot.exists()) {
+        let totalReps = snapshot.val().totalReps;
+
+        let goodSD = snapshot.val().goodSDCount;
+        let badSD = totalReps - goodSD;
+
+        let goodSA = snapshot.val().goodSACount;
+        let badSA = totalReps - goodSA;
+
+        let goodFW = snapshot.val().goodFWCount;
+        let badFW = totalReps - goodFW;
+
+        let goodKA = snapshot.val().goodKACount;
+        let badKA = totalReps - goodKA;
+
+        goodScores = [goodSD, goodSA, goodFW, goodKA];
+        badScores = [badSD, badSA, badFW, badKA];
+
+        cueScoreSeries.push(goodScores);
+        cueScoreSeries.push(badScores);
+    }
+    else {
+      console.log("something is not right.");
+    }
+
+      console.log(cueScoreSeries);
   }
 
   sleep(ms) {
@@ -61,6 +92,10 @@ class Dashboard extends Component {
 
   async componentDidMount() {
     events = [];
+    goodScores = [];
+    badScores = [];
+    cueScoreSeries = [];
+
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel);
     }
@@ -72,8 +107,12 @@ class Dashboard extends Component {
     } else {
       console.log("user identified");
       let currentUserUid = this.props.firebase.getCurrentUserUid();
+
       let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
-      this.readFromDatabase(workoutHistoryRef);
+      this.fetchCalendarData(workoutHistoryRef);
+
+      let cueScoreRef = this.props.firebase.cueScores(currentUserUid);
+      this.fetchBarGraphData(cueScoreRef);
     }
   }
 

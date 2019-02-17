@@ -160,6 +160,9 @@ class PoseNet extends React.Component {
     this.onChangeKA = this.onChangeKA.bind(this);
     this.onChangeSA = this.onChangeSA.bind(this);
     this.onChangeSD = this.onChangeSD.bind(this);
+    this.resetCalibrationState = this.resetCalibrationState.bind(this);
+    this.resetGoodRepCounter = this.resetGoodRepCounter.bind(this);
+    this.resetBadRepCounter = this.resetBadRepCounter.bind(this);
     this.playRepSound = this.playRepSound.bind(this);
     this.goodRepSound = new Audio(GoodRepSound);
     this.angleFeetOutwardsSound = new Audio(AngleFeetOutwardsSound);
@@ -320,7 +323,7 @@ class PoseNet extends React.Component {
     return numChildren;
   }
 
-  async writeToDatabase(setData, score, isFinalSet) {
+  async writeToDatabase(setData, score, repsCompleted, isFinalSet) {
     let date = this.getCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
 
@@ -329,6 +332,64 @@ class PoseNet extends React.Component {
     score = score / (goodRepCounter + badRepCounter) / 6;
     score *= 100;
     score = score.toFixed(2);
+
+    // update total number of reps performed
+    let totalRepsRef = this.props.firebase.totalReps(currentUserUid);
+    let snapshot = await totalRepsRef.once("value");
+    if (snapshot.child("totalReps").exists()) {
+      this.props.firebase.updateTotalReps(currentUserUid).update({
+        totalReps: snapshot.val().totalReps + repsCompleted,
+      });
+    }
+    else {
+      this.props.firebase.updateTotalReps(currentUserUid).update({
+        totalReps: repsCompleted,
+      })
+    }
+
+    // update good cue counters
+    let cueScoreRef = this.props.firebase.cueScores(currentUserUid);
+    snapshot = await cueScoreRef.once("value");
+
+    if (snapshot.child("goodSDCount").exists()) {
+      this.props.firebase.updateSDCue(currentUserUid).update({
+        goodSDCount: snapshot.val().goodSDCount + SDcount,
+      });
+    } else {
+      this.props.firebase.updateSDCue(currentUserUid).update({
+        goodSDCount: SDcount,
+      });
+    }
+
+    if (snapshot.child("goodSACount").exists()) {
+      this.props.firebase.updateSACue(currentUserUid).update({
+        goodSACount: snapshot.val().goodSACount + SAcount,
+      });
+    } else {
+      this.props.firebase.updateSACue(currentUserUid).update({
+        goodSACount: SAcount,
+      });
+    }
+
+    if (snapshot.child("goodFWCount").exists()) {
+      this.props.firebase.updateFWCue(currentUserUid).update({
+        goodFWCount: snapshot.val().goodFWCount + FWcount,
+      });
+    } else {
+      this.props.firebase.updateFWCue(currentUserUid).update({
+        goodFWCount: FWcount,
+      });
+    }
+
+    if (snapshot.child("goodKACount").exists()) {
+      this.props.firebase.updateKACue(currentUserUid).update({
+        goodKACount: snapshot.val().goodKACount + KAcount,
+      });
+    } else {
+      this.props.firebase.updateKACue(currentUserUid).update({
+        goodKACount: KAcount,
+      });
+    }
 
     // create a new workout when they decide to use the analyzer
     let workoutString = "workout_";
@@ -382,14 +443,13 @@ class PoseNet extends React.Component {
     }
   }
 
-  finishWorkout(setData, score) {
-    this.writeToDatabase(setData, score, true);
+  finishWorkout(setData, score, repsCompleted) {
+    this.writeToDatabase(setData, score, repsCompleted, true);
     this.props.history.push(ROUTES.HOME);
     workoutInProgress = false;
 
     let currentUserUid = this.props.firebase.getCurrentUserUid();
     let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
-    // this.readFromDatabase(workoutHistoryRef);
   }
 
   resetRepVariables() {
@@ -462,12 +522,26 @@ class PoseNet extends React.Component {
     this.setState({ setScore: inputEntry });
   }
 
+  resetCalibrationState() {
+    this.setState({ calibrationState: "Calibrating" });
+  }
+
+  resetGoodRepCounter() {
+    this.setState({ goodCounter: 0 });
+  }
+
+  resetBadRepCounter() {
+    this.setState({ badCounter: 0 });
+  }
+
   onChangeClear() {
     this.onChangeSA(false);
     this.onChangeSD(cueGradeEnum.BAD);
     this.onChangeFW(false);
     this.onChangeKA(kneeAngleEnum.BAD);
-    this.setState({ calibrationState: "Calibrating" });
+    this.resetCalibrationState();
+    this.resetGoodRepCounter();
+    this.resetBadRepCounter();
     this.onChangeSetScore(0.0);
   }
 
@@ -1195,7 +1269,7 @@ class PoseNet extends React.Component {
           />
           <Button
             onClick={() => {
-              this.writeToDatabase(repStatsList, setScore, false);
+              this.writeToDatabase(repStatsList, setScore, goodRepCounter + badRepCounter, false);
             }}
             bsStyle="primary"
             bsSize="lg"
@@ -1204,7 +1278,7 @@ class PoseNet extends React.Component {
           </Button>
           <Button
             onClick={() => {
-              this.finishWorkout(repStatsList, setScore);
+              this.finishWorkout(repStatsList, setScore, goodRepCounter + badRepCounter);
             }}
             bsStyle="success"
             bsSize="lg"
