@@ -49,7 +49,6 @@ let shouldersAlignSoundConfidenceLevel = 0;
 let feetWidthSoundConfidenceLevel = 0;
 let straightUpAndDownSoundPlayed = false;
 
-
 let startingLeftHipX = [];
 let startingLeftHipY = [];
 let startingRightHipX = [];
@@ -89,8 +88,8 @@ const kneeAngleEnum = {
 const feetWidthEnum = {
   GOOD: "good",
   WIDE: "wide",
-  NARROW: "narrow",
-}
+  NARROW: "narrow"
+};
 
 const INITIAL_STATE = {
   repData: "testing",
@@ -144,8 +143,8 @@ class PoseNet extends React.Component {
       backgroundcolorSD: "red",
       backgroundcolorFW: "red",
       backgroundcolorKA: "white",
-      backgroundcolorGood: "white",
-      backgroundcolorBad: "white",
+      backgroundcolorGood: "",
+      backgroundcolorBad: "",
       calibrationState: "Calibrating",
       goodCounter: 0,
       badCounter: 0,
@@ -292,13 +291,12 @@ class PoseNet extends React.Component {
     let snapshot = await totalRepsRef.once("value");
     if (snapshot.child("totalReps").exists()) {
       this.props.firebase.updateTotalReps(currentUserUid).update({
-        totalReps: snapshot.val().totalReps + repsCompleted,
+        totalReps: snapshot.val().totalReps + repsCompleted
       });
-    }
-    else {
+    } else {
       this.props.firebase.updateTotalReps(currentUserUid).update({
-        totalReps: repsCompleted,
-      })
+        totalReps: repsCompleted
+      });
     }
 
     // update good cue counters
@@ -307,41 +305,41 @@ class PoseNet extends React.Component {
 
     if (snapshot.child("goodSDCount").exists()) {
       this.props.firebase.updateSDCue(currentUserUid).update({
-        goodSDCount: snapshot.val().goodSDCount + SDcount,
+        goodSDCount: snapshot.val().goodSDCount + SDcount
       });
     } else {
       this.props.firebase.updateSDCue(currentUserUid).update({
-        goodSDCount: SDcount,
+        goodSDCount: SDcount
       });
     }
 
     if (snapshot.child("goodSACount").exists()) {
       this.props.firebase.updateSACue(currentUserUid).update({
-        goodSACount: snapshot.val().goodSACount + SAcount,
+        goodSACount: snapshot.val().goodSACount + SAcount
       });
     } else {
       this.props.firebase.updateSACue(currentUserUid).update({
-        goodSACount: SAcount,
+        goodSACount: SAcount
       });
     }
 
     if (snapshot.child("goodFWCount").exists()) {
       this.props.firebase.updateFWCue(currentUserUid).update({
-        goodFWCount: snapshot.val().goodFWCount + FWcount,
+        goodFWCount: snapshot.val().goodFWCount + FWcount
       });
     } else {
       this.props.firebase.updateFWCue(currentUserUid).update({
-        goodFWCount: FWcount,
+        goodFWCount: FWcount
       });
     }
 
     if (snapshot.child("goodKACount").exists()) {
       this.props.firebase.updateKACue(currentUserUid).update({
-        goodKACount: snapshot.val().goodKACount + KAcount,
+        goodKACount: snapshot.val().goodKACount + KAcount
       });
     } else {
       this.props.firebase.updateKACue(currentUserUid).update({
-        goodKACount: KAcount,
+        goodKACount: KAcount
       });
     }
 
@@ -504,7 +502,7 @@ class PoseNet extends React.Component {
     if (inputEntry) {
       this.setState({ backgroundcolorGood: "green" });
     } else {
-      this.setState({ backgroundcolorGood: "white" });
+      this.setState({ backgroundcolorGood: "" });
     }
   }
 
@@ -512,7 +510,7 @@ class PoseNet extends React.Component {
     if (inputEntry) {
       this.setState({ backgroundcolorBad: "red" });
     } else {
-      this.setState({ backgroundcolorBad: "white" });
+      this.setState({ backgroundcolorBad: "" });
     }
   }
 
@@ -683,8 +681,9 @@ class PoseNet extends React.Component {
               if (feetWidthSoundConfidenceLevel === 30) {
                 if (analyzeFeetWidth(keypoints) === feetWidthEnum.WIDE) {
                   this.narrowStance.play();
-                }
-                else if (analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW) {
+                } else if (
+                  analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW
+                ) {
                   this.widerStance.play();
                 }
               }
@@ -721,10 +720,17 @@ class PoseNet extends React.Component {
             } else {
               currentCalibrationCounter++;
             }
+<<<<<<< HEAD
 
             // We can adjust the number subtracted to maxCalibrationConfidenceLevel to a higher value
             // if we want to allow for some frames to be detected as outliers
             if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10) {
+=======
+            if (
+              currentCalibrationCounter == maxCalibrationConfidenceLevel &&
+              calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10
+            ) {
+>>>>>>> ad708a1211b9fc8f2307facb29723ddd7d902a8b
               calibrationConfidenceLevel = 0;
               currentCalibrationCounter = 0;
               startingLeftHipX = [];
@@ -736,7 +742,10 @@ class PoseNet extends React.Component {
               startingLeftKneeY = [];
             }
 
-            if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10) {
+            if (
+              currentCalibrationCounter == maxCalibrationConfidenceLevel &&
+              calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10
+            ) {
               calibrationComplete = true;
               this.calibrationCompleteSound.play();
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
@@ -810,7 +819,6 @@ class PoseNet extends React.Component {
               goodDepth = false;
               goodSD = cueGradeEnum.OKAY;
               goodKA = kneeAngleEnum.NEUTRAL;
-
             }
 
             distanceLeftHipFromStarting = distanceFormula(
@@ -884,11 +892,12 @@ class PoseNet extends React.Component {
 
                   // console.log("Bad reps: " + badRepCounter);
                 }
-                this.onChangeSetScore(setScore / (goodRepCounter + badRepCounter) / 6);
+                this.onChangeSetScore(
+                  setScore / (goodRepCounter + badRepCounter) / 6
+                );
                 var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
                 repStatsList.push(repStats);
                 // console.log(repStats);
-
 
                 this.resetRepVariables();
               }
@@ -1172,7 +1181,12 @@ class PoseNet extends React.Component {
           />
           <Button
             onClick={() => {
-              this.writeToDatabase(repStatsList, setScore, goodRepCounter + badRepCounter, false);
+              this.writeToDatabase(
+                repStatsList,
+                setScore,
+                goodRepCounter + badRepCounter,
+                false
+              );
             }}
             bsStyle="primary"
             bsSize="lg"
@@ -1181,7 +1195,11 @@ class PoseNet extends React.Component {
           </Button>
           <Button
             onClick={() => {
-              this.finishWorkout(repStatsList, setScore, goodRepCounter + badRepCounter);
+              this.finishWorkout(
+                repStatsList,
+                setScore,
+                goodRepCounter + badRepCounter
+              );
             }}
             bsStyle="success"
             bsSize="lg"
@@ -1202,22 +1220,18 @@ class PoseNet extends React.Component {
           style={{ scale: 1, height: "75%", width: "100%" }}
         />
         <div className="videoOverlay-Good">
-          <div id="good-rep">
+          <div id="good-rep" style={{ backgroundColor: backgroundcolorGood }}>
             <div>Good Rep:</div>
-            <div style={{ color: backgroundcolorGood }}>
-              {this.state.goodCounter}
-            </div>
+            <div>{this.state.goodCounter}</div>
           </div>
         </div>
         <div className="calibration-container">
           <div>{this.state.calibrationState}</div>
         </div>
         <div className="videoOverlay-Bad">
-          <div id="bad-rep">
+          <div id="bad-rep" style={{ backgroundColor: backgroundcolorBad }}>
             <div>Bad Rep:</div>
-            <div style={{ color: backgroundcolorBad }}>
-              {this.state.badCounter}
-            </div>
+            <div>{this.state.badCounter}</div>
           </div>
         </div>
         <canvas

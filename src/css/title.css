@@ -23,6 +23,7 @@ body {
 .titlesection #LMMtitle {
   padding-left: 20%;
   font: 7.1em "Raleway", sans-serif;
+  padding-top: 20%;
 }
 .titlesection .titleshadow {
   text-shadow: 5px 5px #cccccc;
