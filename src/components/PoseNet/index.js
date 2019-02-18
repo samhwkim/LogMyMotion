@@ -720,17 +720,10 @@ class PoseNet extends React.Component {
             } else {
               currentCalibrationCounter++;
             }
-<<<<<<< HEAD
 
             // We can adjust the number subtracted to maxCalibrationConfidenceLevel to a higher value
             // if we want to allow for some frames to be detected as outliers
             if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10) {
-=======
-            if (
-              currentCalibrationCounter == maxCalibrationConfidenceLevel &&
-              calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10
-            ) {
->>>>>>> ad708a1211b9fc8f2307facb29723ddd7d902a8b
               calibrationConfidenceLevel = 0;
               currentCalibrationCounter = 0;
               startingLeftHipX = [];
