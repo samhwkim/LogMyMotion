@@ -77,9 +77,9 @@ export function drawShoulderAlignmentLines(
   canvasHeight
 ) {
   ctx.beginPath();
-  ctx.moveTo(startingAvgLeftShoulderX + 10, 0);
-  ctx.lineTo(startingAvgLeftShoulderX + 10, canvasHeight);
-  if (currentLeftShoulderX > startingAvgLeftShoulderX + 10) {
+  ctx.moveTo(startingAvgLeftShoulderX + 15, 0);
+  ctx.lineTo(startingAvgLeftShoulderX + 15, canvasHeight);
+  if (currentLeftShoulderX > startingAvgLeftShoulderX + 15) {
     ctx.strokeStyle = "red";
   } else {
     ctx.strokeStyle = "green";
@@ -87,9 +87,9 @@ export function drawShoulderAlignmentLines(
   ctx.stroke();
 
   ctx.beginPath();
-  ctx.moveTo(startingAvgRightShoulderX - 10, 0);
-  ctx.lineTo(startingAvgRightShoulderX - 10, canvasHeight);
-  if (currentRightShoulderX < startingAvgRightShoulderX - 10) {
+  ctx.moveTo(startingAvgRightShoulderX - 15, 0);
+  ctx.lineTo(startingAvgRightShoulderX - 15, canvasHeight);
+  if (currentRightShoulderX < startingAvgRightShoulderX - 15) {
     ctx.strokeStyle = "red";
   } else {
     ctx.strokeStyle = "green";

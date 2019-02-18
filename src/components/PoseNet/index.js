@@ -779,8 +779,8 @@ class PoseNet extends React.Component {
             }
 
             if (
-              keypoints[5].position.x > startingAvgLeftShoulderX + 10 ||
-              keypoints[6].position.x < startingAvgRightShoulderX - 10
+              keypoints[5].position.x > startingAvgLeftShoulderX + 15 ||
+              keypoints[6].position.x < startingAvgRightShoulderX - 15
             ) {
               straightUpAndDown = false;
               if (straightUpAndDownSoundPlayed === false) {
@@ -819,9 +819,10 @@ class PoseNet extends React.Component {
               keypoints[11].position.x,
               keypoints[11].position.y
             );
+
             // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP STARTS. ADJUST THIS NUMBER TO INCREASE DISTANCE
             // NEEDED TO REGISTER A STARTED REP STATE
-            if (distanceLeftHipFromStarting > 22) {
+            if (distanceLeftHipFromStarting > 17) {
               startedRep = true;
               if (startRepTimer == null) {
                 startRepTimer = Date.now();
@@ -830,7 +831,7 @@ class PoseNet extends React.Component {
 
             // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP ENDS. ADJUST THIS NUMBER TO CHANGE DISTANCE
             // WITHIN STARTING POSITION TO REGISTER THE END OF A STARTED REP STATE
-            if (startedRep && distanceLeftHipFromStarting < 15) {
+            if (startedRep && distanceLeftHipFromStarting < 10) {
               let finish = Date.now() - startRepTimer;
               if (finish < 1500) {
                 this.resetRepVariables();
