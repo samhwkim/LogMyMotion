@@ -7,6 +7,7 @@ import ChartistGraph from "react-chartist";
 import Card from "../Card/Card.jsx";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
+import CalibrationCompleteSound from "../../assets/audio/calibrationcomplete.mp3"
 import AngleFeetOutwardsSound from "../../assets/audio/anglefeetoutwards.mp3";
 import BodyStraightSound from "../../assets/audio/bodystraight.mp3";
 import GoodJobSound from "../../assets/audio/goodjob.mp3";
@@ -164,6 +165,7 @@ class PoseNet extends React.Component {
     this.resetGoodRepCounter = this.resetGoodRepCounter.bind(this);
     this.resetBadRepCounter = this.resetBadRepCounter.bind(this);
     this.playRepSound = this.playRepSound.bind(this);
+    this.calibrationCompleteSound = new Audio(CalibrationCompleteSound);
     this.goodRepSound = new Audio(GoodRepSound);
     this.angleFeetOutwardsSound = new Audio(AngleFeetOutwardsSound);
     this.bodyStraightSound = new Audio(BodyStraightSound);
@@ -663,7 +665,10 @@ class PoseNet extends React.Component {
 
       poses.forEach(({ score, keypoints }) => {
         if (score >= minPoseConfidence) {
+
+          // Calibration
           if (!calibrationComplete) {
+            // Checks that feet width is good
             if (analyzeFeetWidth(keypoints) === feetWidthEnum.GOOD) {
               this.onChangeFW(true);
               feetSet = true;
@@ -672,6 +677,9 @@ class PoseNet extends React.Component {
               this.onChangeFW(false);
               feetSet = false;
               feetWidthSoundConfidenceLevel++;
+
+              // The value feetWidthSoundConfidenceLevel is being compared to is how many consecutive frames
+              // with bad feet width we allow for before playing an audio feedback
               if (feetWidthSoundConfidenceLevel === 30) {
                 if (analyzeFeetWidth(keypoints) === feetWidthEnum.WIDE) {
                   this.narrowStance.play();
@@ -682,6 +690,7 @@ class PoseNet extends React.Component {
               }
             }
 
+            // Checks that shoulder alignment is good
             if (analyzeShoulderAlignment(keypoints)) {
               this.onChangeSA(true);
               shouldersSet = true;
@@ -690,11 +699,15 @@ class PoseNet extends React.Component {
               this.onChangeSA(false);
               shouldersSet = false;
               shouldersAlignSoundConfidenceLevel++;
+
+              // The value shouldersAlignSoundConfidenceLevel is being compared to is how many consecutive frames
+              // with shoulder misalignment we allow for before playing an audio feedback
               if (shouldersAlignSoundConfidenceLevel === 30) {
                 this.shouldersAlign.play();
               }
             }
 
+            // If both feet width and shoulder alignment is good we gather datapoints for an average position
             if (feetSet && shouldersSet) {
               calibrationConfidenceLevel++;
               currentCalibrationCounter++;
@@ -708,6 +721,9 @@ class PoseNet extends React.Component {
             } else {
               currentCalibrationCounter++;
             }
+
+            // We can adjust the number subtracted to maxCalibrationConfidenceLevel to a higher value
+            // if we want to allow for some frames to be detected as outliers
             if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10) {
               calibrationConfidenceLevel = 0;
               currentCalibrationCounter = 0;
@@ -722,6 +738,7 @@ class PoseNet extends React.Component {
 
             if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10) {
               calibrationComplete = true;
+              this.calibrationCompleteSound.play();
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
                 startingAvgLeftHipX += startingLeftHipX[i];
                 startingAvgLeftHipY += startingLeftHipY[i];
