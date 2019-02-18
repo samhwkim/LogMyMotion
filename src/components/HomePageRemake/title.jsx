@@ -16,7 +16,7 @@ const pluginWrapper = () => {
    */
 };
 
-const originalColors = ["#fafafa", "#e6f3fe", "#e6f3fe", "#e6f3fe"];
+const originalColors = ["000000", "#e6f3fe", "#e6f3fe", "#e6f3fe"];
 
 export default class Title extends React.Component {
   constructor(props) {
