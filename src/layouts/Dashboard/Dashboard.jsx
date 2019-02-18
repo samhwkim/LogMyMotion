@@ -111,7 +111,7 @@ class Dashboard extends Component {
       let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
       this.fetchCalendarData(workoutHistoryRef);
 
-      let cueScoreRef = this.props.firebase.cueScores(currentUserUid);
+      let cueScoreRef = this.props.firebase.generalStats(currentUserUid);
       this.fetchBarGraphData(cueScoreRef);
     }
   }

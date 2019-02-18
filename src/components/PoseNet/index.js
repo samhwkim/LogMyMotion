@@ -43,7 +43,6 @@ let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
-let events = [];
 
 let shouldersAlignSoundConfidenceLevel = 0;
 let feetWidthSoundConfidenceLevel = 0;
@@ -96,6 +95,13 @@ const INITIAL_STATE = {
   error: null
 };
 
+const LABELS = [
+  "Squat Depth",
+  "Feet Width",
+  "Shoulder Alignment",
+  "Knee Angle"
+];
+
 let goodSD = cueGradeEnum.BAD;
 let goodFW = false;
 let goodKA = kneeAngleEnum.NEUTRAL;
@@ -108,6 +114,9 @@ let SAcount = 0;
 let repScore = 0;
 let setScore = 0.0;
 let repStatsList = [];
+let barChartData = [];
+let donutChartData = [];
+
 
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
@@ -277,8 +286,10 @@ class PoseNet extends React.Component {
   }
 
   async writeToDatabase(setData, score, repsCompleted, isFinalSet) {
+    // console.log(`WOIP: ${workoutInProgress}`);
     let date = this.getCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
+    let snapshot;
 
     // modify score to reflect percentage displayed on summary page
     // limit decimal to to hundreths place
@@ -286,9 +297,23 @@ class PoseNet extends React.Component {
     score *= 100;
     score = score.toFixed(2);
 
+    // update total number of sets performed
+    let totalSetsRef = this.props.firebase.totalSets(currentUserUid);
+    snapshot = await totalSetsRef.once("value");
+    if (snapshot.child("totalSets").exists()) {
+      this.props.firebase.updateTotalSets(currentUserUid).update({
+        totalSets: snapshot.val().totalSets + 1,
+      });
+    }
+    else {
+      this.props.firebase.updateTotalSets(currentUserUid).update({
+        totalSets: 1,
+      })
+    }
+
     // update total number of reps performed
     let totalRepsRef = this.props.firebase.totalReps(currentUserUid);
-    let snapshot = await totalRepsRef.once("value");
+    snapshot = await totalRepsRef.once("value");
     if (snapshot.child("totalReps").exists()) {
       this.props.firebase.updateTotalReps(currentUserUid).update({
         totalReps: snapshot.val().totalReps + repsCompleted
@@ -300,7 +325,7 @@ class PoseNet extends React.Component {
     }
 
     // update good cue counters
-    let cueScoreRef = this.props.firebase.cueScores(currentUserUid);
+    let cueScoreRef = this.props.firebase.generalStats(currentUserUid);
     snapshot = await cueScoreRef.once("value");
 
     if (snapshot.child("goodSDCount").exists()) {
@@ -359,8 +384,10 @@ class PoseNet extends React.Component {
       this.props.firebase.addWorkout(currentUserUid, date).update({
         [workoutTitle]: {
           [setTitle]: {
-            setData,
-            setScore: score
+            setData: setData,
+            setScore: score,
+            chartData: [[SDcount, SAcount, FWcount, KAcount]],
+            reps: repsCompleted,
           }
         }
       });
@@ -375,19 +402,13 @@ class PoseNet extends React.Component {
       // write the set data to DB
       this.props.firebase.addSet(currentUserUid, date, workoutTitle).update({
         [setTitle]: {
-          setData: setData
+          setData: setData,
+          setScore: score,
+          chartData: [[SDcount, SAcount, FWcount, KAcount]],
+          reps: repsCompleted,
         }
       });
-      // write the set score to DB
-      this.props.firebase
-        .addSetScore(currentUserUid, date, workoutTitle, setTitle)
-        .update({
-          setScore: score
-        });
     }
-    // this.props.history.push(ROUTES.ANALYZER);
-    // refresh the analyzer page to record a new set
-    // window.location.reload();
 
     // CLEAR DATA FOR NEW SET!
     if (!isFinalSet) {
@@ -395,13 +416,27 @@ class PoseNet extends React.Component {
     }
   }
 
-  finishWorkout(setData, score, repsCompleted) {
-    this.writeToDatabase(setData, score, repsCompleted, true);
-    this.props.history.push(ROUTES.HOME);
+  async finishWorkout(setData, score, repsCompleted) {
+    await this.writeToDatabase(setData, score, repsCompleted, true);
     workoutInProgress = false;
 
     let currentUserUid = this.props.firebase.getCurrentUserUid();
-    let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
+
+    // update total number of workouts performed
+    let totalWorkoutsRef = this.props.firebase.totalWorkouts(currentUserUid);
+    let snapshot = await totalWorkoutsRef.once("value");
+    if (snapshot.child("totalWorkouts").exists()) {
+      this.props.firebase.updateTotalWorkouts(currentUserUid).update({
+        totalWorkouts: snapshot.val().totalWorkouts + 1,
+      });
+    }
+    else {
+      this.props.firebase.updateTotalWorkouts(currentUserUid).update({
+        totalWorkouts: 1,
+      })
+    }
+
+    this.props.history.push(ROUTES.HOME);
   }
 
   resetRepVariables() {
@@ -825,7 +860,7 @@ class PoseNet extends React.Component {
             // NEEDED TO REGISTER A STARTED REP STATE
             if (distanceLeftHipFromStarting > 17) {
               startedRep = true;
-              if (startRepTimer == null) {
+              if (startRepTimer === null) {
                 startRepTimer = Date.now();
               }
             }
@@ -834,7 +869,7 @@ class PoseNet extends React.Component {
             // WITHIN STARTING POSITION TO REGISTER THE END OF A STARTED REP STATE
             if (startedRep && distanceLeftHipFromStarting < 10) {
               let finish = Date.now() - startRepTimer;
-              if (finish < 1500) {
+              if (finish < 500) {
                 this.resetRepVariables();
               } else {
                 FWcount++;
@@ -990,11 +1025,11 @@ class PoseNet extends React.Component {
       data: {
         labels: [
           "Squat Depth",
-          "Feet Width",
           "Shoulder Alignment",
+          "Feet Width",
           "Knee Angle"
         ],
-        series: [[SDcount, FWcount, SAcount, KAcount]]
+        series: [[SDcount, SAcount, FWcount, KAcount]]
       },
       options: {
         seriesBarDistance: 10,

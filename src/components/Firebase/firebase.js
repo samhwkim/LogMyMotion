@@ -39,16 +39,22 @@ class Firebase {
 
   // *** Workout API ***
 
-  cueScores = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  generalStats = (uid) => this.db.ref(`users/${uid}/generalStats`);
 
-  updateSDCue = (uid) => this.db.ref(`users/${uid}/cueScores`);
-  updateSACue = (uid) => this.db.ref(`users/${uid}/cueScores`);
-  updateFWCue = (uid) => this.db.ref(`users/${uid}/cueScores`);
-  updateKACue = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  updateSDCue = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  updateSACue = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  updateFWCue = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  updateKACue = (uid) => this.db.ref(`users/${uid}/generalStats`);
 
-  totalReps = (uid) => this.db.ref(`users/${uid}/cueScores`);
-  updateTotalReps = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  totalReps = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  updateTotalReps = (uid) => this.db.ref(`users/${uid}/generalStats`);
 
+  totalSets = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  updateTotalSets = (uid) => this.db.ref(`users/${uid}/generalStats`);
+
+  totalWorkouts = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  updateTotalWorkouts = (uid) => this.db.ref(`users/${uid}/generalStats`);
+  
   dates = (uid) => this.db.ref(`users/${uid}/workoutHistory`);
 
   addWorkout = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
