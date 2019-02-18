@@ -48,13 +48,10 @@ export const analyzeFeetWidth = keypoints => {
   feetWidth = distanceFormula(rightAnkleX, rightAnkleY, leftAnkleX, leftAnkleY);
 
   if (feetWidth < 0.5 * shoulderWidth) {
-    // return false;
     return feetWidthEnum.NARROW;
   } else if (feetWidth > 1.5 * shoulderWidth) {
-    // return false;
     return feetWidthEnum.WIDE;
   } else {
-    // return true;
     return feetWidthEnum.GOOD;
   }
 };

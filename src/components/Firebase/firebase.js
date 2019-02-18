@@ -39,6 +39,16 @@ class Firebase {
 
   // *** Workout API ***
 
+  cueScores = (uid) => this.db.ref(`users/${uid}/cueScores`);
+
+  updateSDCue = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  updateSACue = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  updateFWCue = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  updateKACue = (uid) => this.db.ref(`users/${uid}/cueScores`);
+
+  totalReps = (uid) => this.db.ref(`users/${uid}/cueScores`);
+  updateTotalReps = (uid) => this.db.ref(`users/${uid}/cueScores`);
+
   dates = (uid) => this.db.ref(`users/${uid}/workoutHistory`);
 
   addWorkout = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);

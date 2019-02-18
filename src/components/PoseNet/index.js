@@ -5,6 +5,8 @@ import Rodal from "rodal";
 import SpeechRecognition from "react-speech-recognition";
 import ChartistGraph from "react-chartist";
 import Card from "../Card/Card.jsx";
+import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
+import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import AngleFeetOutwardsSound from "../../assets/audio/anglefeetoutwards.mp3";
 import BodyStraightSound from "../../assets/audio/bodystraight.mp3";
 import GoodJobSound from "../../assets/audio/goodjob.mp3";
@@ -12,8 +14,6 @@ import LittleDeeperSound from "../../assets/audio/littledeeper.mp3";
 import NarrowStance from "../../assets/audio/narrowstance.mp3";
 import ShouldersAlign from "../../assets/audio/shouldersalign.mp3";
 import WiderStance from "../../assets/audio/widerstance.mp3";
-import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
-import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
 import SummaryTable from "../SummaryTable";
 import Firebase from "../Firebase";
@@ -91,7 +91,6 @@ const feetWidthEnum = {
   NARROW: "narrow",
 }
 
-
 const INITIAL_STATE = {
   repData: "testing",
   error: null
@@ -161,6 +160,9 @@ class PoseNet extends React.Component {
     this.onChangeKA = this.onChangeKA.bind(this);
     this.onChangeSA = this.onChangeSA.bind(this);
     this.onChangeSD = this.onChangeSD.bind(this);
+    this.resetCalibrationState = this.resetCalibrationState.bind(this);
+    this.resetGoodRepCounter = this.resetGoodRepCounter.bind(this);
+    this.resetBadRepCounter = this.resetBadRepCounter.bind(this);
     this.playRepSound = this.playRepSound.bind(this);
     this.goodRepSound = new Audio(GoodRepSound);
     this.angleFeetOutwardsSound = new Audio(AngleFeetOutwardsSound);
@@ -208,60 +210,6 @@ class PoseNet extends React.Component {
 
     return today.toString();
   }
-
-  /* checkNextSetNumber */
-  /* Experimental function to test reading from Firebase */
-  checkNextSetNumber(currentUserUid, date) {
-    let ref = this.props.firebase.sets(currentUserUid, date); // fetch the sets for a particular user and date
-    let defaultSetNum = 0;
-    // Attach an asynchronous callback to read the data at our posts reference
-    ref.on("value", function(snapshot) {
-      let firstSetExists = snapshot.exists();
-      if (firstSetExists) {
-        console.log("first set exists!");
-        snapshot.forEach(child => {
-          console.log(child.key);
-          let currentSetNum = child.key.toString();
-          console.log(`snapshot: ${currentSetNum}`);
-          currentSetNum = currentSetNum.substr(-1);
-          console.log(`last set #: ${currentSetNum}`);
-          defaultSetNum = Number(currentSetNum) + 1;
-          console.log(`new set #: ${defaultSetNum}`);
-          return defaultSetNum;
-        });
-      } else {
-        console.log("no sets!");
-      }
-    });
-  }
-
-  // async readFromDatabase(dbRef) {
-  //   let snapshot = await dbRef.once("value");
-  //   if(snapshot.exists()) {
-  //     snapshot.forEach((child) => {
-  //       console.log(child.key);
-  //       console.log(child.numChildren());
-  //       let dateArr = child.key.split("-");
-  //       for(let i = 0; i < child.numChildren(); i++) {
-  //         //child.key is date
-  //         var event = {
-  //           title: "Workout " + (i+1),
-  //           allDay: true,
-  //           start: new Date(dateArr[2], dateArr[0]-1, dateArr[1]),
-  //           end: new Date(dateArr[2], dateArr[0]-1, dateArr[1]),
-  //           color: "default"
-  //         };
-  //
-  //         events.push(event);
-  //
-  //       }
-  //
-  //     });
-  //     console.log(events);
-  //   } else {
-  //     console.log("No Dates Found");
-  //   }
-  // }
 
   clearForNewSet() {
     shouldersSet = false;
@@ -327,7 +275,7 @@ class PoseNet extends React.Component {
     return numChildren;
   }
 
-  async writeToDatabase(setData, score, isFinalSet) {
+  async writeToDatabase(setData, score, repsCompleted, isFinalSet) {
     let date = this.getCurrentDate();
     let currentUserUid = this.props.firebase.getCurrentUserUid();
 
@@ -336,6 +284,64 @@ class PoseNet extends React.Component {
     score = score / (goodRepCounter + badRepCounter) / 6;
     score *= 100;
     score = score.toFixed(2);
+
+    // update total number of reps performed
+    let totalRepsRef = this.props.firebase.totalReps(currentUserUid);
+    let snapshot = await totalRepsRef.once("value");
+    if (snapshot.child("totalReps").exists()) {
+      this.props.firebase.updateTotalReps(currentUserUid).update({
+        totalReps: snapshot.val().totalReps + repsCompleted,
+      });
+    }
+    else {
+      this.props.firebase.updateTotalReps(currentUserUid).update({
+        totalReps: repsCompleted,
+      })
+    }
+
+    // update good cue counters
+    let cueScoreRef = this.props.firebase.cueScores(currentUserUid);
+    snapshot = await cueScoreRef.once("value");
+
+    if (snapshot.child("goodSDCount").exists()) {
+      this.props.firebase.updateSDCue(currentUserUid).update({
+        goodSDCount: snapshot.val().goodSDCount + SDcount,
+      });
+    } else {
+      this.props.firebase.updateSDCue(currentUserUid).update({
+        goodSDCount: SDcount,
+      });
+    }
+
+    if (snapshot.child("goodSACount").exists()) {
+      this.props.firebase.updateSACue(currentUserUid).update({
+        goodSACount: snapshot.val().goodSACount + SAcount,
+      });
+    } else {
+      this.props.firebase.updateSACue(currentUserUid).update({
+        goodSACount: SAcount,
+      });
+    }
+
+    if (snapshot.child("goodFWCount").exists()) {
+      this.props.firebase.updateFWCue(currentUserUid).update({
+        goodFWCount: snapshot.val().goodFWCount + FWcount,
+      });
+    } else {
+      this.props.firebase.updateFWCue(currentUserUid).update({
+        goodFWCount: FWcount,
+      });
+    }
+
+    if (snapshot.child("goodKACount").exists()) {
+      this.props.firebase.updateKACue(currentUserUid).update({
+        goodKACount: snapshot.val().goodKACount + KAcount,
+      });
+    } else {
+      this.props.firebase.updateKACue(currentUserUid).update({
+        goodKACount: KAcount,
+      });
+    }
 
     // create a new workout when they decide to use the analyzer
     let workoutString = "workout_";
@@ -389,14 +395,13 @@ class PoseNet extends React.Component {
     }
   }
 
-  finishWorkout(setData, score) {
-    this.writeToDatabase(setData, score, true);
+  finishWorkout(setData, score, repsCompleted) {
+    this.writeToDatabase(setData, score, repsCompleted, true);
     this.props.history.push(ROUTES.HOME);
     workoutInProgress = false;
 
     let currentUserUid = this.props.firebase.getCurrentUserUid();
     let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
-    // this.readFromDatabase(workoutHistoryRef);
   }
 
   resetRepVariables() {
@@ -408,7 +413,6 @@ class PoseNet extends React.Component {
     startedRep = false;
     repScore = 0;
     this.onChangeSD("bad");
-    // this.onChangeKA(false);
     this.onChangeKA(kneeAngleEnum.NEUTRAL);
     startRepTimer = null;
   }
@@ -471,12 +475,26 @@ class PoseNet extends React.Component {
     this.setState({ setScore: inputEntry });
   }
 
+  resetCalibrationState() {
+    this.setState({ calibrationState: "Calibrating" });
+  }
+
+  resetGoodRepCounter() {
+    this.setState({ goodCounter: 0 });
+  }
+
+  resetBadRepCounter() {
+    this.setState({ badCounter: 0 });
+  }
+
   onChangeClear() {
     this.onChangeSA(false);
     this.onChangeSD(cueGradeEnum.BAD);
     this.onChangeFW(false);
     this.onChangeKA(kneeAngleEnum.BAD);
-    this.setState({ calibrationState: "Calibrating" });
+    this.resetCalibrationState();
+    this.resetGoodRepCounter();
+    this.resetBadRepCounter();
     this.onChangeSetScore(0.0);
   }
 
@@ -661,7 +679,6 @@ class PoseNet extends React.Component {
                 else if (analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW) {
                   this.widerStance.play();
                 }
-
               }
             }
 
@@ -763,7 +780,7 @@ class PoseNet extends React.Component {
               this.onChangeSD("good");
               goodDepth = true;
               goodSD = cueGradeEnum.GOOD;
-              if (analyzeKneeAngle(keypoints)) {
+              if (analyzeKneeAngle(keypoints) == true) {
                 goodKA = kneeAngleEnum.GOOD;
                 this.onChangeKA(goodKA);
               } else {
@@ -785,14 +802,18 @@ class PoseNet extends React.Component {
               keypoints[11].position.x,
               keypoints[11].position.y
             );
-            if (distanceLeftHipFromStarting > 17) {
+            // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP STARTS. ADJUST THIS NUMBER TO INCREASE DISTANCE
+            // NEEDED TO REGISTER A STARTED REP STATE
+            if (distanceLeftHipFromStarting > 22) {
               startedRep = true;
               if (startRepTimer == null) {
                 startRepTimer = Date.now();
               }
             }
 
-            if (startedRep && distanceLeftHipFromStarting < 10) {
+            // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP ENDS. ADJUST THIS NUMBER TO CHANGE DISTANCE
+            // WITHIN STARTING POSITION TO REGISTER THE END OF A STARTED REP STATE
+            if (startedRep && distanceLeftHipFromStarting < 15) {
               let finish = Date.now() - startRepTimer;
               if (finish < 1500) {
                 this.resetRepVariables();
@@ -821,6 +842,7 @@ class PoseNet extends React.Component {
                   repScore += 2;
                   SAcount++;
                 }
+
                 setScore += repScore;
                 this.onChangeSetScore(setScore);
                 if (repScore >= 4) {
@@ -849,33 +871,6 @@ class PoseNet extends React.Component {
                 repStatsList.push(repStats);
                 // console.log(repStats);
 
-                // if(goodSD === cueGradeEnum.GOOD) {
-                //   console.log("Good squat depth");
-                // } else if(goodSD === cueGradeEnum.NEUTRAL) {
-                //   console.log("Okay squat depth");
-                // } else {
-                //   console.log("Bad squat depth");
-                // }
-                //
-                // if(straightUpAndDown === true) {
-                //   console.log("Good balance?");
-                // } else {
-                //   console.log("Bad balance?");
-                // }
-                //
-                // if(goodFW === true) {
-                //   console.log("Good feet width");
-                // } else {
-                //   console.log("Bad feet width");
-                // }
-                //
-                // if(goodKA === cueGradeEnum.GOOD) {
-                //   console.log("Good squat depth");
-                // } else if(goodKA === cueGradeEnum.NEUTRAL) {
-                //   console.log("Okay squat depth");
-                // } else {
-                //   console.log("Bad squat depth");
-                // }
 
                 this.resetRepVariables();
               }
@@ -1159,7 +1154,7 @@ class PoseNet extends React.Component {
           />
           <Button
             onClick={() => {
-              this.writeToDatabase(repStatsList, setScore, false);
+              this.writeToDatabase(repStatsList, setScore, goodRepCounter + badRepCounter, false);
             }}
             bsStyle="primary"
             bsSize="lg"
@@ -1168,7 +1163,7 @@ class PoseNet extends React.Component {
           </Button>
           <Button
             onClick={() => {
-              this.finishWorkout(repStatsList, setScore);
+              this.finishWorkout(repStatsList, setScore, goodRepCounter + badRepCounter);
             }}
             bsStyle="success"
             bsSize="lg"
