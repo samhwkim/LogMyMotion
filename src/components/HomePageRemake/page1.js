@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Typist from "react-typist";
 import "./page1.css";
+
 export default class page1 extends Component {
   render() {
     return (
@@ -23,6 +24,16 @@ export default class page1 extends Component {
               <span>Your Personal Virtual Trainer</span>
             </div>
           </Typist>
+          <div className="link-container">
+            <span className="login-text">
+              <a className="login-link" href="/login">
+                Login
+              </a>
+            </span>
+            <a className="signup-link" href="/signup">
+              Sign Up
+            </a>
+          </div>
         </div>
       </div>
     );

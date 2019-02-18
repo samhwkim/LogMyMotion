@@ -3,6 +3,8 @@ import ReactFullpage from "@fullpage/react-fullpage";
 
 import Page1 from "./page1";
 import Page2 from "./page2";
+import Page3 from "./page3";
+import Page4 from "./page4";
 
 const SEL = "custom-section";
 const SECTION_SEL = `.${SEL}`;
@@ -14,14 +16,19 @@ const pluginWrapper = () => {
    */
 };
 
-const originalColors = ["#fafafa", "#e6f3fe"];
+const originalColors = ["#fafafa", "#e6f3fe", "#e6f3fe", "#e6f3fe"];
 
 export default class Title extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       sectionsColor: [...originalColors],
-      fullpages: [{ sectionPage: <Page1 /> }, { sectionPage: <Page2 /> }]
+      fullpages: [
+        { sectionPage: <Page1 /> },
+        { sectionPage: <Page2 /> },
+        { sectionPage: <Page3 /> },
+        { sectionPage: <Page4 /> }
+      ]
     };
   }
 
