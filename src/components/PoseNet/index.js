@@ -5,6 +5,13 @@ import Rodal from "rodal";
 import SpeechRecognition from "react-speech-recognition";
 import ChartistGraph from "react-chartist";
 import Card from "../Card/Card.jsx";
+import AngleFeetOutwardsSound from "../../assets/audio/anglefeetoutwards.mp3";
+import BodyStraightSound from "../../assets/audio/bodystraight.mp3";
+import GoodJobSound from "../../assets/audio/goodjob.mp3";
+import LittleDeeperSound from "../../assets/audio/littledeeper.mp3";
+import NarrowStance from "../../assets/audio/narrowstance.mp3";
+import ShouldersAlign from "../../assets/audio/shouldersalign.mp3";
+import WiderStance from "../../assets/audio/widerstance.mp3";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
 import Sound from "react-sound";
@@ -29,11 +36,18 @@ let shouldersSet = false;
 let feetSet = false;
 let calibrationConfidenceLevel = 0;
 let calibrationComplete = false;
+let currentCalibrationCounter = 0;
+let maxCalibrationConfidenceLevel = 75;
 let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
 let events = [];
+
+let shouldersAlignSoundConfidenceLevel = 0;
+let feetWidthSoundConfidenceLevel = 0;
+let straightUpAndDownSoundPlayed = false;
+
 
 let startingLeftHipX = [];
 let startingLeftHipY = [];
@@ -70,6 +84,13 @@ const kneeAngleEnum = {
   NEUTRAL: "neutral",
   BAD: "bad"
 };
+
+const feetWidthEnum = {
+  GOOD: "good",
+  WIDE: "wide",
+  NARROW: "narrow",
+}
+
 
 const INITIAL_STATE = {
   repData: "testing",
@@ -142,6 +163,13 @@ class PoseNet extends React.Component {
     this.onChangeSD = this.onChangeSD.bind(this);
     this.playRepSound = this.playRepSound.bind(this);
     this.goodRepSound = new Audio(GoodRepSound);
+    this.angleFeetOutwardsSound = new Audio(AngleFeetOutwardsSound);
+    this.bodyStraightSound = new Audio(BodyStraightSound);
+    this.goodJobSound = new Audio(GoodJobSound);
+    this.littleDeeperSound = new Audio(LittleDeeperSound);
+    this.narrowStance = new Audio(NarrowStance);
+    this.shouldersAlign = new Audio(ShouldersAlign);
+    this.widerStance = new Audio(WiderStance);
     this.writeToDatabase = this.writeToDatabase.bind(this);
     this.changeTextColorGood = this.changeTextColorGood.bind(this);
     this.changeTextColorBad = this.changeTextColorBad.bind(this);
@@ -240,6 +268,12 @@ class PoseNet extends React.Component {
     feetSet = false;
     calibrationConfidenceLevel = 0;
     calibrationComplete = false;
+
+    //SAM'S VARIABLES
+    currentCalibrationCounter = 0;
+    shouldersAlignSoundConfidenceLevel = 0;
+    feetWidthSoundConfidenceLevel = 0;
+
     goodRepCounter = 0;
     badRepCounter = 0;
 
@@ -367,13 +401,15 @@ class PoseNet extends React.Component {
 
   resetRepVariables() {
     goodDepth = false;
+    straightUpAndDownSoundPlayed = false;
     goodSD = cueGradeEnum.BAD;
     goodKA = kneeAngleEnum.NEUTRAL;
     straightUpAndDown = true;
     startedRep = false;
     repScore = 0;
     this.onChangeSD("bad");
-    this.onChangeKA(false);
+    // this.onChangeKA(false);
+    this.onChangeKA(kneeAngleEnum.NEUTRAL);
     startRepTimer = null;
   }
 
@@ -602,14 +638,6 @@ class PoseNet extends React.Component {
       }
 
       ctx.clearRect(0, 0, videoWidth, videoHeight);
-      //console.log(ctx);
-      // if (showVideo)
-      //   ctx.save();
-      //   ctx.scale(-1, 1);
-      //   ctx.translate(-videoWidth, 0);
-      //   ctx.drawImage(video, 0, 0, videoWidth, videoHeight);
-      //   ctx.restore();
-      // }
 
       // For each pose (i.e. person) detected in an image, loop through the poses
       // and draw the resulting skeleton and keypoints if over certain confidence
@@ -618,32 +646,41 @@ class PoseNet extends React.Component {
       poses.forEach(({ score, keypoints }) => {
         if (score >= minPoseConfidence) {
           if (!calibrationComplete) {
-            if (analyzeFeetWidth(keypoints)) {
+            if (analyzeFeetWidth(keypoints) === feetWidthEnum.GOOD) {
               this.onChangeFW(true);
               feetSet = true;
+              feetWidthSoundConfidenceLevel = 0;
             } else {
               this.onChangeFW(false);
               feetSet = false;
+              feetWidthSoundConfidenceLevel++;
+              if (feetWidthSoundConfidenceLevel === 30) {
+                if (analyzeFeetWidth(keypoints) === feetWidthEnum.WIDE) {
+                  this.narrowStance.play();
+                }
+                else if (analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW) {
+                  this.widerStance.play();
+                }
+
+              }
             }
 
             if (analyzeShoulderAlignment(keypoints)) {
               this.onChangeSA(true);
               shouldersSet = true;
+              shouldersAlignSoundConfidenceLevel = 0;
             } else {
               this.onChangeSA(false);
               shouldersSet = false;
+              shouldersAlignSoundConfidenceLevel++;
+              if (shouldersAlignSoundConfidenceLevel === 30) {
+                this.shouldersAlign.play();
+              }
             }
-
-            /*if (analyzeKneeAngle(keypoints)) {
-              this.onChangeKA(true);
-              goodKA = true;
-            } else {
-              this.onChangeKA(false);
-              goodKA = false;
-            }*/
 
             if (feetSet && shouldersSet) {
               calibrationConfidenceLevel++;
+              currentCalibrationCounter++;
               startingLeftHipX.push(keypoints[11].position.x);
               startingLeftHipY.push(keypoints[11].position.y);
               startingRightHipX.push(keypoints[12].position.x);
@@ -652,7 +689,11 @@ class PoseNet extends React.Component {
               startingRightShoulderX.push(keypoints[6].position.x);
               startingLeftKneeY.push(keypoints[13].position.y);
             } else {
+              currentCalibrationCounter++;
+            }
+            if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10) {
               calibrationConfidenceLevel = 0;
+              currentCalibrationCounter = 0;
               startingLeftHipX = [];
               startingLeftHipY = [];
               startingRightHipX = [];
@@ -662,9 +703,9 @@ class PoseNet extends React.Component {
               startingLeftKneeY = [];
             }
 
-            if (calibrationConfidenceLevel > 75) {
+            if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10) {
               calibrationComplete = true;
-              for (var i = 0; i < 75; i++) {
+              for (var i = 0; i < calibrationConfidenceLevel; i++) {
                 startingAvgLeftHipX += startingLeftHipX[i];
                 startingAvgLeftHipY += startingLeftHipY[i];
                 startingAvgRightHipX += startingRightHipX[i];
@@ -674,13 +715,13 @@ class PoseNet extends React.Component {
                 startingAvgLeftKneeY += startingLeftKneeY[i];
               }
 
-              startingAvgLeftHipX /= 75;
-              startingAvgLeftHipY /= 75;
-              startingAvgRightHipX /= 75;
-              startingAvgRightHipY /= 75;
-              startingAvgLeftShoulderX /= 75;
-              startingAvgRightShoulderX /= 75;
-              startingAvgLeftKneeY /= 75;
+              startingAvgLeftHipX /= calibrationConfidenceLevel;
+              startingAvgLeftHipY /= calibrationConfidenceLevel;
+              startingAvgRightHipX /= calibrationConfidenceLevel;
+              startingAvgRightHipY /= calibrationConfidenceLevel;
+              startingAvgLeftShoulderX /= calibrationConfidenceLevel;
+              startingAvgRightShoulderX /= calibrationConfidenceLevel;
+              startingAvgLeftKneeY /= calibrationConfidenceLevel;
               this.onChangeCalibrationState(true);
               // this.props.startListening();
               // console.log("Calibration complete");
@@ -708,6 +749,10 @@ class PoseNet extends React.Component {
               keypoints[6].position.x < startingAvgRightShoulderX - 10
             ) {
               straightUpAndDown = false;
+              if (straightUpAndDownSoundPlayed === false) {
+                this.bodyStraightSound.play();
+                straightUpAndDownSoundPlayed = true;
+              }
             }
             //Assume that FW and SA will be "good" for all repetitions
             goodFW = true;
@@ -731,6 +776,7 @@ class PoseNet extends React.Component {
               goodDepth = false;
               goodSD = cueGradeEnum.OKAY;
               goodKA = kneeAngleEnum.NEUTRAL;
+
             }
 
             distanceLeftHipFromStarting = distanceFormula(
@@ -755,10 +801,18 @@ class PoseNet extends React.Component {
                 if (goodSD === cueGradeEnum.GOOD) {
                   repScore += 2;
                   SDcount++;
+
+                  if (goodKA === kneeAngleEnum.BAD) {
+                    this.angleFeetOutwardsSound.play();
+                  }
                 } else if (goodSD === cueGradeEnum.OKAY) {
                   repScore += 1;
                   SDokayCount++;
+                  this.littleDeeperSound.play();
+                } else if (goodSD === cueGradeEnum.BAD) {
+                  this.littleDeeperSound.play();
                 }
+
                 if (goodKA === kneeAngleEnum.GOOD) {
                   repScore += 2;
                   KAcount++;
@@ -790,12 +844,38 @@ class PoseNet extends React.Component {
 
                   // console.log("Bad reps: " + badRepCounter);
                 }
-                this.onChangeSetScore(
-                  setScore / (goodRepCounter + badRepCounter) / 6
-                );
+                this.onChangeSetScore(setScore / (goodRepCounter + badRepCounter) / 6);
                 var repStats = [goodSD, straightUpAndDown, goodFW, goodKA];
                 repStatsList.push(repStats);
                 // console.log(repStats);
+
+                // if(goodSD === cueGradeEnum.GOOD) {
+                //   console.log("Good squat depth");
+                // } else if(goodSD === cueGradeEnum.NEUTRAL) {
+                //   console.log("Okay squat depth");
+                // } else {
+                //   console.log("Bad squat depth");
+                // }
+                //
+                // if(straightUpAndDown === true) {
+                //   console.log("Good balance?");
+                // } else {
+                //   console.log("Bad balance?");
+                // }
+                //
+                // if(goodFW === true) {
+                //   console.log("Good feet width");
+                // } else {
+                //   console.log("Bad feet width");
+                // }
+                //
+                // if(goodKA === cueGradeEnum.GOOD) {
+                //   console.log("Good squat depth");
+                // } else if(goodKA === cueGradeEnum.NEUTRAL) {
+                //   console.log("Okay squat depth");
+                // } else {
+                //   console.log("Bad squat depth");
+                // }
 
                 this.resetRepVariables();
               }
