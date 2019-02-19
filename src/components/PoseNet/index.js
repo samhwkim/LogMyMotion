@@ -776,6 +776,7 @@ class PoseNet extends React.Component {
             ) {
               calibrationComplete = true;
               this.calibrationCompleteSound.play();
+              this.props.startListening();
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
                 startingAvgLeftHipX += startingLeftHipX[i];
                 startingAvgLeftHipY += startingLeftHipY[i];
@@ -794,7 +795,7 @@ class PoseNet extends React.Component {
               startingAvgRightShoulderX /= calibrationConfidenceLevel;
               startingAvgLeftKneeY /= calibrationConfidenceLevel;
               this.onChangeCalibrationState(true);
-              // this.props.startListening();
+
               // console.log("Calibration complete");
             }
           } else {
@@ -899,7 +900,7 @@ class PoseNet extends React.Component {
 
                 setScore += repScore;
                 this.onChangeSetScore(setScore);
-                if (repScore >= 4) {
+                if (repScore >= 5) {
                   goodRepCounter++;
                   this.onChangeGoodRep(true);
                   this.onChangeGoodRep(false);
@@ -1309,8 +1310,8 @@ const speechRecognitionOptions = {
 const PoseNetForm = compose(
   withRouter,
   withFirebase,
-  SpeechRecognition
-  //SpeechRecognition(speechRecognitionOptions),
+  //SpeechRecognition
+  SpeechRecognition(speechRecognitionOptions),
 )(PoseNet);
 
 export default PoseNetForm;
