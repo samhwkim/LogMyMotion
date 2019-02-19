@@ -16,7 +16,7 @@ const pluginWrapper = () => {
    */
 };
 
-const originalColors = ["#fafafa", "#e6f3fe", "#e6f3fe", "#e6f3fe"];
+const originalColors = ["#FCFEFC", "#cccccc", "#D3D3E4", "#e6f3fe"];
 
 export default class Title extends React.Component {
   constructor(props) {
@@ -50,7 +50,7 @@ export default class Title extends React.Component {
         <ReactFullpage
           debug /* Debug logging */
           navigation
-          anchors={["firstPage", "secondPage", "thirdPage"]}
+          anchors={["firstPage", "secondPage", "thirdPage", "fourthPage"]}
           sectionSelector={SECTION_SEL}
           onLeave={this.onLeave.bind(this)}
           sectionsColor={this.state.sectionsColor}
