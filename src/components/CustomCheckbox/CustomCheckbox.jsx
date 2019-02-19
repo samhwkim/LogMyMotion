@@ -16,7 +16,7 @@ class CustomCheckbox extends Component {
     const classes =
       inline !== undefined ? "checkbox checkbox-inline" : "checkbox";
     return (
-      <div className={classes}>
+      <div className={classes} style={{pointerEvents:"none"}}>
         <input
           id={number}
           type="checkbox"

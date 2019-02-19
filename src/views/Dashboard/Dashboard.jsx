@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import ChartistGraph from "react-chartist";
 import { PanelGroup, Panel, Nav, NavItem, Tab, Grid, Row, Col } from 'react-bootstrap';
 
-// react components used to create a SVG / Vector map
-
 import Card from "../../components/Card/Card.jsx";
 import { StatsCard } from "../../components/StatsCard/StatsCard.jsx";
 import { Tasks } from "../../components/Tasks/Tasks.jsx";
@@ -19,22 +17,25 @@ import {
 } from "../../variables/Variables.jsx";
 import { AuthUserContext, withAuthorization } from '../../components/Session';
 
-var mapData = {
-  AU: 760,
-  BR: 550,
-  CA: 120,
-  DE: 1300,
-  FR: 540,
-  GB: 690,
-  GE: 200,
-  IN: 200,
-  RO: 600,
-  RU: 300,
-  US: 2920
-};
+const generalChallengesList = [
+  'Complete your first ',
+  "Complete 5 good repetitions",
+  "Complete at least 10 perfect repetitions in one set",
+  "Workout for three consecutive days",
+  'Complete at least 10 repetitions with perfect squat depth',
+  "Unfollow 5 enemies from twitter",
+  "Unfollow 5 enemies from twitter",
+];
 
-
-
+const squatChallengesList = [
+  'Complete your first workout',
+  "Complete 5 good repetitions",
+  "Complete at least 10 perfect repetitions in one set",
+  "Workout for three consecutive days",
+  'Complete at least 10 repetitions with perfect squat depth',
+  "Unfollow 5 enemies from twitter",
+  "Unfollow 5 enemies from twitter",
+];
 
 
 class Dashboard extends Component {
@@ -57,6 +58,20 @@ class Dashboard extends Component {
               <i className="fa fa-circle text-info" /> Good Cue
               <i className="fa fa-circle text-danger" /> Bad Cue
             </div>
+          }
+        />
+      </Tab.Pane>
+    );
+
+    let challenges = (workout, eventKey, challengesList) => (
+      <Tab.Pane eventKey={eventKey}>
+        <Card
+          title={workout}
+          category="Complete the challenges below"
+          content={
+            <table className="table">
+              <Tasks challengesList={challengesList} />
+            </table>
           }
         />
       </Tab.Pane>
@@ -108,7 +123,7 @@ class Dashboard extends Component {
             <Col lg={150}>
               <Card
                 title="Workout History"
-                category="24 Hours performance"
+                category="Last 10 Workouts Performance"
                 content={
                   <ChartistGraph
                     data={dataSales}
@@ -119,10 +134,9 @@ class Dashboard extends Component {
                 }
                 legend={
                   <div>
-                    <i className="fa fa-circle text-info" /> Open
-                    <i className="fa fa-circle text-danger" /> Click
-                    <i className="fa fa-circle text-warning" /> Click Second
-                    Time
+                    <i className="fa fa-circle text-info" /> Squat
+                    <i className="fa fa-circle text-danger" /> Bench Press
+                    <i className="fa fa-circle text-warning" /> Barbell Press
                   </div>
                 }
                 stats={
@@ -157,30 +171,20 @@ class Dashboard extends Component {
                 <Row className="clearfix">
                   <Col sm={12}>
                     <Nav bsStyle="tabs">
-                      <NavItem eventKey="1">Squat</NavItem>
-                      <NavItem eventKey="2">Bench Press</NavItem>
-                      <NavItem eventKey="3">Barbell Rows</NavItem>
+                      <NavItem eventKey="1">General</NavItem>
+                      <NavItem eventKey="2">Squat</NavItem>
+                      <NavItem eventKey="3">Bench Press</NavItem>
+                      <NavItem eventKey="4">Barbell Rows</NavItem>
                     </Nav>
                   </Col>
                   <Col sm={12}>
                     <Tab.Content animation>
-                      <Tab.Pane eventKey="1">
-                        <Card
-                          title="Squat Challenges"
-                          category="Complete the challenges below"
-                          content={
-                            <table className="table">
-                              <Tasks />
-                            </table>
-                          }
-
-                        />
-                      </Tab.Pane>
+                      {challenges("General Challenges", "1", generalChallengesList)}
+                      {challenges("Squat Challenges", "2", squatChallengesList)}
                     </Tab.Content>
                   </Col>
                 </Row>
               </Tab.Container>
-
             </Col>
           </Row>
         </Grid>

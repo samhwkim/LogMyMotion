@@ -2,7 +2,6 @@ import React from 'react';
 import { AuthUserContext } from '../Session';
 import { BrowserRouter as Router, Route, Switch, HashRouter } from 'react-router-dom';
 
-
 import LandingPage from '../MainPages/landingpage';
 import Signup from "../../layouts/Pages/Pages.jsx";
 import Login from "../../layouts/Pages/Pages.jsx";
@@ -11,7 +10,6 @@ import Dashboard from "../../layouts/Dashboard/Dashboard.jsx";
 import WorkoutCalendar from "../../layouts/WorkoutCalendar/WorkoutCalendar.jsx";
 import { withAuthentication } from '../Session';
 import indexRoutes from "../../constants/index.jsx";
-
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../assets/css/animate.min.css";
@@ -28,7 +26,5 @@ const App = () => (
     </Switch>
   </Router>
 );
-
-
 
 export default withAuthentication(App);
