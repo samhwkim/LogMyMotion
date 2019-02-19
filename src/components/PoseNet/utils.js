@@ -104,9 +104,9 @@ export function drawSquatDepthLine(
   canvasWidth
 ) {
   ctx.beginPath();
-  ctx.moveTo(0, startingAvgLeftKneeY - 15);
-  ctx.lineTo(600, startingAvgLeftKneeY - 15);
-  if (currentLeftHipY < startingAvgLeftKneeY - 15) {
+  ctx.moveTo(0, startingAvgLeftKneeY - 20);
+  ctx.lineTo(600, startingAvgLeftKneeY - 20);
+  if (currentLeftHipY < startingAvgLeftKneeY - 20) {
     ctx.strokeStyle = "red";
   } else {
     ctx.strokeStyle = "green";
