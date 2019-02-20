@@ -43,6 +43,7 @@ let goodDepth = false;
 let startedRep = false;
 let goodRepCounter = 0;
 let badRepCounter = 0;
+let afterSet = false;
 
 let shouldersAlignSoundConfidenceLevel = 0;
 let feetWidthSoundConfidenceLevel = 0;
@@ -226,6 +227,7 @@ class PoseNet extends React.Component {
     feetSet = false;
     calibrationConfidenceLevel = 0;
     calibrationComplete = false;
+    afterSet = false;
 
     //SAM'S VARIABLES
     currentCalibrationCounter = 0;
@@ -697,8 +699,7 @@ class PoseNet extends React.Component {
       // scores
 
       poses.forEach(({ score, keypoints }) => {
-        if (score >= minPoseConfidence) {
-
+        if (score >= minPoseConfidence && !afterSet) {
           // Calibration
           if (!calibrationComplete) {
             // Checks that feet width is good
@@ -776,6 +777,7 @@ class PoseNet extends React.Component {
             ) {
               calibrationComplete = true;
               this.calibrationCompleteSound.play();
+              this.props.startListening();
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
                 startingAvgLeftHipX += startingLeftHipX[i];
                 startingAvgLeftHipY += startingLeftHipY[i];
@@ -794,7 +796,7 @@ class PoseNet extends React.Component {
               startingAvgRightShoulderX /= calibrationConfidenceLevel;
               startingAvgLeftKneeY /= calibrationConfidenceLevel;
               this.onChangeCalibrationState(true);
-              // this.props.startListening();
+
               // console.log("Calibration complete");
             }
           } else {
@@ -837,7 +839,7 @@ class PoseNet extends React.Component {
               if (analyzeKneeAngle(keypoints) == true) {
                 goodKA = kneeAngleEnum.GOOD;
                 this.onChangeKA(goodKA);
-              } else {
+              } else if(goodKA === kneeAngleEnum.BAD) {
                 goodKA = kneeAngleEnum.BAD;
                 this.onChangeKA(goodKA);
               }
@@ -899,7 +901,7 @@ class PoseNet extends React.Component {
 
                 setScore += repScore;
                 this.onChangeSetScore(setScore);
-                if (repScore >= 4) {
+                if (repScore >= 5) {
                   goodRepCounter++;
                   this.onChangeGoodRep(true);
                   this.onChangeGoodRep(false);
@@ -1009,6 +1011,8 @@ class PoseNet extends React.Component {
 
     if (this.props.transcript.includes("done")) {
       this.showSummary();
+      calibrationComplete = false;
+      afterSet = true;
       this.props.resetTranscript();
       this.setState({ repData: repStatsList });
       //this.writeToDatabase(repStatsList, setScore);
@@ -1309,8 +1313,8 @@ const speechRecognitionOptions = {
 const PoseNetForm = compose(
   withRouter,
   withFirebase,
-  SpeechRecognition
-  //SpeechRecognition(speechRecognitionOptions),
+  //SpeechRecognition
+  SpeechRecognition(speechRecognitionOptions),
 )(PoseNet);
 
 export default PoseNetForm;
