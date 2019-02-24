@@ -56,6 +56,7 @@ let startingRightHipY = [];
 let startingLeftShoulderX = [];
 let startingRightShoulderX = [];
 let startingLeftKneeY = [];
+let recordedVideo = false;
 
 let startingAvgLeftHipX = 0;
 let startingAvgLeftHipY = 0;
@@ -91,17 +92,14 @@ const feetWidthEnum = {
   NARROW: "narrow"
 };
 
-const INITIAL_STATE = {
-  repData: "testing",
-  error: null
-};
-
 const LABELS = [
   "Squat Depth",
   "Feet Width",
   "Shoulder Alignment",
   "Knee Angle"
 ];
+
+const videoType = 'video/webm';
 
 let goodSD = cueGradeEnum.BAD;
 let goodFW = false;
@@ -161,7 +159,8 @@ class PoseNet extends React.Component {
       summaryVisible: false,
       badCounter: 0,
       setScore: 0,
-      repData: []
+      repData: [],
+      videos: [],
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -209,16 +208,7 @@ class PoseNet extends React.Component {
     let mm = today.getMonth() + 1; // January is 0!
     let yyyy = today.getFullYear();
 
-    // if (dd < 10) {
-    //   dd = '0' + dd;
-    // }
-    //
-    // if (mm < 10) {
-    //   mm = '0' + mm;
-    // }
-
     today = mm + "-" + dd + "-" + yyyy;
-
     return today.toString();
   }
 
@@ -616,9 +606,48 @@ class PoseNet extends React.Component {
         // Once the video metadata is ready, we can start streaming video
         video.play();
         resolve(video);
+        // window.
+        this.mediaRecorder = new MediaRecorder(stream, {
+          mimeType: videoType,
+        });
+
+        this.chunks = [];
+
+        this.mediaRecorder.ondataavailable = e => {
+          if (e.data && e.data.size > 0) {
+            this.chunks.push(e.data);
+          }
+        };
+
       };
     });
   }
+
+  startRecording() {
+    // e.preventDefault();
+    // wipe old data chunks
+    this.chunks = [];
+    // start recorder with 10ms buffer
+    this.mediaRecorder.start(10);
+    // say that we're recording
+  }
+
+  async stopRecording() {
+    // e.preventDefault();
+   // stop the recorder
+   this.mediaRecorder.stop();
+   // say that we're not recording
+   // save the video to memory
+   await this.saveVideo();
+ }
+
+ saveVideo() {
+   const blob = new Blob(this.chunks, {type: videoType});
+   let videoURL = window.URL.createObjectURL(blob);
+   const videos = this.state.videos.concat([videoURL]);
+   recordedVideo = true;
+   this.setState({videos});
+ }
 
   detectPose() {
     const { videoWidth, videoHeight } = this.props;
@@ -776,6 +805,7 @@ class PoseNet extends React.Component {
               calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10
             ) {
               calibrationComplete = true;
+              this.startRecording();
               this.calibrationCompleteSound.play();
               this.props.startListening();
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
@@ -816,6 +846,8 @@ class PoseNet extends React.Component {
                 600
               );
             }
+
+
 
             if (
               keypoints[5].position.x > startingAvgLeftShoulderX + 15 ||
@@ -908,6 +940,7 @@ class PoseNet extends React.Component {
                   this.changeTextColorGood(true);
                   //console.log(this.state.backgroundcolorGood);
                   this.playRepSound("good");
+                  // this.stopRecording();
                   setTimeout(this.changeTextColorGood, 1000);
 
                   //console.log(this.state.backgroundcolorGood);
@@ -932,6 +965,16 @@ class PoseNet extends React.Component {
                 this.resetRepVariables();
               }
             }
+            if (this.props.transcript.includes("done")) {
+              this.stopRecording();
+              this.showSummary();
+              calibrationComplete = false;
+              afterSet = true;
+              this.props.resetTranscript();
+              this.setState({ repData: repStatsList });
+              //this.writeToDatabase(repStatsList, setScore);
+              // this.readFromDatabase();
+            }
           }
 
           if (showPoints) {
@@ -955,7 +998,22 @@ class PoseNet extends React.Component {
     poseDetectionFrameInner();
   }
 
+
   render() {
+
+    function createDonutData(dataLabels, dataSeries) {
+      return {
+        type: "Pie",
+        data: {
+          labels: dataLabels,
+          series: dataSeries,
+        },
+        options: {
+          donut: true
+        }
+      };
+  }
+
     const {
       backgroundcolorSA,
       backgroundcolorFW,
@@ -1009,15 +1067,17 @@ class PoseNet extends React.Component {
       textKA = "Good";
     }
 
-    if (this.props.transcript.includes("done")) {
-      this.showSummary();
-      calibrationComplete = false;
-      afterSet = true;
-      this.props.resetTranscript();
-      this.setState({ repData: repStatsList });
-      //this.writeToDatabase(repStatsList, setScore);
-      // this.readFromDatabase();
-    }
+    // if (this.props.transcript.includes("done")) {
+    //   this.stopRecording();
+    //   console.log(this.state.videos);
+    //   this.showSummary();
+    //   calibrationComplete = false;
+    //   afterSet = true;
+    //   this.props.resetTranscript();
+    //   this.setState({ repData: repStatsList });
+    //   //this.writeToDatabase(repStatsList, setScore);
+    //   // this.readFromDatabase();
+    // }
 
     const styles = {
       overflowY: "scroll",
@@ -1063,64 +1123,26 @@ class PoseNet extends React.Component {
       ]
     };
 
-    const setScoreData = {
-      type: "Pie",
-      data: {
-        labels: ["Set Score", "Bad Set Score"],
-        series: [this.state.setScore, 1 - this.state.setScore]
-      },
-      options: {
-        donut: true
-      }
-    };
+    const setScoreData = createDonutData(["Set Score", "Bad Set Score"], [this.state.setScore, 1 - this.state.setScore]);
+    const sdDonutData = createDonutData(["Good Reps", "Okay Reps", "Bad Reps"], [SDcount, goodRepCounter + badRepCounter - SDcount - SDokayCount, SDokayCount]);
+    const fwDonutData = createDonutData(["Good Reps", "Bad Reps"], [FWcount, goodRepCounter + badRepCounter - FWcount]);
+    const saDonutData = createDonutData(["Good Reps", "Bad Reps"], [SAcount, goodRepCounter + badRepCounter - SAcount]);
+    const kaDonutData = createDonutData(["Good Reps", "Bad Reps"], [KAcount, goodRepCounter + badRepCounter - KAcount]);
 
-    const sdDonutData = {
-      type: "Pie",
-      data: {
-        labels: ["Good Reps", "Okay Reps", "Bad Reps"],
-        series: [
-          SDcount,
-          goodRepCounter + badRepCounter - SDcount - SDokayCount,
-          SDokayCount
-        ]
-      },
-      options: {
-        donut: true
-      }
-    };
-
-    const fwDonutData = {
-      type: "Pie",
-      data: {
-        labels: ["Good Reps", "Bad Reps"],
-        series: [FWcount, goodRepCounter + badRepCounter - FWcount]
-      },
-      options: {
-        donut: true
-      }
-    };
-
-    const saDonutData = {
-      type: "Pie",
-      data: {
-        labels: ["Good Reps", "Bad Reps"],
-        series: [SAcount, goodRepCounter + badRepCounter - SAcount]
-      },
-      options: {
-        donut: true
-      }
-    };
-
-    const kaDonutData = {
-      type: "Pie",
-      data: {
-        labels: ["Good Reps", "Bad Reps"],
-        series: [KAcount, goodRepCounter + badRepCounter - KAcount]
-      },
-      options: {
-        donut: true
-      }
-    };
+    let workoutVideo;
+    if(this.state.videos.length > 0) {
+      workoutVideo = (
+        <video
+          autoPlay
+          loop
+          style={{width: "100%" }}
+          src={this.state.videos[0]}>
+          Video is not available
+        </video>
+      );
+    } else {
+        workoutVideo = null;
+    }
 
     let workoutSummary;
     if (this.state.summaryVisible) {
@@ -1137,19 +1159,22 @@ class PoseNet extends React.Component {
             Score: {(this.state.setScore * 100).toFixed(2)} %{" "}
           </div>
           <Grid fluid>
+          <Row>
+            {workoutVideo}
+          </Row>
             <Row>
-              <Card
-                title={"Cue Performance"}
-                category={"Bar Chart"}
-                content={
-                  <ChartistGraph
-                    data={RepChartData.data}
-                    type={RepChartData.type}
-                    options={RepChartData.options}
-                    responsiveOptions={RepChartData.responsiveOptions}
-                  />
-                }
-              />
+            <Card
+              title={"Cue Performance"}
+              category={"Bar Chart"}
+              content={
+                <ChartistGraph
+                  data={RepChartData.data}
+                  type={RepChartData.type}
+                  options={RepChartData.options}
+                  responsiveOptions={RepChartData.responsiveOptions}
+                />
+              }
+            />
             </Row>
             <Row>
               <Col lg={3} sm={6}>
