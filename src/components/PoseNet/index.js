@@ -871,7 +871,7 @@ class PoseNet extends React.Component {
               if (analyzeKneeAngle(keypoints) == true) {
                 goodKA = kneeAngleEnum.GOOD;
                 this.onChangeKA(goodKA);
-              } else if(goodKA === kneeAngleEnum.BAD) {
+              } else {
                 goodKA = kneeAngleEnum.BAD;
                 this.onChangeKA(goodKA);
               }
