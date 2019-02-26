@@ -256,6 +256,7 @@ class PoseNet extends React.Component {
 
     repStatsList = [];
     this.hideSummary();
+    this.setState({videos: []});
     this.canvas
       .getContext("2d")
       .clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
@@ -428,6 +429,7 @@ class PoseNet extends React.Component {
       })
     }
 
+    this.setState({videos: []});
     this.props.history.push(ROUTES.HOME);
   }
 
@@ -624,20 +626,14 @@ class PoseNet extends React.Component {
   }
 
   startRecording() {
-    // e.preventDefault();
     // wipe old data chunks
     this.chunks = [];
     // start recorder with 10ms buffer
     this.mediaRecorder.start(10);
-    // say that we're recording
   }
 
   async stopRecording() {
-    // e.preventDefault();
-   // stop the recorder
    this.mediaRecorder.stop();
-   // say that we're not recording
-   // save the video to memory
    await this.saveVideo();
  }
 
