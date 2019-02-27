@@ -879,12 +879,7 @@ class PoseNet extends React.Component {
               goodKA = kneeAngleEnum.NEUTRAL;
             }
 
-            distanceLeftHipFromStarting = distanceFormula(
-              startingAvgLeftHipX,
-              startingAvgLeftHipY,
-              keypoints[11].position.x,
-              keypoints[11].position.y
-            );
+            distanceLeftHipFromStarting = keypoints[11].position.y - startingAvgLeftHipY;
 
             // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP STARTS. ADJUST THIS NUMBER TO INCREASE DISTANCE
             // NEEDED TO REGISTER A STARTED REP STATE
