@@ -9,7 +9,8 @@ const dashboardRoutes = [
     path: "/home",
     name: "Dashboard",
     icon: "pe-7s-graph",
-    component: Dashboard
+    component: Dashboard,
+    cueScores: true
   },
   {
     path: "/calendar",

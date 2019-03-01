@@ -56,6 +56,14 @@ class Calendar extends Component {
     }
   }
 
+  componentDidMount() {
+    window.dispatchEvent(new Event('resize'));
+  }
+
+  componentDidUpdate() {
+    window.dispatchEvent(new Event('resize'));
+  }
+
   async selectedEvent(event) {
     this.showExerciseChooser();
     // Clear the main set list before population
@@ -108,6 +116,10 @@ class Calendar extends Component {
     return {
       className: backgroundColor
     };
+  }
+
+  handleSelect() {
+    window.dispatchEvent(new Event('resize'));
   }
 
 
@@ -170,12 +182,10 @@ class Calendar extends Component {
         <Row className="clearfix">
           <Col sm={12}>
             <Nav bsStyle="tabs">
-
               {listOfSetData.map((prop, key) => {
                 opt['eventKey'] = `set_${key+1}`;
                 return <NavItem {...opt}>Set #{key+1}</NavItem>;
               })}
-
             </Nav>
           </Col>
           <Col sm={12}>
@@ -183,6 +193,7 @@ class Calendar extends Component {
               {listOfSetData.map((prop, key) => {
                 opt = {};
                 opt['eventKey'] = `set_${key+1}`;
+                opt['onEnter'] = this.handleSelect;
                 return (
                   <Tab.Pane {...opt}>
                     <div align="center">Score: {(listOfSetData[key].setScore)} % </div>

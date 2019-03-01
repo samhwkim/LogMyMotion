@@ -21,7 +21,7 @@ class CustomCheckbox extends Component {
           id={number}
           type="checkbox"
           onChange={this.handleClick}
-          checked={this.state.is_checked}
+          checked={isChecked}
           {...rest}
         />
         <label htmlFor={number}>{label}</label>

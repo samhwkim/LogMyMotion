@@ -23,19 +23,32 @@ let badScores = [];
 let cueScoreSeries = [];
 let savedUid = "";
 
+let dataBar;
+// let workoutCompletedToday = false;
 
 class Dashboard extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      workoutCompletedToday: false
+    }
     this.componentDidMount = this.componentDidMount.bind(this);
     this.sleep = this.sleep.bind(this);
   }
 
   async fetchCalendarData(dbRef) {
     let snapshot = await dbRef.once("value");
+    let today = new Date();
+
     if (snapshot.exists()) {
       snapshot.forEach((child) => {
         let dateArr = child.key.split("-");
+        let workoutDate = new Date(dateArr[2], dateArr[0]-1, dateArr[1]);
+
+        if (today.getFullYear() === workoutDate.getFullYear() && today.getDate() === workoutDate.getDate() && today.getMonth() === workoutDate.getMonth()) {
+          this.setState({workoutCompletedToday: true});
+        }
+
         for (let i = 0; i < child.numChildren(); i++) {
           //child.key is date
           var event = {
@@ -49,7 +62,7 @@ class Dashboard extends Component {
           events.push(event);
         }
       });
-      this.setState({ a: 1 });
+
     }
     else {
       console.log("No Dates Found");
@@ -82,19 +95,19 @@ class Dashboard extends Component {
     else {
       console.log("something is not right.");
     }
-
-      console.log(cueScoreSeries);
   }
 
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
+
   async componentDidMount() {
+    window.stub = this;
     events = [];
     goodScores = [];
     badScores = [];
-    cueScoreSeries = [];
+
 
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel);
@@ -110,9 +123,6 @@ class Dashboard extends Component {
 
       let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
       this.fetchCalendarData(workoutHistoryRef);
-
-      let cueScoreRef = this.props.firebase.generalStats(currentUserUid);
-      this.fetchBarGraphData(cueScoreRef);
     }
   }
 
@@ -144,10 +154,25 @@ class Dashboard extends Component {
     }
   }
 
-  componentWillMount() {
+  async componentWillMount() {
     if (document.documentElement.className.indexOf("nav-open") !== -1) {
       document.documentElement.classList.toggle("nav-open");
     }
+
+    cueScoreSeries = [];
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+    let cueScoreRef = this.props.firebase.generalStats(currentUserUid);
+    await this.fetchBarGraphData(cueScoreRef);
+    dataBar = {
+      labels: [
+        "Squat Depth",
+        "Shoulder Alignment",
+        "Feet Width",
+        "Knee Angle",
+      ],
+      series: cueScoreSeries,
+    };
+
   }
   render() {
     return (
@@ -190,6 +215,14 @@ class Dashboard extends Component {
 
                       />
                     );
+                } else if(prop.cueScores) {
+                  return (
+                    <Route
+                      path={prop.path}
+                      render={(props) => <prop.component {...props} dataBar={dataBar} challenge={this.state.workoutCompletedToday}/>}
+                      key={key}
+                    />
+                  );
                 }
                 else
                   return (

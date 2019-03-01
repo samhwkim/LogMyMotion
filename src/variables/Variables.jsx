@@ -652,8 +652,8 @@ var responsiveSales = [
 var dataBar = {
   labels: [
     "Squat Depth",
-    "Feet Width",
     "Shoulder Alignment",
+    "Feet Width",
     "Knee Angle",
   ],
 

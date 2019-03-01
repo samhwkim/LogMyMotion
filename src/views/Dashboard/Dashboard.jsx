@@ -10,44 +10,30 @@ import {
   dataSales,
   optionsSales,
   responsiveSales,
-  dataBar,
   optionsBar,
   responsiveBar,
   table_data
 } from "../../variables/Variables.jsx";
 import { AuthUserContext, withAuthorization } from '../../components/Session';
 
-const generalChallengesList = [
-  'Complete your first ',
-  "Complete 5 good repetitions",
-  "Complete at least 10 perfect repetitions in one set",
-  "Workout for three consecutive days",
-  'Complete at least 10 repetitions with perfect squat depth',
-  "Unfollow 5 enemies from twitter",
-  "Unfollow 5 enemies from twitter",
-];
-
 const squatChallengesList = [
-  'Complete your first workout',
-  "Complete 5 good repetitions",
+  'Complete 5 repetitions',
+  'Complete a set with perfect squat depth for each rep',
+  'Complete a set with perfect shoulder alignment for each rep',
   "Complete at least 10 perfect repetitions in one set",
-  "Workout for three consecutive days",
-  'Complete at least 10 repetitions with perfect squat depth',
-  "Unfollow 5 enemies from twitter",
-  "Unfollow 5 enemies from twitter",
+  "Complete a set with perfect knee angle for each rep",
 ];
 
 
 class Dashboard extends Component {
   render() {
-
     let cueHistoryGraph = (workout, eventKey ) => (
       <Tab.Pane eventKey={eventKey}>
         <Card
           title={workout}
           content={
             <ChartistGraph
-              data={dataBar}
+              data={this.props.dataBar}
               type="Bar"
               options={optionsBar}
               responsiveOptions={responsiveBar}
@@ -70,7 +56,7 @@ class Dashboard extends Component {
           category="Complete the challenges below"
           content={
             <table className="table">
-              <Tasks challengesList={challengesList} />
+              <Tasks challengesList={challengesList} challengeCompleted={this.props.challenge} />
             </table>
           }
         />
@@ -171,16 +157,14 @@ class Dashboard extends Component {
                 <Row className="clearfix">
                   <Col sm={12}>
                     <Nav bsStyle="tabs">
-                      <NavItem eventKey="1">General</NavItem>
-                      <NavItem eventKey="2">Squat</NavItem>
-                      <NavItem eventKey="3">Bench Press</NavItem>
-                      <NavItem eventKey="4">Barbell Rows</NavItem>
+                      <NavItem eventKey="1">Squat</NavItem>
+                      <NavItem eventKey="2">Bench Press</NavItem>
+                      <NavItem eventKey="3">Barbell Rows</NavItem>
                     </Nav>
                   </Col>
                   <Col sm={12}>
                     <Tab.Content animation>
-                      {challenges("General Challenges", "1", generalChallengesList)}
-                      {challenges("Squat Challenges", "2", squatChallengesList)}
+                      {challenges("Squat Challenges", "1", squatChallengesList)}
                     </Tab.Content>
                   </Col>
                 </Row>

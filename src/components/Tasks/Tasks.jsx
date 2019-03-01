@@ -6,6 +6,10 @@ export class Tasks extends Component {
     super(props);
   }
 
+  componentWillMount() {
+        this.setState({ a: 1 });
+  }
+
   handleCheckbox = event => {
     const target = event.target;
     console.log(event.target);
@@ -24,7 +28,7 @@ export class Tasks extends Component {
           <td>
             <Checkbox
               number={number}
-              isChecked={i === 1 || i === 2 ? true : false}
+              isChecked={i === 0 && this.props.challengeCompleted ? true : false}
             />
           </td>
           <td>{tasks_title[i]}</td>
