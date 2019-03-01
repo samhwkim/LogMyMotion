@@ -15,9 +15,6 @@ import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ChartistGraph from "react-chartist";
 import Button from '../../components/CustomButton/CustomButton.jsx';
-import squatIMG from "../../assets/img/squat.png";
-import benchpressIMG from "../../assets/img/benchpress.png";
-import barbellrowIMG from "../../assets/img/barbellrow.png";
 
 
 import "rodal/lib/rodal.css";
@@ -35,7 +32,6 @@ class Calendar extends Component {
     this.state = {
       events: events,
       summaryVisible: false,
-      exerciseChooserVisible: false,
     };
   }
 
@@ -65,7 +61,7 @@ class Calendar extends Component {
   }
 
   async selectedEvent(event) {
-    this.showExerciseChooser();
+
     // Clear the main set list before population
     listOfSetData = [];
     // Retrieve the current user uid
@@ -84,6 +80,7 @@ class Calendar extends Component {
 
     let setsRef = this.props.firebase.sets(currentUserUid, workoutDate, workoutTitle);
     await this.getSets(setsRef);
+    this.showSummary();
   }
 
   showSummary() {
@@ -92,19 +89,6 @@ class Calendar extends Component {
 
   hideSummary() {
     this.setState({ summaryVisible: false });
-  }
-
-  hideExerciseChooser() {
-    this.setState({ exerciseChooserVisible: false });
-    this.showSummary();
-  }
-
-  exitExerciseChooser() {
-    this.setState({ exerciseChooserVisible: false });
-  }
-
-  showExerciseChooser() {
-    this.setState({ exerciseChooserVisible: true });
   }
 
 
@@ -238,47 +222,9 @@ class Calendar extends Component {
       );
     }
 
-    let exerciseChooser;
-    if(this.state.exerciseChooserVisible) {
-      exerciseChooser = (
-        <Rodal
-          visible={this.state.exerciseChooserVisible}
-          onClose={this.exitExerciseChooser.bind(this)}
-          measure={"%"}
-          width={80}
-          height={80}
-          customStyles={styles}>
-          <div className="main-content">
-            <Grid fluid>
-              <Row className="text-center">
-                <Col>
-                  <h1>Choose Your Exercise.</h1>
-                </Col>
-              </Row>
-            <br />
-              <Row>
-                <Col sm={4} className="text-center" style={{overflow: "auto"}}>
-                  <Button onClick={this.hideExerciseChooser.bind(this)} bsSize="lg">Squat</Button>
-                  <img src={squatIMG} className="img-responsive" style={{marginTop: "5%"}} />
-                </Col>
-                <Col sm={4} className="text-center">
-                  <Button bsSize="lg">Bench Press</Button>
-                  <img src={benchpressIMG} className="img-responsive" style={{marginTop: "5%"}}/>
-                </Col>
-                <Col sm={4} className="text-center">
-                  <Button bsSize="lg">Barbell Rows</Button>
-                  <img src={barbellrowIMG} className="img-responsive" style={{marginTop: "5%"}} />
-                </Col>
-              </Row>
-            </Grid>
-          </div>
-        </Rodal>
-      );
-    }
 
     return (
       <div className="main-content">
-        {exerciseChooser}
         {workoutSummary}
         <Grid fluid>
           <Row>
