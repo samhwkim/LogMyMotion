@@ -24,7 +24,8 @@ export function drawKeypoints(
       const { y, x } = keypoint.position;
       ctx.beginPath();
       ctx.arc(x * scale, y * scale, 3, 0, 2 * Math.PI);
-      ctx.fillStyle = skeletonColor;
+      // ctx.fillStyle = skeletonColor;
+      ctx.fillStyle = "rgba(0, 255, 255, 0.5)";
       ctx.fill();
     }
   });
@@ -39,7 +40,8 @@ function drawSegment([ay, ax], [by, bx], color, lineWidth, scale, ctx) {
   ctx.moveTo(ax * scale, ay * scale);
   ctx.lineTo(bx * scale, by * scale);
   ctx.lineWidth = lineWidth;
-  ctx.strokeStyle = color;
+  // ctx.strokeStyle = color;
+  ctx.strokeStyle = "rgba(0, 255, 255, 0.5)";
   ctx.stroke();
 }
 

@@ -26,46 +26,137 @@ const localizer = BigCalendar.momentLocalizer(moment);
 // each rep will be a list of cue grades
 let listOfSetData = [];
 
+// retreive the blobs from Firebase Storage, then convert to videos!
+let listOfBlobs = [];
+let listOfTempVideos = [];
+let listOfFinalVideos = [];
+
+let listOfSDDonutData = [];
+let listOfSADonutData = [];
+let listOfFWDonutData = [];
+let listOfKADonutData = [];
+
+let globalWorkoutTitle = null;
+let globalSetTitle = null;
+let globalDate = null;
+let uid = null;
+
 class Calendar extends Component {
   constructor(props) {
     super(props);
     this.state = {
       events: events,
       summaryVisible: false,
+      videos: [],
     };
+  }
+
+  createDonutData(dataLabels, dataSeries) {
+    return {
+      type: "Pie",
+      data: {
+        labels: dataLabels,
+        series: dataSeries,
+      },
+      options: {
+        donut: true
+      }
+    };
+  }
+
+  convertBlobToVideo() {
+    for (let i = 0; i < listOfBlobs.length; i++) {
+      let videoURL = window.URL.createObjectURL(listOfBlobs[i]);
+      listOfTempVideos.push(videoURL);
+    }
   }
 
   async getSets(ref) {
     let snapshot = await ref.once("value");
     if (snapshot.exists()) {
+      const stub = [];
       snapshot.forEach((child) => {
-
+        globalSetTitle = child.key;
         let set = {
           setData: child.val().setData,
           setScore: child.val().setScore,
+          setCueScores: child.val().chartData,
+          setRepCount: child.val().reps,
         };
 
+        // Save data for the donut charts!
+        let sdDonut = this.createDonutData(["Good Reps", "Okay Reps", "Bad Reps"], [set.setCueScores[0][0], set.setCueScores[0][1],  set.setRepCount - set.setCueScores[0][0] - set.setCueScores[0][1]]);
+        let saDonut = this.createDonutData(["Good Reps", "Bad Reps"], [set.setCueScores[0][2], set.setRepCount - set.setCueScores[0][2]]);
+        let fwDonut = this.createDonutData(["Good Reps", "Bad Reps"], [set.setCueScores[0][3], set.setRepCount - set.setCueScores[0][3]]);
+        let kaDonut = this.createDonutData(["Good Reps", "Bad Reps"], [set.setCueScores[0][4], set.setRepCount - set.setCueScores[0][4]]);
+
+        listOfSDDonutData.push(sdDonut);
+        listOfSADonutData.push(saDonut);
+        listOfFWDonutData.push(fwDonut);
+        listOfKADonutData.push(kaDonut);
+
         listOfSetData.push(set);
+
+        // retrieve respective video
+        // console.log(`users/${uid}/workoutVideos/${globalDate}/${globalWorkoutTitle}/${globalSetTitle}/video`);
+         stub.push(new Promise((resolve) => {
+           this.props.firebase.createStorageRef(uid, globalDate, globalWorkoutTitle, globalSetTitle)
+          .getDownloadURL()
+          .then(async function(url) {
+              var xhr = await new XMLHttpRequest();
+              xhr.responseType = 'blob';
+              xhr.onload = function(event) {
+                var blob = xhr.response;
+                listOfBlobs.push(blob);
+                resolve();
+              };
+              xhr.open('GET', url);
+              xhr.send();
+
+          }).catch(function(error) {
+            // Handle any error
+          })
+        }));
       });
+      return Promise.all(stub);
+
     } else {
       console.log("no sets found");
     }
   }
 
-  componentDidMount() {
-    window.dispatchEvent(new Event('resize'));
-  }
+  prepareVideoObjects() {
+    let workoutVideo;
+    for (let i = 0; i < listOfTempVideos.length; i++) {
+      workoutVideo = (
+        <video
+          autoPlay
+          loop
+          style={{width: "100%" }}
+          src={listOfTempVideos[i]}>
+          Video is not available
+        </video>
+      );
 
-  componentDidUpdate() {
-    window.dispatchEvent(new Event('resize'));
+      listOfFinalVideos.push(workoutVideo);
+    }
   }
 
   async selectedEvent(event) {
-
-    // Clear the main set list before population
+    // Clear lists before population
     listOfSetData = [];
+    listOfBlobs = [];
+    listOfTempVideos = [];
+    listOfFinalVideos = [];
+
+    listOfSDDonutData = [];
+    listOfSADonutData = [];
+    listOfFWDonutData = [];
+    listOfKADonutData = [];
+
     // Retrieve the current user uid
     let currentUserUid = this.props.firebase.getCurrentUserUid();
+    uid = currentUserUid;
 
     // Retrieve and format the Firebase date title
     let date = event.start;
@@ -73,13 +164,21 @@ class Calendar extends Component {
     let month = date.getMonth() + 1;
     let year = date.getFullYear();
     let workoutDate = month + "-" + day + "-" + year;
+    globalDate = workoutDate;
 
     // Retrieve and format the Firebase workout title
     let workoutNum = (event.title).toString().slice(-1);
     let workoutTitle = "workout_" + workoutNum;
+    globalWorkoutTitle = workoutTitle;
 
     let setsRef = this.props.firebase.sets(currentUserUid, workoutDate, workoutTitle);
-    await this.getSets(setsRef);
+    await this.getSets(setsRef); // retrieves set info & set video
+
+    // convert the downloaded blobs into videos (populates listOfTempVideos)
+    this.convertBlobToVideo();
+    // prepare and define the video components (populates listOfFinalVideos)
+    this.prepareVideoObjects();
+
     this.showSummary();
   }
 
@@ -108,6 +207,18 @@ class Calendar extends Component {
 
 
   render() {
+    function createDonutData(dataLabels, dataSeries) {
+      return {
+        type: "Pie",
+        data: {
+          labels: dataLabels,
+          series: dataSeries,
+        },
+        options: {
+          donut: true
+        }
+      };
+    }
 
     const graph_data = {
       type: "Bar",
@@ -133,20 +244,19 @@ class Calendar extends Component {
         }
       },
       responsiveOptions: [
-    [
-      "screen and (max-width: 640px)",
-      {
-        seriesBarDistance: 5,
-        axisX: {
-          labelInterpolationFnc: function(value) {
-            return value[0];
+        [
+          "screen and (max-width: 640px)",
+          {
+            seriesBarDistance: 5,
+            axisX: {
+              labelInterpolationFnc: function(value) {
+                return value[0];
+              }
+            }
           }
-        }
-      }
-    ]
-  ]
-};
-
+        ]
+      ]
+    };
 
     const styles = {
       overflowY: "scroll",
@@ -189,6 +299,64 @@ class Calendar extends Component {
                         name='rating'
                       />
                     </div>
+                    <div align="center">Score: {(listOfSetData[key].setScore)} % </div>
+                    <Row>
+                      {listOfFinalVideos[key]}
+                    </Row>
+                    <Row>
+                    <Col lg={3} sm={6}>
+                      <Card
+                        title={"Squat Depth"}
+                        category={"Donut"}
+                        content={
+                          <ChartistGraph
+                            data={listOfSDDonutData[key].data}
+                            type={listOfSDDonutData[key].type}
+                            options={listOfSDDonutData[key].options}
+                          />
+                        }
+                      />
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <Card
+                        title={"Feet Width"}
+                        category={"Donut"}
+                        content={
+                          <ChartistGraph
+                            data={listOfFWDonutData[key].data}
+                            type={listOfFWDonutData[key].type}
+                            options={listOfFWDonutData[key].options}
+                          />
+                        }
+                      />
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <Card
+                        title={"Shoulder Alignment"}
+                        category={"Donut"}
+                        content={
+                          <ChartistGraph
+                            data={listOfSADonutData[key].data}
+                            type={listOfSADonutData[key].type}
+                            options={listOfSADonutData[key].options}
+                          />
+                        }
+                      />
+                    </Col>
+                    <Col lg={3} sm={6}>
+                      <Card
+                        title={"Knee Angle"}
+                        category={"Donut"}
+                        content={
+                          <ChartistGraph
+                            data={listOfKADonutData[key].data}
+                            type={listOfKADonutData[key].type}
+                            options={listOfKADonutData[key].options}
+                          />
+                        }
+                      />
+                    </Col>
+                    </Row>
                         <Card
                           title={"Cue Performance"}
                           category={"Bar Chart"}

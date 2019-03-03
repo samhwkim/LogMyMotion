@@ -36,6 +36,9 @@ class Dashboard extends Component {
     this.sleep = this.sleep.bind(this);
   }
 
+  async fetchVideoData(storageRef) {
+  }
+
   async fetchCalendarData(dbRef) {
     let snapshot = await dbRef.once("value");
     let today = new Date();

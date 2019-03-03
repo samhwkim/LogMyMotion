@@ -57,7 +57,6 @@ let startingRightHipY = [];
 let startingLeftShoulderX = [];
 let startingRightShoulderX = [];
 let startingLeftKneeY = [];
-let recordedVideo = false;
 
 let startingAvgLeftHipX = 0;
 let startingAvgLeftHipY = 0;
@@ -116,6 +115,8 @@ let setScore = 0.0;
 let repStatsList = [];
 let barChartData = [];
 let donutChartData = [];
+
+let globalBlob;
 
 
 function distanceFormula(x1, y1, x2, y2) {
@@ -380,11 +381,15 @@ class PoseNet extends React.Component {
           [setTitle]: {
             setData: setData,
             setScore: score,
-            chartData: [[SDcount, SAcount, FWcount, KAcount]],
+            chartData: [[SDcount, SDokayCount, SAcount, FWcount, KAcount]],
             reps: repsCompleted,
           }
         }
       });
+
+      // save the video recording from this set
+      this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
+
     } else {
       let setString = "set_";
       let urlRef = this.props.firebase.sets(currentUserUid, date, workoutTitle);
@@ -398,10 +403,13 @@ class PoseNet extends React.Component {
         [setTitle]: {
           setData: setData,
           setScore: score,
-          chartData: [[SDcount, SAcount, FWcount, KAcount]],
+          chartData: [[SDcount, SDokayCount, SAcount, FWcount, KAcount]],
           reps: repsCompleted,
         }
       });
+
+      // save the video recording from this set
+      this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
     }
 
     // CLEAR DATA FOR NEW SET!
@@ -445,6 +453,7 @@ class PoseNet extends React.Component {
     this.onChangeSD("bad");
     this.onChangeKA(kneeAngleEnum.NEUTRAL);
     startRepTimer = null;
+    globalBlob = null;
   }
 
   onChangeSA(inputEntry) {
@@ -640,10 +649,18 @@ class PoseNet extends React.Component {
 
  saveVideo() {
    const blob = new Blob(this.chunks, {type: videoType});
+   // save the blob to be used in the writeToDatabase()
+   globalBlob = blob;
+
    let videoURL = window.URL.createObjectURL(blob);
    const videos = this.state.videos.concat([videoURL]);
-   recordedVideo = true;
    this.setState({videos});
+ }
+
+ storeVideo(uid, date, workoutId, setId, blob) {
+   this.props.firebase.createStorageRef(uid, date, workoutId, setId).put(blob).then(function(snapshot) {
+     console.log('Uploaded a blob or file!');
+   });
  }
 
   detectPose() {
@@ -865,7 +882,7 @@ class PoseNet extends React.Component {
               this.onChangeSD("good");
               goodDepth = true;
               goodSD = cueGradeEnum.GOOD;
-              if (analyzeKneeAngle(keypoints) == true) {
+              if (analyzeKneeAngle(keypoints) === true) {
                 goodKA = kneeAngleEnum.GOOD;
                 this.onChangeKA(goodKA);
               } else {
@@ -1116,7 +1133,7 @@ class PoseNet extends React.Component {
     };
 
     const setScoreData = createDonutData(["Set Score", "Bad Set Score"], [this.state.setScore, 1 - this.state.setScore]);
-    const sdDonutData = createDonutData(["Good Reps", "Okay Reps", "Bad Reps"], [SDcount, goodRepCounter + badRepCounter - SDcount - SDokayCount, SDokayCount]);
+    const sdDonutData = createDonutData(["Good Reps", "Okay Reps", "Bad Reps"], [SDcount, SDokayCount, goodRepCounter + badRepCounter - SDcount - SDokayCount]);
     const fwDonutData = createDonutData(["Good Reps", "Bad Reps"], [FWcount, goodRepCounter + badRepCounter - FWcount]);
     const saDonutData = createDonutData(["Good Reps", "Bad Reps"], [SAcount, goodRepCounter + badRepCounter - SAcount]);
     const kaDonutData = createDonutData(["Good Reps", "Bad Reps"], [KAcount, goodRepCounter + badRepCounter - KAcount]);

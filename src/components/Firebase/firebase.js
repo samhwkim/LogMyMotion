@@ -1,7 +1,7 @@
 import app from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-
+import 'firebase/storage';
 
 const config = {
   apiKey: "AIzaSyDQ-I5WQ38dLbX7wXBxjctB3qHNsZU2Vco",
@@ -17,6 +17,7 @@ class Firebase {
     app.initializeApp(config);
     this.auth = app.auth();
     this.db = app.database();
+    this.storage = app.storage();
   }
 
   // *** Auth API ***
@@ -54,7 +55,7 @@ class Firebase {
 
   totalWorkouts = (uid) => this.db.ref(`users/${uid}/generalStats`);
   updateTotalWorkouts = (uid) => this.db.ref(`users/${uid}/generalStats`);
-  
+
   dates = (uid) => this.db.ref(`users/${uid}/workoutHistory`);
 
   addWorkout = (uid, date) => this.db.ref(`users/${uid}/workoutHistory/${date}`);
@@ -66,6 +67,14 @@ class Firebase {
   addSetScore = (uid, date, workoutId, setId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${workoutId}/${setId}`);
 
   sets = (uid, date, workoutId) => this.db.ref(`users/${uid}/workoutHistory/${date}/${workoutId}`);
+
+  /* Firebase Storage API */
+
+  createStorageRef = (uid, date, workoutId, setId) => this.storage.ref(`users/${uid}/workoutVideos/${date}/${workoutId}/${setId}/video`);
+
+  storageRef = () => this.storage.ref();
+
+  saveVideo = (uid) => this.storage.ref(`users/${uid}/workoutVideos`);
 
 }
 
