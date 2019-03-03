@@ -15,7 +15,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { compose } from 'recompose';
 import ChartistGraph from "react-chartist";
 import Button from '../../components/CustomButton/CustomButton.jsx';
-
+import StarRatings from 'react-star-ratings';
 
 import "rodal/lib/rodal.css";
 const localizer = BigCalendar.momentLocalizer(moment);
@@ -180,7 +180,15 @@ class Calendar extends Component {
                 opt['onEnter'] = this.handleSelect;
                 return (
                   <Tab.Pane {...opt}>
-                    <div align="center">Score: {(listOfSetData[key].setScore)} % </div>
+                    <div align="center">
+                      <StarRatings
+                        rating={(listOfSetData[key].setScore/100 * 5)}
+                        starRatedColor="gold"
+                        changeRating={this.changeRating}
+                        numberOfStars={5}
+                        name='rating'
+                      />
+                    </div>
                         <Card
                           title={"Cue Performance"}
                           category={"Bar Chart"}

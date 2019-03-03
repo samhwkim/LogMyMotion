@@ -23,6 +23,7 @@ import { Link, withRouter } from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
 import { compose } from "recompose";
 import Button from "../CustomButton/CustomButton.jsx";
+import StarRatings from 'react-star-ratings';
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -1147,7 +1148,13 @@ class PoseNet extends React.Component {
           customStyles={styles}
         >
           <div align="center">
-            Score: {(this.state.setScore * 100).toFixed(2)} %{" "}
+            <StarRatings
+              rating={(this.state.setScore * 5)}
+              starRatedColor="gold"
+              changeRating={this.changeRating}
+              numberOfStars={5}
+              name='rating'
+            />
           </div>
           <Grid fluid>
           <Row>
