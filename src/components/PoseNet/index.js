@@ -1223,20 +1223,6 @@ class PoseNet extends React.Component {
             {workoutVideo}
           </Row>
             <Row>
-            <Card
-              title={"Cue Performance"}
-              category={"Bar Chart"}
-              content={
-                <ChartistGraph
-                  data={RepChartData.data}
-                  type={RepChartData.type}
-                  options={RepChartData.options}
-                  responsiveOptions={RepChartData.responsiveOptions}
-                />
-              }
-            />
-            </Row>
-            <Row>
               <Col lg={3} sm={6}>
                 <Card
                   title={"Squat Depth"}

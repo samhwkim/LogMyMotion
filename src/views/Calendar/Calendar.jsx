@@ -342,7 +342,6 @@ class Calendar extends Component {
                         name='rating'
                       />
                     </div>
-                    <div align="center">Score: {(listOfSetData[key].setScore)} % </div>
                     <Row>
                       {listOfFinalVideos[key]}
                     </Row>
@@ -400,18 +399,6 @@ class Calendar extends Component {
                       />
                     </Col>
                     </Row>
-                        <Card
-                          title={"Cue Performance"}
-                          category={"Bar Chart"}
-                          content={
-                            <ChartistGraph
-                              data={graph_data.data}
-                              type={graph_data.type}
-                              options={graph_data.options}
-                              responsiveOptions={graph_data.responsiveOptions}
-                            />
-                          }
-                        />
                     <SummaryTable
                       numReps={listOfSetData[key].setData.length}
                       repStatsList={listOfSetData[key].setData}
