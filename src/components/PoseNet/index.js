@@ -1142,11 +1142,46 @@ class PoseNet extends React.Component {
       ]
     };
 
-    const setScoreData = createDonutData(["Set Score", "Bad Set Score"], [this.state.setScore, 1 - this.state.setScore]);
-    const sdDonutData = createDonutData(["Good Reps", "Okay Reps", "Bad Reps"], [SDcount, SDokayCount, goodRepCounter + badRepCounter - SDcount - SDokayCount]);
-    const fwDonutData = createDonutData(["Good Reps", "Bad Reps"], [FWcount, goodRepCounter + badRepCounter - FWcount]);
-    const saDonutData = createDonutData(["Good Reps", "Bad Reps"], [SAcount, goodRepCounter + badRepCounter - SAcount]);
-    const kaDonutData = createDonutData(["Good Reps", "Bad Reps"], [KAcount, goodRepCounter + badRepCounter - KAcount]);
+    let SDOkayLabel;
+    if (SDokayCount === 0) {
+      SDOkayLabel = " ";
+    } else {
+      SDOkayLabel = "Okay";
+    }
+
+    let SDBadLabel;
+    if (goodRepCounter + badRepCounter - SDcount - SDokayCount === 0) {
+      SDBadLabel = " ";
+    } else {
+      SDBadLabel = "Bad"
+    }
+
+    let SABadLabel;
+    if (goodRepCounter + badRepCounter - SAcount === 0) {
+      SABadLabel = " ";
+    } else {
+      SABadLabel = "Bad";
+    }
+
+    let FWBadLabel;
+    if (goodRepCounter + badRepCounter - FWcount === 0) {
+      FWBadLabel = " ";
+    } else {
+      FWBadLabel = "Bad";
+    }
+
+    let KABadLabel;
+    if (goodRepCounter + badRepCounter - KAcount === 0) {
+      KABadLabel = " ";
+    }
+    else {
+      KABadLabel = "Bad";
+    }
+
+    const sdDonutData = createDonutData(["Good", SDBadLabel, SDOkayLabel], [SDcount, goodRepCounter + badRepCounter - SDcount - SDokayCount, SDokayCount,]);
+    const saDonutData = createDonutData(["Good", SABadLabel], [SAcount, goodRepCounter + badRepCounter - SAcount]);
+    const fwDonutData = createDonutData(["Good", FWBadLabel], [FWcount, goodRepCounter + badRepCounter - FWcount]);
+    const kaDonutData = createDonutData(["Good", KABadLabel], [KAcount, goodRepCounter + badRepCounter - KAcount]);
 
     let workoutVideo;
     if(this.state.videos.length > 0) {

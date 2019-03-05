@@ -84,11 +84,49 @@ class Calendar extends Component {
           setRepCount: child.val().reps,
         };
 
+        let SDOkayLabel;
+        if (set.setCueScores[0][1] === 0) {
+          SDOkayLabel = " ";
+        } else {
+          SDOkayLabel = "Okay";
+        }
+
+        let SDBadLabel;
+        if (set.setRepCount - set.setCueScores[0][0] - set.setCueScores[0][1] === 0) {
+          SDBadLabel = " ";
+        } else {
+          SDBadLabel = "Bad"
+        }
+
+        let SABadLabel;
+        if (set.setRepCount - set.setCueScores[0][2] === 0) {
+          SABadLabel = " ";
+        } else {
+          SABadLabel = "Bad";
+        }
+
+        let FWBadLabel;
+        if (set.setRepCount - set.setCueScores[0][3] === 0) {
+          FWBadLabel = " ";
+        } else {
+          FWBadLabel = "Bad";
+        }
+
+        let KABadLabel;
+        if (set.setRepCount - set.setCueScores[0][4] === 0) {
+          KABadLabel = " ";
+        }
+        else {
+          KABadLabel = "Bad";
+        }
+
+
+
         // Save data for the donut charts!
-        let sdDonut = this.createDonutData(["Good Reps", "Okay Reps", "Bad Reps"], [set.setCueScores[0][0], set.setCueScores[0][1],  set.setRepCount - set.setCueScores[0][0] - set.setCueScores[0][1]]);
-        let saDonut = this.createDonutData(["Good Reps", "Bad Reps"], [set.setCueScores[0][2], set.setRepCount - set.setCueScores[0][2]]);
-        let fwDonut = this.createDonutData(["Good Reps", "Bad Reps"], [set.setCueScores[0][3], set.setRepCount - set.setCueScores[0][3]]);
-        let kaDonut = this.createDonutData(["Good Reps", "Bad Reps"], [set.setCueScores[0][4], set.setRepCount - set.setCueScores[0][4]]);
+        let sdDonut = this.createDonutData(["Good", SDBadLabel, SDOkayLabel], [set.setCueScores[0][0], set.setRepCount - set.setCueScores[0][0] - set.setCueScores[0][1], set.setCueScores[0][1]]);
+        let saDonut = this.createDonutData(["Good", SABadLabel], [set.setCueScores[0][2], set.setRepCount - set.setCueScores[0][2]]);
+        let fwDonut = this.createDonutData(["Good", FWBadLabel], [set.setCueScores[0][3], set.setRepCount - set.setCueScores[0][3]]);
+        let kaDonut = this.createDonutData(["Good", KABadLabel], [set.setCueScores[0][4], set.setRepCount - set.setCueScores[0][4]]);
 
         listOfSDDonutData.push(sdDonut);
         listOfSADonutData.push(saDonut);
