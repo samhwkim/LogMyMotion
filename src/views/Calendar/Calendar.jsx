@@ -125,6 +125,7 @@ class Calendar extends Component {
     }
   }
 
+
   prepareVideoObjects() {
     let workoutVideo;
     for (let i = 0; i < listOfTempVideos.length; i++) {
@@ -140,6 +141,10 @@ class Calendar extends Component {
 
       listOfFinalVideos.push(workoutVideo);
     }
+  }
+
+  componentDidMount() {
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 1000);
   }
 
   async selectedEvent(event) {
@@ -179,6 +184,7 @@ class Calendar extends Component {
     // prepare and define the video components (populates listOfFinalVideos)
     this.prepareVideoObjects();
 
+    console.log("summary clicked!!");
     this.showSummary();
   }
 
@@ -204,7 +210,6 @@ class Calendar extends Component {
   handleSelect() {
     window.dispatchEvent(new Event('resize'));
   }
-
 
   render() {
     function createDonutData(dataLabels, dataSeries) {

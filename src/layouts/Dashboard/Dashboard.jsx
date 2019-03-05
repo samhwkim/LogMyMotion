@@ -64,6 +64,8 @@ class Dashboard extends Component {
 
           events.push(event);
         }
+
+        this.setState({a: "b"});
       });
 
     }
@@ -175,6 +177,8 @@ class Dashboard extends Component {
       ],
       series: cueScoreSeries,
     };
+
+    this.setState({a: 'a'})
 
   }
   render() {

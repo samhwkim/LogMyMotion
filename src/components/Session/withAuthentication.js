@@ -29,11 +29,24 @@ const withAuthentication = Component => {
     }
 
     render() {
-      return (
-        <AuthUserContext.Provider value={this.state.authUser}>
-          {<Component {...this.props} />}
-        </AuthUserContext.Provider>
-      );
+      let alwaysRender = false;
+      if (window.location.pathname === "/" || window.location.pathname === "/login" || window.location.pathname === "/signup") {
+        alwaysRender = true;
+      }
+
+      if (alwaysRender === true) {
+        return (
+          <AuthUserContext.Provider value={this.state.authUser}>
+            {<Component {...this.props} />}
+          </AuthUserContext.Provider>
+        );
+      } else {
+        return (
+          <AuthUserContext.Provider value={this.state.authUser}>
+            {this.state.authUser ? <Component {...this.props} /> : null}
+          </AuthUserContext.Provider>
+        );
+      }
     }
   }
 

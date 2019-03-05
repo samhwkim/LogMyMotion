@@ -55,6 +55,13 @@ const styles = theme => ({
 });
 
 class MuiVirtualizedTable extends React.PureComponent {
+  componentDidMount() {
+    setTimeout(() => {
+      console.log('resizing');
+      window.dispatchEvent(new Event('resize'))
+    }, 300);
+  }
+
   getRowClassName = ({ index }) => {
     const { classes, rowClassName, onRowClick } = this.props;
 
