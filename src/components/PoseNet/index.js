@@ -853,6 +853,18 @@ class PoseNet extends React.Component {
                 this.canvas.getContext("2d"),
                 400
               );
+              if (keypoints[5].position.x > startingAvgLeftShoulderX + 15) {
+                this.onChangeSA(false);
+              } else {
+                this.onChangeSA(true);
+              }
+
+              if (keypoints[6].position.x < startingAvgRightShoulderX - 15) {
+                this.onChangeSA(false);
+              } else {
+                this.onChangeSA(true);
+              }
+
               drawSquatDepthLine(
                 startingAvgLeftKneeY,
                 keypoints[11].position.y,
@@ -860,8 +872,6 @@ class PoseNet extends React.Component {
                 600
               );
             }
-
-
 
             if (
               keypoints[5].position.x > startingAvgLeftShoulderX + 15 ||
