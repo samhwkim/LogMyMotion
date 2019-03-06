@@ -3,7 +3,7 @@
 
 .videocueinfo {
   font: 2em "Raleway", Sans-serif;
-  background: rgba(153, 153, 153, 0.4);
+  background: rgba(153, 153, 153, 0.6);
   border-radius: 10px;
   padding: 5px;
   position: absolute;
@@ -12,21 +12,28 @@
 }
 
 .videocueinfo #video-info-SD {
+  color: white;
   padding-top: 5%;
   padding-bottom: 5%;
 }
 
 .videocueinfo #video-info-SA {
+  color: white;
+
   padding-top: 5%;
   padding-bottom: 5%;
 }
 
 .videocueinfo #video-info-FW {
+  color: white;
+
   padding-top: 5%;
   padding-bottom: 5%;
 }
 
 .videocueinfo #video-info-KA {
+  color: white;
+
   padding-top: 5%;
   padding-bottom: 5%;
 }
@@ -76,12 +83,12 @@
 
 .calibration-container {
   font: 3.5em "Raleway", Sans-serif;
-  color: yellow;
+  color: white;
   position: absolute;
   top: 2.5%;
   left: 40%;
   z-index: 1;
-  background: rgba(153, 153, 153, 0.2);
+  background: rgba(153, 153, 153, 0.6);
   border-radius: 10px;
   padding: 5px;
 }
@@ -117,7 +124,7 @@
   top: 2.5%;
   left: 2.5%;
   z-index: 1;
-  background: rgba(153, 153, 153, 0.4);
+  background: rgba(153, 153, 153, 0.6);
   border-radius: 10px;
   padding: 5px;
 }
@@ -129,7 +136,7 @@
   top: 2.5%;
   right: 2.5%;
   z-index: 1;
-  background: rgba(153, 153, 153, 0.4);
+  background: rgba(153, 153, 153, 0.6);
   border-radius: 10px;
   padding: 5px;
 }

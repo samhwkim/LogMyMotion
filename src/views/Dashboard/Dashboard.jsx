@@ -1,6 +1,15 @@
 import React, { Component } from "react";
 import ChartistGraph from "react-chartist";
-import { PanelGroup, Panel, Nav, NavItem, Tab, Grid, Row, Col } from 'react-bootstrap';
+import {
+  PanelGroup,
+  Panel,
+  Nav,
+  NavItem,
+  Tab,
+  Grid,
+  Row,
+  Col
+} from "react-bootstrap";
 
 import Card from "../../components/Card/Card.jsx";
 import { StatsCard } from "../../components/StatsCard/StatsCard.jsx";
@@ -14,20 +23,19 @@ import {
   responsiveBar,
   table_data
 } from "../../variables/Variables.jsx";
-import { AuthUserContext, withAuthorization } from '../../components/Session';
+import { AuthUserContext, withAuthorization } from "../../components/Session";
 
 const squatChallengesList = [
-  'Complete 5 repetitions',
-  'Complete a set with perfect squat depth for each rep',
-  'Complete a set with perfect shoulder alignment for each rep',
+  "Complete 5 repetitions",
+  "Complete a set with perfect squat depth for each rep",
+  "Complete a set with perfect shoulder alignment for each rep",
   "Complete at least 10 perfect repetitions in one set",
-  "Complete a set with perfect knee angle for each rep",
+  "Complete a set with perfect knee angle for each rep"
 ];
-
 
 class Dashboard extends Component {
   render() {
-    let cueHistoryGraph = (workout, eventKey ) => (
+    let cueHistoryGraph = (workout, eventKey) => (
       <Tab.Pane eventKey={eventKey}>
         <Card
           title={workout}
@@ -56,7 +64,10 @@ class Dashboard extends Component {
           category="Complete the challenges below"
           content={
             <table className="table">
-              <Tasks challengesList={challengesList} challengeCompleted={this.props.challenge} />
+              <Tasks
+                challengesList={challengesList}
+                challengeCompleted={this.props.challenge}
+              />
             </table>
           }
         />
@@ -66,9 +77,9 @@ class Dashboard extends Component {
     return (
       <AuthUserContext.Consumer>
         {authUser => (
-      <div className="main-content">
-        <Grid fluid>
-          <Row>
+          <div className="main-content">
+            <Grid fluid>
+              {/* <Row>
             <Col lg={3} sm={6}>
               <StatsCard
                 bigIcon={<i className="pe-7s-server text-warning" />}
@@ -104,76 +115,110 @@ class Dashboard extends Component {
                 statsIconText="Updated now"
               />
             </Col>
-          </Row>
-          <Row>
-            <Col lg={150}>
-              <Card
-                title="Workout History"
-                category="Last 10 Workouts Performance"
-                content={
-                  <ChartistGraph
-                    data={dataSales}
-                    type="Line"
-                    options={optionsSales}
-                    responsiveOptions={responsiveSales}
+          </Row> */}
+              {/* <Row>
+                <Col lg={150}>
+                  <Card
+                    title="Workout History"
+                    category="Last 10 Workouts Performance"
+                    content={
+                      <ChartistGraph
+                        data={dataSales}
+                        type="Line"
+                        options={optionsSales}
+                        responsiveOptions={responsiveSales}
+                      />
+                    }
+                    legend={
+                      <div>
+                        <i className="fa fa-circle text-info" /> Squat
+                        <i className="fa fa-circle text-danger" /> Bench Press
+                        <i className="fa fa-circle text-warning" /> Barbell
+                        Press
+                      </div>
+                    }
+                    stats={
+                      <div>
+                        <i className="fa fa-history" /> Updated 3 minutes ago
+                      </div>
+                    }
                   />
-                }
-                legend={
-                  <div>
-                    <i className="fa fa-circle text-info" /> Squat
-                    <i className="fa fa-circle text-danger" /> Bench Press
-                    <i className="fa fa-circle text-warning" /> Barbell Press
-                  </div>
-                }
-                stats={
-                  <div>
-                    <i className="fa fa-history" /> Updated 3 minutes ago
-                  </div>
-                }
-              />
-            </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
-              <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
-                <Row className="clearfix">
-                  <Col sm={12}>
-                    <Nav bsStyle="tabs">
-                      <NavItem eventKey="1">Squat</NavItem>
-                      <NavItem eventKey="2">Bench Press</NavItem>
-                      <NavItem eventKey="3">Barbell Rows</NavItem>
-                    </Nav>
-                  </Col>
-                  <Col sm={12}>
-                    <Tab.Content animation>
-                      {cueHistoryGraph("Squat Cue History", "1")}
-                    </Tab.Content>
-                  </Col>
-                </Row>
-              </Tab.Container>
-            </Col>
-            <Col md={6}>
-              <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
-                <Row className="clearfix">
-                  <Col sm={12}>
-                    <Nav bsStyle="tabs">
-                      <NavItem eventKey="1">Squat</NavItem>
-                      <NavItem eventKey="2">Bench Press</NavItem>
-                      <NavItem eventKey="3">Barbell Rows</NavItem>
-                    </Nav>
-                  </Col>
-                  <Col sm={12}>
-                    <Tab.Content animation>
-                      {challenges("Squat Challenges", "1", squatChallengesList)}
-                    </Tab.Content>
-                  </Col>
-                </Row>
-              </Tab.Container>
-            </Col>
-          </Row>
-        </Grid>
-      </div>
-      )}
+                </Col>
+              </Row> */}
+              <Row>
+                <Col md={6}>
+                  <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
+                    <Row className="clearfix">
+                      <Col sm={12}>
+                        <Nav bsStyle="tabs">
+                          <NavItem eventKey="1">Squat</NavItem>
+                          <NavItem eventKey="2">Bench Press</NavItem>
+                          <NavItem eventKey="3">Barbell Rows</NavItem>
+                        </Nav>
+                      </Col>
+                      <Col sm={12}>
+                        <Tab.Content animation>
+                          {cueHistoryGraph("Squat Cue History", "1")}
+                        </Tab.Content>
+                      </Col>
+                    </Row>
+                  </Tab.Container>
+                </Col>
+                <Col md={6}>
+                  <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
+                    <Row className="clearfix">
+                      <Col sm={12}>
+                        <Nav bsStyle="tabs">
+                          <NavItem eventKey="1">Squat</NavItem>
+                          <NavItem eventKey="2">Bench Press</NavItem>
+                          <NavItem eventKey="3">Barbell Rows</NavItem>
+                        </Nav>
+                      </Col>
+                      <Col sm={12}>
+                        <Tab.Content animation>
+                          {challenges(
+                            "Squat Challenges",
+                            "1",
+                            squatChallengesList
+                          )}
+                        </Tab.Content>
+                      </Col>
+                    </Row>
+                  </Tab.Container>
+                </Col>
+              </Row>
+              <Row>
+                <Col lg={150}>
+                  <Card
+                    title="Workout History"
+                    category="Last 10 Workouts Performance"
+                    content={
+                      <ChartistGraph
+                        data={dataSales}
+                        type="Line"
+                        options={optionsSales}
+                        responsiveOptions={responsiveSales}
+                      />
+                    }
+                    legend={
+                      <div>
+                        <i className="fa fa-circle text-info" /> Squat
+                        <i className="fa fa-circle text-danger" /> Bench Press
+                        <i className="fa fa-circle text-warning" /> Barbell
+                        Press
+                      </div>
+                    }
+                    stats={
+                      <div>
+                        <i className="fa fa-history" /> Updated 3 minutes ago
+                      </div>
+                    }
+                  />
+                </Col>
+              </Row>
+            </Grid>
+          </div>
+        )}
       </AuthUserContext.Consumer>
     );
   }

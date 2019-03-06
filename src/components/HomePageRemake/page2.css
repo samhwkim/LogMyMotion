@@ -1,8 +1,5 @@
 @charset "UTF-8";
 @import url("https://fonts.googleapis.com/css?family=Raleway");
-@import url("https://fonts.googleapis.com/css?family=Libre+Barcode+39+Text");
-@import url("https://fonts.googleapis.com/css?family=Major+Mono+Display");
-@import url("https://fonts.googleapis.com/css?family=Raleway+Dots");
 
 .about-container {
   text-align: center;
@@ -12,21 +9,25 @@
 }
 
 .about-container .about-title {
-  font: 5em "Raleway", monospace;
-  color: whitesmoke;
-  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
-    1px 1px 0 #000;
-  padding-bottom: 5%;
-}
-
-.about-container .carousel-container img {
-  border-radius: 25px;
-  border: 2px solid #000000;
+  font: 5.1em "Raleway", monospace;
+  color: black;
+  padding-bottom: 2.5%;
 }
 
 .about-container .about-description {
-  font: 2.5em "Raleway", sans-serif;
+  font: 2.2em "Raleway", sans-serif;
   padding-right: 2.5%;
   text-transform: uppercase;
   padding-top: 10%;
+}
+
+.about-container .imageicon-container {
+  font: 1.8em "Raleway", sans-serif;
+}
+.imageicon-container .eyeImage {
+  padding-bottom: 2.5%;
+}
+
+.imageicon-container .crossImage .crossAbout {
+  padding-top: 1%;
 }

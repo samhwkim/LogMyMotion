@@ -7,7 +7,7 @@ import ChartistGraph from "react-chartist";
 import Card from "../Card/Card.jsx";
 import { isMobile, drawKeypoints, drawSkeleton } from "./utils";
 import GoodRepSound from "../../assets/audio/Goodrep.mp3";
-import CalibrationCompleteSound from "../../assets/audio/calibrationcomplete.mp3"
+import CalibrationCompleteSound from "../../assets/audio/calibrationcomplete.mp3";
 import AngleFeetOutwardsSound from "../../assets/audio/anglefeetoutwards.mp3";
 import BodyStraightSound from "../../assets/audio/bodystraight.mp3";
 import GoodJobSound from "../../assets/audio/goodjob.mp3";
@@ -23,7 +23,7 @@ import { Link, withRouter } from "react-router-dom";
 import * as ROUTES from "../../constants/routes";
 import { compose } from "recompose";
 import Button from "../CustomButton/CustomButton.jsx";
-import StarRatings from 'react-star-ratings';
+import StarRatings from "react-star-ratings";
 
 import { analyzeSquatDepth } from "./squat_depth_cue";
 import { analyzeFeetWidth } from "./feet_width_cue";
@@ -99,7 +99,7 @@ const LABELS = [
   "Knee Angle"
 ];
 
-const videoType = 'video/webm';
+const videoType = "video/webm";
 
 let goodSD = cueGradeEnum.BAD;
 let goodFW = false;
@@ -117,7 +117,6 @@ let barChartData = [];
 let donutChartData = [];
 
 let globalBlob;
-
 
 function distanceFormula(x1, y1, x2, y2) {
   var result = Math.sqrt(Math.pow(y2 - y1, 2) + Math.pow(x2 - x1, 2));
@@ -162,7 +161,7 @@ class PoseNet extends React.Component {
       badCounter: 0,
       setScore: 0,
       repData: [],
-      videos: [],
+      videos: []
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -258,7 +257,7 @@ class PoseNet extends React.Component {
 
     repStatsList = [];
     this.hideSummary();
-    this.setState({videos: []});
+    this.setState({ videos: [] });
     this.canvas
       .getContext("2d")
       .clearRect(0, 0, this.props.videoWidth, this.props.videoHeight);
@@ -297,13 +296,12 @@ class PoseNet extends React.Component {
     snapshot = await totalSetsRef.once("value");
     if (snapshot.child("totalSets").exists()) {
       this.props.firebase.updateTotalSets(currentUserUid).update({
-        totalSets: snapshot.val().totalSets + 1,
+        totalSets: snapshot.val().totalSets + 1
       });
-    }
-    else {
+    } else {
       this.props.firebase.updateTotalSets(currentUserUid).update({
-        totalSets: 1,
-      })
+        totalSets: 1
+      });
     }
 
     // update total number of reps performed
@@ -382,14 +380,13 @@ class PoseNet extends React.Component {
             setData: setData,
             setScore: score,
             chartData: [[SDcount, SDokayCount, SAcount, FWcount, KAcount]],
-            reps: repsCompleted,
+            reps: repsCompleted
           }
         }
       });
 
       // save the video recording from this set
       this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
-
     } else {
       let setString = "set_";
       let urlRef = this.props.firebase.sets(currentUserUid, date, workoutTitle);
@@ -404,7 +401,7 @@ class PoseNet extends React.Component {
           setData: setData,
           setScore: score,
           chartData: [[SDcount, SDokayCount, SAcount, FWcount, KAcount]],
-          reps: repsCompleted,
+          reps: repsCompleted
         }
       });
 
@@ -429,16 +426,15 @@ class PoseNet extends React.Component {
     let snapshot = await totalWorkoutsRef.once("value");
     if (snapshot.child("totalWorkouts").exists()) {
       this.props.firebase.updateTotalWorkouts(currentUserUid).update({
-        totalWorkouts: snapshot.val().totalWorkouts + 1,
+        totalWorkouts: snapshot.val().totalWorkouts + 1
+      });
+    } else {
+      this.props.firebase.updateTotalWorkouts(currentUserUid).update({
+        totalWorkouts: 1
       });
     }
-    else {
-      this.props.firebase.updateTotalWorkouts(currentUserUid).update({
-        totalWorkouts: 1,
-      })
-    }
 
-    this.setState({videos: []});
+    this.setState({ videos: [] });
     this.props.history.push(ROUTES.HOME);
   }
 
@@ -620,7 +616,7 @@ class PoseNet extends React.Component {
         resolve(video);
         // window.
         this.mediaRecorder = new MediaRecorder(stream, {
-          mimeType: videoType,
+          mimeType: videoType
         });
 
         this.chunks = [];
@@ -630,7 +626,6 @@ class PoseNet extends React.Component {
             this.chunks.push(e.data);
           }
         };
-
       };
     });
   }
@@ -643,25 +638,28 @@ class PoseNet extends React.Component {
   }
 
   async stopRecording() {
-   this.mediaRecorder.stop();
-   await this.saveVideo();
- }
+    this.mediaRecorder.stop();
+    await this.saveVideo();
+  }
 
- saveVideo() {
-   const blob = new Blob(this.chunks, {type: videoType});
-   // save the blob to be used in the writeToDatabase()
-   globalBlob = blob;
+  saveVideo() {
+    const blob = new Blob(this.chunks, { type: videoType });
+    // save the blob to be used in the writeToDatabase()
+    globalBlob = blob;
 
-   let videoURL = window.URL.createObjectURL(blob);
-   const videos = this.state.videos.concat([videoURL]);
-   this.setState({videos});
- }
+    let videoURL = window.URL.createObjectURL(blob);
+    const videos = this.state.videos.concat([videoURL]);
+    this.setState({ videos });
+  }
 
- storeVideo(uid, date, workoutId, setId, blob) {
-   this.props.firebase.createStorageRef(uid, date, workoutId, setId).put(blob).then(function(snapshot) {
-     console.log('Uploaded a blob or file!');
-   });
- }
+  storeVideo(uid, date, workoutId, setId, blob) {
+    this.props.firebase
+      .createStorageRef(uid, date, workoutId, setId)
+      .put(blob)
+      .then(function(snapshot) {
+        console.log("Uploaded a blob or file!");
+      });
+  }
 
   detectPose() {
     const { videoWidth, videoHeight } = this.props;
@@ -802,7 +800,10 @@ class PoseNet extends React.Component {
 
             // We can adjust the number subtracted to maxCalibrationConfidenceLevel to a higher value
             // if we want to allow for some frames to be detected as outliers
-            if (currentCalibrationCounter == maxCalibrationConfidenceLevel && calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10) {
+            if (
+              currentCalibrationCounter == maxCalibrationConfidenceLevel &&
+              calibrationConfidenceLevel < maxCalibrationConfidenceLevel - 10
+            ) {
               calibrationConfidenceLevel = 0;
               currentCalibrationCounter = 0;
               startingLeftHipX = [];
@@ -907,7 +908,8 @@ class PoseNet extends React.Component {
               goodKA = kneeAngleEnum.NEUTRAL;
             }
 
-            distanceLeftHipFromStarting = keypoints[11].position.y - startingAvgLeftHipY;
+            distanceLeftHipFromStarting =
+              keypoints[11].position.y - startingAvgLeftHipY;
 
             // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP STARTS. ADJUST THIS NUMBER TO INCREASE DISTANCE
             // NEEDED TO REGISTER A STARTED REP STATE
@@ -1017,21 +1019,19 @@ class PoseNet extends React.Component {
     poseDetectionFrameInner();
   }
 
-
   render() {
-
     function createDonutData(dataLabels, dataSeries) {
       return {
         type: "Pie",
         data: {
           labels: dataLabels,
-          series: dataSeries,
+          series: dataSeries
         },
         options: {
           donut: true
         }
       };
-  }
+    }
 
     const {
       backgroundcolorSA,
@@ -1153,7 +1153,7 @@ class PoseNet extends React.Component {
     if (goodRepCounter + badRepCounter - SDcount - SDokayCount === 0) {
       SDBadLabel = " ";
     } else {
-      SDBadLabel = "Bad"
+      SDBadLabel = "Bad";
     }
 
     let SABadLabel;
@@ -1173,29 +1173,45 @@ class PoseNet extends React.Component {
     let KABadLabel;
     if (goodRepCounter + badRepCounter - KAcount === 0) {
       KABadLabel = " ";
-    }
-    else {
+    } else {
       KABadLabel = "Bad";
     }
 
-    const sdDonutData = createDonutData(["Good", SDBadLabel, SDOkayLabel], [SDcount, goodRepCounter + badRepCounter - SDcount - SDokayCount, SDokayCount,]);
-    const saDonutData = createDonutData(["Good", SABadLabel], [SAcount, goodRepCounter + badRepCounter - SAcount]);
-    const fwDonutData = createDonutData(["Good", FWBadLabel], [FWcount, goodRepCounter + badRepCounter - FWcount]);
-    const kaDonutData = createDonutData(["Good", KABadLabel], [KAcount, goodRepCounter + badRepCounter - KAcount]);
+    const sdDonutData = createDonutData(
+      ["Good", SDBadLabel, SDOkayLabel],
+      [
+        SDcount,
+        goodRepCounter + badRepCounter - SDcount - SDokayCount,
+        SDokayCount
+      ]
+    );
+    const saDonutData = createDonutData(
+      ["Good", SABadLabel],
+      [SAcount, goodRepCounter + badRepCounter - SAcount]
+    );
+    const fwDonutData = createDonutData(
+      ["Good", FWBadLabel],
+      [FWcount, goodRepCounter + badRepCounter - FWcount]
+    );
+    const kaDonutData = createDonutData(
+      ["Good", KABadLabel],
+      [KAcount, goodRepCounter + badRepCounter - KAcount]
+    );
 
     let workoutVideo;
-    if(this.state.videos.length > 0) {
+    if (this.state.videos.length > 0) {
       workoutVideo = (
         <video
           autoPlay
           loop
-          style={{width: "100%" }}
-          src={this.state.videos[0]}>
+          style={{ width: "100%" }}
+          src={this.state.videos[0]}
+        >
           Video is not available
         </video>
       );
     } else {
-        workoutVideo = null;
+      workoutVideo = null;
     }
 
     let workoutSummary;
@@ -1211,17 +1227,15 @@ class PoseNet extends React.Component {
         >
           <div align="center">
             <StarRatings
-              rating={(this.state.setScore * 5)}
+              rating={this.state.setScore * 5}
               starRatedColor="gold"
               changeRating={this.changeRating}
               numberOfStars={5}
-              name='rating'
+              name="rating"
             />
           </div>
           <Grid fluid>
-          <Row>
-            {workoutVideo}
-          </Row>
+            <Row>{workoutVideo}</Row>
             <Row>
               <Col lg={3} sm={6}>
                 <Card
@@ -1329,7 +1343,11 @@ class PoseNet extends React.Component {
           </div>
         </div>
         <div className="calibration-container">
-          <div>{this.state.calibrationState}</div>
+          <div>
+            {this.state.calibrationState == "Calibration Complete"
+              ? null
+              : this.state.calibrationState}
+          </div>
         </div>
         <div className="videoOverlay-Bad">
           <div id="bad-rep" style={{ backgroundColor: backgroundcolorBad }}>
@@ -1361,15 +1379,15 @@ class PoseNet extends React.Component {
           </div>
         </div>
         <div className="rep-container">
-          <div id="good-rep">
+          {/* <div id="good-rep">
             <div>Good Rep:</div>
             {this.state.goodCounter}
           </div>
           <div id="bad-rep">
             <div>Bad Rep:</div>
             {this.state.badCounter}
-          </div>
-          <span>{transcript}</span>
+          </div> */}
+          {/* <span>{transcript}</span> */}
           {workoutSummary}
         </div>
       </div>
@@ -1385,7 +1403,7 @@ const PoseNetForm = compose(
   withRouter,
   withFirebase,
   //SpeechRecognition
-  SpeechRecognition(speechRecognitionOptions),
+  SpeechRecognition(speechRecognitionOptions)
 )(PoseNet);
 
 export default PoseNetForm;

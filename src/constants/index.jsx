@@ -8,8 +8,8 @@ import WorkoutCalendar from "../views/Calendar/Calendar";
 import NewLandingPage from "../components/MainPages/newlandingpage";
 
 var indexRoutes = [
-  { path: "/", name: "Landing Page", component: LandingPage },
-  { path: "/temp", name: "Temp Page", component: NewLandingPage },
+  { path: "/", name: "Landing Page", component: NewLandingPage },
+  { path: "/temp", name: "Temp Page", component: LandingPage },
   { path: "/pages", name: "Pages", component: Pages },
   { path: "/home", name: "Home", component: Dashboard },
   { path: "/login", name: "Log In", component: Login },
