@@ -42,6 +42,7 @@ let currentCalibrationCounter = 0;
 let maxCalibrationConfidenceLevel = 75;
 let goodDepth = false;
 let startedRep = false;
+let repCounter = 0;
 let goodRepCounter = 0;
 let badRepCounter = 0;
 let afterSet = false;
@@ -225,6 +226,7 @@ class PoseNet extends React.Component {
     shouldersAlignSoundConfidenceLevel = 0;
     feetWidthSoundConfidenceLevel = 0;
 
+    repCounter = 0;
     goodRepCounter = 0;
     badRepCounter = 0;
 
@@ -822,7 +824,7 @@ class PoseNet extends React.Component {
               calibrationComplete = true;
               this.startRecording();
               this.calibrationCompleteSound.play();
-              this.props.startListening();
+
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
                 startingAvgLeftHipX += startingLeftHipX[i];
                 startingAvgLeftHipY += startingLeftHipY[i];
@@ -845,6 +847,10 @@ class PoseNet extends React.Component {
               // console.log("Calibration complete");
             }
           } else {
+            if(repCounter >= 5) {
+              this.props.startListening();
+            }
+            
             if (this.canvas != null) {
               drawShoulderAlignmentLines(
                 startingAvgLeftShoulderX,
@@ -956,6 +962,7 @@ class PoseNet extends React.Component {
                 this.onChangeSetScore(setScore);
                 if (repScore >= 5) {
                   goodRepCounter++;
+                  repCounter++;
                   this.onChangeGoodRep(true);
                   this.onChangeGoodRep(false);
                   this.changeTextColorGood(true);
@@ -969,6 +976,7 @@ class PoseNet extends React.Component {
                   // console.log("Good reps: " + goodRepCounter);
                 } else {
                   badRepCounter++;
+                  repCounter++;
                   this.onChangeBadRep(true);
                   this.onChangeBadRep(false);
                   this.changeTextColorBad(true);
