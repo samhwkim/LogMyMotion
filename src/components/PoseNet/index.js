@@ -850,7 +850,7 @@ class PoseNet extends React.Component {
             if(repCounter >= 5) {
               this.props.startListening();
             }
-            
+
             if (this.canvas != null) {
               drawShoulderAlignmentLines(
                 startingAvgLeftShoulderX,
@@ -860,13 +860,16 @@ class PoseNet extends React.Component {
                 this.canvas.getContext("2d"),
                 400
               );
-              if (keypoints[5].position.x > startingAvgLeftShoulderX + 15) {
+
+              // This is where we change how far the shoulder lines should be from our avg starting
+              // positions. Make sure to change it in the utils.js file as well.
+              if (keypoints[5].position.x > startingAvgLeftShoulderX + 20) {
                 this.onChangeSA(false);
               } else {
                 this.onChangeSA(true);
               }
 
-              if (keypoints[6].position.x < startingAvgRightShoulderX - 15) {
+              if (keypoints[6].position.x < startingAvgRightShoulderX - 20) {
                 this.onChangeSA(false);
               } else {
                 this.onChangeSA(true);
@@ -919,7 +922,7 @@ class PoseNet extends React.Component {
 
             // NOTICE: THIS IS WHERE WE DETERMINE WHEN A REP STARTS. ADJUST THIS NUMBER TO INCREASE DISTANCE
             // NEEDED TO REGISTER A STARTED REP STATE
-            if (distanceLeftHipFromStarting > 17) {
+            if (distanceLeftHipFromStarting > 12) {
               startedRep = true;
               if (startRepTimer === null) {
                 startRepTimer = Date.now();

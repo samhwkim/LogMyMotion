@@ -78,20 +78,25 @@ export function drawShoulderAlignmentLines(
   ctx,
   canvasHeight
 ) {
+
+  // Change the value added to determine the distance from the avg starting
+  // position the line should be drawn from the left shoulder.
   ctx.beginPath();
-  ctx.moveTo(startingAvgLeftShoulderX + 15, 0);
-  ctx.lineTo(startingAvgLeftShoulderX + 15, canvasHeight);
-  if (currentLeftShoulderX > startingAvgLeftShoulderX + 15) {
+  ctx.moveTo(startingAvgLeftShoulderX + 20, 0);
+  ctx.lineTo(startingAvgLeftShoulderX + 20, canvasHeight);
+  if (currentLeftShoulderX > startingAvgLeftShoulderX + 20) {
     ctx.strokeStyle = "red";
   } else {
     ctx.strokeStyle = "green";
   }
   ctx.stroke();
 
+  // Change the value subtracted to determine the distance from the avg starting
+  // position the line should be drawn from the right shoulder.
   ctx.beginPath();
-  ctx.moveTo(startingAvgRightShoulderX - 15, 0);
-  ctx.lineTo(startingAvgRightShoulderX - 15, canvasHeight);
-  if (currentRightShoulderX < startingAvgRightShoulderX - 15) {
+  ctx.moveTo(startingAvgRightShoulderX - 20, 0);
+  ctx.lineTo(startingAvgRightShoulderX - 20, canvasHeight);
+  if (currentRightShoulderX < startingAvgRightShoulderX - 20) {
     ctx.strokeStyle = "red";
   } else {
     ctx.strokeStyle = "green";
