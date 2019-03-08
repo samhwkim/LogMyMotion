@@ -15,6 +15,11 @@ class Header extends Component {
     this.handleMinimizeSidebar = this.handleMinimizeSidebar.bind(this);
     this.mobileSidebarToggle = this.mobileSidebarToggle.bind(this);
   }
+
+  componentDidMount() {
+    this.handleMinimizeSidebar();
+  }
+  
   makeBrand() {
     var name;
     dashboardRoutes.map((prop, key) => {
