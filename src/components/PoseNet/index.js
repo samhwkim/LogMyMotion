@@ -162,7 +162,8 @@ class PoseNet extends React.Component {
       badCounter: 0,
       setScore: 0,
       repData: [],
-      videos: []
+      videos: [],
+      isRecording: false
     };
     this.onChangeBadRep = this.onChangeBadRep.bind(this);
     this.onChangeCalibrationState = this.onChangeCalibrationState.bind(this);
@@ -187,6 +188,7 @@ class PoseNet extends React.Component {
     this.writeToDatabase = this.writeToDatabase.bind(this);
     this.changeTextColorGood = this.changeTextColorGood.bind(this);
     this.changeTextColorBad = this.changeTextColorBad.bind(this);
+    this.endWorkout = this.endWorkout.bind(this);
   }
 
   playRepSound(inputEntry) {
@@ -560,6 +562,19 @@ class PoseNet extends React.Component {
     this.video = elem;
   };
 
+  endWorkout = e => {
+    if (this.state.isRecording === true) {
+      e.preventDefault();
+      console.log("End Workout");
+      this.stopRecording();
+      this.showSummary();
+      calibrationComplete = false;
+      afterSet = true;
+      this.props.resetTranscript();
+      this.setState({ repData: repStatsList });
+    }
+  };
+
   async componentWillMount() {
     // Loads the pre-trained PoseNet model
     this.net = await posenet.load(this.props.mobileNetArchitecture);
@@ -633,6 +648,7 @@ class PoseNet extends React.Component {
   }
 
   startRecording() {
+    this.setState({ isRecording: true });
     // wipe old data chunks
     this.chunks = [];
     // start recorder with 10ms buffer
@@ -640,6 +656,7 @@ class PoseNet extends React.Component {
   }
 
   async stopRecording() {
+    this.setState({ isRecording: false });
     this.mediaRecorder.stop();
     await this.saveVideo();
   }
@@ -847,7 +864,7 @@ class PoseNet extends React.Component {
               // console.log("Calibration complete");
             }
           } else {
-            if(repCounter >= 5) {
+            if (repCounter >= 5) {
               this.props.startListening();
             }
 
@@ -1373,7 +1390,9 @@ class PoseNet extends React.Component {
           style={{ scale: 1, width: "100%" }}
         />
         <div className="videocueinfo">
-          <div id="video-info-SD">Squat Depth:</div>
+          <div id="video-info-SD" onClick={this.endWorkout}>
+            Squat Depth:
+          </div>
           <div id="SD-good" style={{ backgroundColor: backgroundcolorSD }}>
             {textSD}
           </div>

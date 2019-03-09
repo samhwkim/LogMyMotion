@@ -39,7 +39,9 @@
 }
 
 .videocueinfo {
+  font-weight: 1000;
   float: right;
+  z-index: 11;
 }
 
 .videocueinfo #SD-good {
@@ -82,6 +84,7 @@
 }
 
 .calibration-container {
+  font-weight: 1000;
   font: 3.5em "Raleway", Sans-serif;
   color: white;
   position: absolute;
@@ -94,6 +97,7 @@
 }
 
 .rep-container {
+  font-weight: 1000;
   font: 3.5em "Raleway", Sans-serif;
 }
 
@@ -119,6 +123,8 @@
 
 .videoOverlay-Good {
   font: 2.5em "Raleway", Sans-serif;
+  font-weight: 1000;
+
   color: white;
   position: absolute;
   top: 2.5%;
@@ -131,6 +137,8 @@
 
 .videoOverlay-Bad {
   font: 2.5em "Raleway", Sans-serif;
+  font-weight: 1000;
+
   color: white;
   position: absolute;
   top: 2.5%;
