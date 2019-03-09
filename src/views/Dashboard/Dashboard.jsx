@@ -79,72 +79,6 @@ class Dashboard extends Component {
         {authUser => (
           <div className="main-content">
             <Grid fluid>
-              {/* <Row>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-server text-warning" />}
-                statsText="10"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Days since last workout"
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-wallet text-success" />}
-                statsText="Revenue"
-                statsValue="$1,345"
-                statsIcon={<i className="fa fa-calendar-o" />}
-                statsIconText="Last day"
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="pe-7s-graph1 text-danger" />}
-                statsText="Errors"
-                statsValue="23"
-                statsIcon={<i className="fa fa-clock-o" />}
-                statsIconText="In the last hour"
-              />
-            </Col>
-            <Col lg={3} sm={6}>
-              <StatsCard
-                bigIcon={<i className="fa fa-twitter text-info" />}
-                statsText="Followers"
-                statsValue="+45"
-                statsIcon={<i className="fa fa-refresh" />}
-                statsIconText="Updated now"
-              />
-            </Col>
-          </Row> */}
-              {/* <Row>
-                <Col lg={150}>
-                  <Card
-                    title="Workout History"
-                    category="Last 10 Workouts Performance"
-                    content={
-                      <ChartistGraph
-                        data={dataSales}
-                        type="Line"
-                        options={optionsSales}
-                        responsiveOptions={responsiveSales}
-                      />
-                    }
-                    legend={
-                      <div>
-                        <i className="fa fa-circle text-info" /> Squat
-                        <i className="fa fa-circle text-danger" /> Bench Press
-                        <i className="fa fa-circle text-warning" /> Barbell
-                        Press
-                      </div>
-                    }
-                    stats={
-                      <div>
-                        <i className="fa fa-history" /> Updated 3 minutes ago
-                      </div>
-                    }
-                  />
-                </Col>
-              </Row> */}
               <Row>
                 <Col md={6}>
                   <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
@@ -189,31 +123,36 @@ class Dashboard extends Component {
               </Row>
               <Row>
                 <Col lg={150}>
-                  <Card
-                    title="Workout History"
-                    category="Last 10 Workouts Performance"
-                    content={
-                      <ChartistGraph
-                        data={dataSales}
-                        type="Line"
-                        options={optionsSales}
-                        responsiveOptions={responsiveSales}
-                      />
-                    }
-                    legend={
-                      <div>
-                        <i className="fa fa-circle text-info" /> Squat
-                        <i className="fa fa-circle text-danger" /> Bench Press
-                        <i className="fa fa-circle text-warning" /> Barbell
-                        Press
-                      </div>
-                    }
-                    stats={
-                      <div>
-                        <i className="fa fa-history" /> Updated 3 minutes ago
-                      </div>
-                    }
-                  />
+                  <Tab.Container id="tabs-with-dropdown" defaultActiveKey="1">
+                    <Row className="clearfix">
+                      <Col sm={12}>
+                        <Nav bsStyle="tabs">
+                          <NavItem eventKey="1">Squat</NavItem>
+                          <NavItem eventKey="2">Bench Press</NavItem>
+                          <NavItem eventKey="3">Barbell Rows</NavItem>
+                        </Nav>
+                      </Col>
+                      <Col sm={12}>
+                        <Tab.Content animation>
+                          <Tab.Pane eventKey="1">
+                            <Card
+                              title="Workout History"
+                              category="Last 10 Workouts Performance"
+                              content={
+                                <ChartistGraph
+                                  data={dataSales}
+                                  type="Line"
+                                  options={optionsSales}
+                                  responsiveOptions={responsiveSales}
+                                />
+                              }
+                            />
+                          </Tab.Pane>
+                        </Tab.Content>
+                      </Col>
+                    </Row>
+                  </Tab.Container>
+
                 </Col>
               </Row>
             </Grid>
