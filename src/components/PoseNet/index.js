@@ -562,9 +562,9 @@ class PoseNet extends React.Component {
     this.video = elem;
   };
 
-  endWorkout = e => {
+  endWorkout() {
     if (this.state.isRecording === true) {
-      e.preventDefault();
+      //e.preventDefault();
       console.log("End Workout");
       this.stopRecording();
       this.showSummary();
@@ -573,7 +573,7 @@ class PoseNet extends React.Component {
       this.props.resetTranscript();
       this.setState({ repData: repStatsList });
     }
-  };
+  }
 
   async componentWillMount() {
     // Loads the pre-trained PoseNet model
