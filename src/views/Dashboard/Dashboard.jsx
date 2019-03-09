@@ -137,10 +137,10 @@ class Dashboard extends Component {
                           <Tab.Pane eventKey="1">
                             <Card
                               title="Workout History"
-                              category="Last 10 Workouts Performance"
+                              category="Scores from Last 5 Workouts"
                               content={
                                 <ChartistGraph
-                                  data={dataSales}
+                                  data={this.props.lineGraphData}
                                   type="Line"
                                   options={optionsSales}
                                   responsiveOptions={responsiveSales}

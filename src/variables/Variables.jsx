@@ -619,13 +619,13 @@ var dataSales = {
 };
 var optionsSales = {
   low: 0,
-  high: 800,
+  high: 100,
   showArea: false,
   height: "245px",
   axisX: {
-    showGrid: false
+    showGrid: true
   },
-  lineSmooth: true,
+  lineSmooth: false,
   showLine: true,
   showPoint: true,
   fullWidth: true,

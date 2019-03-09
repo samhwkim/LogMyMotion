@@ -21,9 +21,17 @@ let events = [];
 let goodScores = [];
 let badScores = [];
 let cueScoreSeries = [];
+
+let workoutDates = [];
+let workoutList = [];
+let latestDates = [];
+let lastFiveDates = [];
+let latestWorkoutScores = [];
+
 let savedUid = "";
 
 let dataBar;
+let lineGraphData;
 // let workoutCompletedToday = false;
 
 class Dashboard extends Component {
@@ -36,7 +44,44 @@ class Dashboard extends Component {
     this.sleep = this.sleep.bind(this);
   }
 
-  async fetchVideoData(storageRef) {
+  async getWorkoutScore(uid, date, workoutId, sets) {
+    let total = 0;
+    for (let i = 0; i < sets.length; i++) {
+      // console.log(`${uid}/${date}/${workoutId}/${sets[i]}`);
+      let setScoreRef = this.props.firebase.addSetScore(uid, date, workoutId, sets[i]);
+      let setScoreSnap = await setScoreRef.once("value");
+      // console.log(setScoreSnap.child("setScore").val());
+      total += parseFloat(setScoreSnap.child("setScore").val());
+    }
+
+    latestDates.push(date);
+    latestWorkoutScores.push((total/sets.length).toFixed(2));
+  }
+
+  async fetchLineGraphData() {
+    let currentUserUid = this.props.firebase.getCurrentUserUid();
+    // create a list of the last 5 workout dates.
+    lastFiveDates = workoutDates.slice(Math.max(workoutDates.length - 5, 1));
+
+    for (let i = 0; i < lastFiveDates.length; i++) {
+      let dateRef = this.props.firebase.workouts(currentUserUid, lastFiveDates[i]);
+      let snapshot = await dateRef.once("value");
+       // child === workout_1, workout_2, etc...
+      if (snapshot.exists()) {
+        snapshot.forEach((child) => {
+          // workout score is the average of the set scores!!
+          // save the max set score from all workouts (ignore other sets) of each workout!
+          let sets = Object.keys(child.val());
+          let workoutScore = 0;
+
+
+          this.getWorkoutScore(currentUserUid, lastFiveDates[i], child.key, sets);
+          this.setState({a: "c"});
+        });
+      }
+
+
+    }
   }
 
   async fetchCalendarData(dbRef) {
@@ -47,6 +92,8 @@ class Dashboard extends Component {
       snapshot.forEach((child) => {
         let dateArr = child.key.split("-");
         let workoutDate = new Date(dateArr[2], dateArr[0]-1, dateArr[1]);
+
+        workoutDates.push(child.key); // save the dates of workouts
 
         if (today.getFullYear() === workoutDate.getFullYear() && today.getDate() === workoutDate.getDate() && today.getMonth() === workoutDate.getMonth()) {
           this.setState({workoutCompletedToday: true});
@@ -112,7 +159,11 @@ class Dashboard extends Component {
     events = [];
     goodScores = [];
     badScores = [];
-
+    workoutList = [];
+    workoutDates = [];
+    lastFiveDates = [];
+    latestDates = [];
+    latestWorkoutScores = [];
 
     if (navigator.platform.indexOf("Win") > -1) {
       ps = new PerfectScrollbar(this.refs.mainPanel);
@@ -127,8 +178,26 @@ class Dashboard extends Component {
       let currentUserUid = this.props.firebase.getCurrentUserUid();
 
       let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
-      this.fetchCalendarData(workoutHistoryRef);
+      await this.fetchCalendarData(workoutHistoryRef);
+      await this.fetchLineGraphData();
+
+      // trim the line graph arrays to be the last five dates and workouts
+      latestDates = latestDates.slice(Math.max(latestDates.length - 5, 1));
+      latestWorkoutScores = latestWorkoutScores.slice(Math.max(latestWorkoutScores.length - 5, 1));
+
+      console.log(latestDates);
+      console.log(latestWorkoutScores);
+
+      lineGraphData =  {
+        labels: latestDates,
+        series: [
+          latestWorkoutScores,
+        ]
+      };
+
+      this.setState({a: 'a'});
     }
+
   }
 
   componentWillUnmount() {
@@ -165,6 +234,12 @@ class Dashboard extends Component {
     }
 
     cueScoreSeries = [];
+    workoutList = [];
+    workoutDates = [];
+    lastFiveDates = [];
+    latestDates = [];
+    latestWorkoutScores = [];
+
     let currentUserUid = this.props.firebase.getCurrentUserUid();
     let cueScoreRef = this.props.firebase.generalStats(currentUserUid);
     await this.fetchBarGraphData(cueScoreRef);
@@ -178,10 +253,28 @@ class Dashboard extends Component {
       series: cueScoreSeries,
     };
 
-    this.setState({a: 'a'})
+    // await this.fetchLineGraphData();
+    // // trim the line graph arrays to be the last five dates and workouts
+    // latestDates = latestDates.slice(Math.max(latestDates.length - 5, 1));
+    // latestWorkoutScores = latestWorkoutScores.slice(Math.max(latestWorkoutScores.length - 5, 1));
+    //
+    // console.log(latestDates);
+    // console.log(latestWorkoutScores);
+    //
+    // lineGraphData =  {
+    //   labels: latestDates,
+    //   series: [
+    //     latestWorkoutScores,
+    //     [67, 152, 143, 240, 287, 335, 435, 437],
+    //     [23, 113, 67, 108, 190, 239, 307, 308],
+    //   ]
+    // };
+
+    this.setState({a: 'a'});
 
   }
   render() {
+    console.log(lineGraphData);
     return (
       <div className="wrapper">
         <Sidebar {...this.props} />
@@ -226,7 +319,7 @@ class Dashboard extends Component {
                   return (
                     <Route
                       path={prop.path}
-                      render={(props) => <prop.component {...props} dataBar={dataBar} challenge={this.state.workoutCompletedToday}/>}
+                      render={(props) => <prop.component {...props} dataBar={dataBar} challenge={this.state.workoutCompletedToday} lineGraphData={lineGraphData}/>}
                       key={key}
                     />
                   );
