@@ -883,9 +883,10 @@ class PoseNet extends React.Component {
               );
             }
 
+            // Make sure the value being added and subtracted is matching the one in utils.js
             if (
-              keypoints[5].position.x > startingAvgLeftShoulderX + 15 ||
-              keypoints[6].position.x < startingAvgRightShoulderX - 15
+              keypoints[5].position.x > startingAvgLeftShoulderX + 20 ||
+              keypoints[6].position.x < startingAvgRightShoulderX - 20
             ) {
               straightUpAndDown = false;
               if (straightUpAndDownSoundPlayed === false) {

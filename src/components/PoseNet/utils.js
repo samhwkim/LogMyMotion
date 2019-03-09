@@ -81,6 +81,7 @@ export function drawShoulderAlignmentLines(
 
   // Change the value added to determine the distance from the avg starting
   // position the line should be drawn from the left shoulder.
+  // Make sure to change it in index.js as well
   ctx.beginPath();
   ctx.moveTo(startingAvgLeftShoulderX + 20, 0);
   ctx.lineTo(startingAvgLeftShoulderX + 20, canvasHeight);
@@ -93,6 +94,7 @@ export function drawShoulderAlignmentLines(
 
   // Change the value subtracted to determine the distance from the avg starting
   // position the line should be drawn from the right shoulder.
+  // Make sure to change it in index.js as well
   ctx.beginPath();
   ctx.moveTo(startingAvgRightShoulderX - 20, 0);
   ctx.lineTo(startingAvgRightShoulderX - 20, canvasHeight);
