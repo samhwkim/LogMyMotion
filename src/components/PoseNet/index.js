@@ -759,11 +759,11 @@ class PoseNet extends React.Component {
               // with bad feet width we allow for before playing an audio feedback
               if (feetWidthSoundConfidenceLevel === 30) {
                 if (analyzeFeetWidth(keypoints) === feetWidthEnum.WIDE) {
-                  //this.narrowStance.play();
+                  this.narrowStance.play();
                 } else if (
                   analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW
                 ) {
-                  this.widerStance.play();
+                  // this.widerStance.play();
                 }
               }
             }
