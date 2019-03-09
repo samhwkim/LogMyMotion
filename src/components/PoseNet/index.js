@@ -46,6 +46,7 @@ let repCounter = 0;
 let goodRepCounter = 0;
 let badRepCounter = 0;
 let afterSet = false;
+let firstRepStarted = false;
 
 let shouldersAlignSoundConfidenceLevel = 0;
 let feetWidthSoundConfidenceLevel = 0;
@@ -222,6 +223,7 @@ class PoseNet extends React.Component {
     calibrationConfidenceLevel = 0;
     calibrationComplete = false;
     afterSet = false;
+    firstRepStarted = false;
 
     //SAM'S VARIABLES
     currentCalibrationCounter = 0;
@@ -839,7 +841,7 @@ class PoseNet extends React.Component {
               calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10
             ) {
               calibrationComplete = true;
-              this.startRecording();
+              //this.startRecording();
               this.calibrationCompleteSound.play();
 
               for (var i = 0; i < calibrationConfidenceLevel; i++) {
@@ -942,6 +944,10 @@ class PoseNet extends React.Component {
             // NEEDED TO REGISTER A STARTED REP STATE
             if (distanceLeftHipFromStarting > 12) {
               startedRep = true;
+              if(!firstRepStarted) {
+                this.startRecording();
+                firstRepStarted = true;
+              }
               if (startRepTimer === null) {
                 startRepTimer = Date.now();
               }
