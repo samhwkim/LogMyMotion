@@ -759,7 +759,7 @@ class PoseNet extends React.Component {
               // with bad feet width we allow for before playing an audio feedback
               if (feetWidthSoundConfidenceLevel === 30) {
                 if (analyzeFeetWidth(keypoints) === feetWidthEnum.WIDE) {
-                  this.narrowStance.play();
+                  // this.narrowStance.play();
                 } else if (
                   analyzeFeetWidth(keypoints) === feetWidthEnum.NARROW
                 ) {
@@ -781,7 +781,7 @@ class PoseNet extends React.Component {
               // The value shouldersAlignSoundConfidenceLevel is being compared to is how many consecutive frames
               // with shoulder misalignment we allow for before playing an audio feedback
               if (shouldersAlignSoundConfidenceLevel === 30) {
-                this.shouldersAlign.play();
+                // this.shouldersAlign.play();
               }
             }
 
