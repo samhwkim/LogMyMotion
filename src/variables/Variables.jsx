@@ -621,14 +621,14 @@ var optionsSales = {
   low: 0,
   high: 100,
   showArea: false,
-  height: "245px",
+  height: "300px",
   axisX: {
     showGrid: true
   },
   lineSmooth: false,
   showLine: true,
   showPoint: true,
-  fullWidth: true,
+  fullWidth: false,
   chartPadding: {
     right: 50
   }

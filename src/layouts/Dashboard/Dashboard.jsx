@@ -68,7 +68,7 @@ class Dashboard extends Component {
       let snapshot = await dateRef.once("value");
        // child === workout_1, workout_2, etc...
       if (snapshot.exists()) {
-        snapshot.forEach((child) => {
+        await snapshot.forEach((child) => {
           // workout score is the average of the set scores!!
           // save the max set score from all workouts (ignore other sets) of each workout!
           let sets = Object.keys(child.val());
@@ -180,18 +180,22 @@ class Dashboard extends Component {
       let workoutHistoryRef = this.props.firebase.dates(currentUserUid);
       await this.fetchCalendarData(workoutHistoryRef);
       await this.fetchLineGraphData();
+      this.setState({a: 'a'});
 
       // trim the line graph arrays to be the last five dates and workouts
-      latestDates = latestDates.slice(Math.max(latestDates.length - 5, 1));
-      latestWorkoutScores = latestWorkoutScores.slice(Math.max(latestWorkoutScores.length - 5, 1));
+      // let dateArray = latestDates.slice(Math.max(latestDates.length - 5, 1));
+      // let scoreArray = latestWorkoutScores.slice(Math.max(latestWorkoutScores.length - 5, 1));
 
-      console.log(latestDates);
-      console.log(latestWorkoutScores);
+      let dateArray = latestDates.slice(-5);
+      let today = new Date();
+
+      dateArray[4] = (today.getMonth() + 1) + "-" + (today.getDate()) + "-" + today.getFullYear();
+      let scoreArray = latestWorkoutScores.slice(-5);
 
       lineGraphData =  {
-        labels: latestDates,
+        labels: dateArray,
         series: [
-          latestWorkoutScores,
+          scoreArray,
         ]
       };
 
@@ -274,7 +278,6 @@ class Dashboard extends Component {
 
   }
   render() {
-    console.log(lineGraphData);
     return (
       <div className="wrapper">
         <Sidebar {...this.props} />
