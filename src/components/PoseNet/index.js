@@ -944,7 +944,7 @@ class PoseNet extends React.Component {
             // NEEDED TO REGISTER A STARTED REP STATE
             if (distanceLeftHipFromStarting > 12) {
               startedRep = true;
-              if(!firstRepStarted) {
+              if (!firstRepStarted) {
                 this.startRecording();
                 firstRepStarted = true;
               }
@@ -1374,7 +1374,7 @@ class PoseNet extends React.Component {
         <div className="videoOverlay-Good">
           <div id="good-rep" style={{ backgroundColor: backgroundcolorGood }}>
             <div>Good Rep:</div>
-            <div>{this.state.goodCounter}</div>
+            <div className="goodCounterCount">{this.state.goodCounter}</div>
           </div>
         </div>
         <div className="calibration-container">
@@ -1387,7 +1387,7 @@ class PoseNet extends React.Component {
         <div className="videoOverlay-Bad">
           <div id="bad-rep" style={{ backgroundColor: backgroundcolorBad }}>
             <div>Bad Rep:</div>
-            <div>{this.state.badCounter}</div>
+            <div className="badCounterCount">{this.state.badCounter}</div>
           </div>
         </div>
         <canvas
@@ -1397,20 +1397,20 @@ class PoseNet extends React.Component {
         />
         <div className="videocueinfo">
           <div id="video-info-SD" onClick={this.endWorkout}>
-            Squat Depth:
+            Squat Depth
           </div>
           <div id="SD-good" style={{ backgroundColor: backgroundcolorSD }}>
             {textSD}
           </div>
-          <div id="video-info-SA">Shoulder Alignment:</div>
+          <div id="video-info-SA">Shoulder Alignment</div>
           <div id="SA-good" style={{ backgroundColor: backgroundcolorSA }}>
             {textSA}
           </div>
-          <div id="video-info-FW">Feet Width:</div>
+          <div id="video-info-FW">Feet Width</div>
           <div id="FW-good" style={{ backgroundColor: backgroundcolorFW }}>
             {textFW}
           </div>
-          <div id="video-info-KA">Knee Angle:</div>
+          <div id="video-info-KA">Knee Angle</div>
           <div id="KA-good" style={{ backgroundColor: backgroundcolorKA }}>
             {textKA}
           </div>

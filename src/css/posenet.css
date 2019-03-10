@@ -134,6 +134,9 @@
   border-radius: 10px;
   padding: 5px;
 }
+.videoOverlay-Good .goodCounterCount {
+  text-align: center;
+}
 
 .videoOverlay-Bad {
   font: 2.5em "Raleway", Sans-serif;
@@ -147,6 +150,10 @@
   background: rgba(153, 153, 153, 0.6);
   border-radius: 10px;
   padding: 5px;
+}
+
+.videoOverlay-Bad .badCounterCount {
+  text-align: center;
 }
 
 .PoseNet #posenetVideo {
