@@ -26,7 +26,7 @@ import {
 import { AuthUserContext, withAuthorization } from "../../components/Session";
 
 const squatChallengesList = [
-  "Complete 5 repetitions",
+  "Complete your first squat workout today",
   "Complete a set with perfect squat depth for each rep",
   "Complete a set with perfect shoulder alignment for each rep",
   "Complete at least 10 perfect repetitions in one set",

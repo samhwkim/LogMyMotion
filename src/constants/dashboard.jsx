@@ -32,7 +32,7 @@ const dashboardRoutes = [
         mini: "S",
       },
       { path: "/analyzer", name: "Bench Press", mini: "BP"},
-       {path: "/analyzer", name: "Barbell Press", mini: "BP"},
+       {path: "/analyzer", name: "Barbell Rows", mini: "BR"},
     ]
   },
   {
