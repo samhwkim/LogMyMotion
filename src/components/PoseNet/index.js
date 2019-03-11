@@ -1373,7 +1373,7 @@ class PoseNet extends React.Component {
         />
         <div className="videoOverlay-Good">
           <div id="good-rep" style={{ backgroundColor: backgroundcolorGood }}>
-            <div>Good Rep:</div>
+            <div>Good Rep</div>
             <div className="goodCounterCount">{this.state.goodCounter}</div>
           </div>
         </div>
@@ -1386,7 +1386,7 @@ class PoseNet extends React.Component {
         </div>
         <div className="videoOverlay-Bad">
           <div id="bad-rep" style={{ backgroundColor: backgroundcolorBad }}>
-            <div>Bad Rep:</div>
+            <div>Bad Rep</div>
             <div className="badCounterCount">{this.state.badCounter}</div>
           </div>
         </div>

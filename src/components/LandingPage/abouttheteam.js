@@ -5,7 +5,7 @@ import sam from "../../images/sKim.png";
 import yam from "../../images/yam.png";
 import eric from "../../images/eFriela.png";
 import arvan from "../../images/aDas.png";
-import ethan from "../../images/eSu.png";
+import ethan from "../../images/esu.jpg";
 
 export default class AboutTheTeam extends Component {
   render() {

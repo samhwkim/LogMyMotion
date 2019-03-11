@@ -1,0 +1,23 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+.tech-container .tech-title {
+  font: 4em "Raleway", sans-serif;
+  padding-bottom: 2.5%;
+}
+
+.tech-container .techused {
+  text-align: center;
+  padding-bottom: 2.5%;
+}
+.tech-container .tech-people {
+  font: 4em "Raleway", sans-serif;
+  padding-bottom: 2.5%;
+}
+
+.tech-container .peoplePics {
+  text-align: center;
+}
+.tech-container .peoplePics img {
+  border-radius: 50%;
+}
