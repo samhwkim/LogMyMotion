@@ -1135,7 +1135,7 @@ class PoseNet extends React.Component {
 
     const styles = {
       overflowY: "scroll",
-      backgroundColor: "grey"
+      backgroundColor: "gray"
     };
 
     const RepChartData = {
@@ -1213,7 +1213,7 @@ class PoseNet extends React.Component {
     }
 
     const sdDonutData = createDonutData(
-      ["Good", SDBadLabel, SDOkayLabel],
+      [" ", " ", " "],
       [
         SDcount,
         goodRepCounter + badRepCounter - SDcount - SDokayCount,
@@ -1221,15 +1221,15 @@ class PoseNet extends React.Component {
       ]
     );
     const saDonutData = createDonutData(
-      ["Good", SABadLabel],
+      [" ", " "],
       [SAcount, goodRepCounter + badRepCounter - SAcount]
     );
     const fwDonutData = createDonutData(
-      ["Good", FWBadLabel],
+      [" ", " "],
       [FWcount, goodRepCounter + badRepCounter - FWcount]
     );
     const kaDonutData = createDonutData(
-      ["Good", KABadLabel],
+      [" ", " "],
       [KAcount, goodRepCounter + badRepCounter - KAcount]
     );
 
@@ -1259,7 +1259,9 @@ class PoseNet extends React.Component {
           height={80}
           onClose={this.hideSummary.bind(this)}
           customStyles={styles}
+          closeMaskOnClick={false}
         >
+        <div align="center">Workout Summary</div>
           <div align="center">
             <StarRatings
               rating={this.state.setScore * 5}
@@ -1275,7 +1277,7 @@ class PoseNet extends React.Component {
               <Col lg={3} sm={6}>
                 <Card
                   title={"Squat Depth"}
-                  category={"Donut"}
+                  category={""}
                   content={
                     <ChartistGraph
                       data={sdDonutData.data}
@@ -1288,7 +1290,7 @@ class PoseNet extends React.Component {
               <Col lg={3} sm={6}>
                 <Card
                   title={"Feet Width"}
-                  category={"Donut"}
+                  category={""}
                   content={
                     <ChartistGraph
                       data={fwDonutData.data}
@@ -1301,7 +1303,7 @@ class PoseNet extends React.Component {
               <Col lg={3} sm={6}>
                 <Card
                   title={"Shoulder Alignment"}
-                  category={"Donut"}
+                  category={""}
                   content={
                     <ChartistGraph
                       data={saDonutData.data}
@@ -1314,7 +1316,7 @@ class PoseNet extends React.Component {
               <Col lg={3} sm={6}>
                 <Card
                   title={"Knee Angle"}
-                  category={"Donut"}
+                  category={""}
                   content={
                     <ChartistGraph
                       data={kaDonutData.data}
@@ -1331,7 +1333,9 @@ class PoseNet extends React.Component {
             repStatsList={repStatsList}
             summaryStatus={this.state.summaryVisible}
           />
+          <div align="center" margin="5px">
           <Button
+            style={{ marginRight: "5px" }}
             onClick={() => {
               this.writeToDatabase(
                 repStatsList,
@@ -1346,6 +1350,7 @@ class PoseNet extends React.Component {
             Record Another Set
           </Button>
           <Button
+            style={{ marginLeft: "5px" }}
             onClick={() => {
               this.finishWorkout(
                 repStatsList,
@@ -1358,6 +1363,7 @@ class PoseNet extends React.Component {
           >
             Finish Workout
           </Button>
+          </div>
         </Rodal>
       );
     }

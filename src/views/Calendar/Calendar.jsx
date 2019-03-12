@@ -123,10 +123,10 @@ class Calendar extends Component {
 
 
         // Save data for the donut charts!
-        let sdDonut = this.createDonutData(["Good", SDBadLabel, SDOkayLabel], [set.setCueScores[0][0], set.setRepCount - set.setCueScores[0][0] - set.setCueScores[0][1], set.setCueScores[0][1]]);
-        let saDonut = this.createDonutData(["Good", SABadLabel], [set.setCueScores[0][2], set.setRepCount - set.setCueScores[0][2]]);
-        let fwDonut = this.createDonutData(["Good", FWBadLabel], [set.setCueScores[0][3], set.setRepCount - set.setCueScores[0][3]]);
-        let kaDonut = this.createDonutData(["Good", KABadLabel], [set.setCueScores[0][4], set.setRepCount - set.setCueScores[0][4]]);
+        let sdDonut = this.createDonutData([" ", " ", " "], [set.setCueScores[0][0], set.setRepCount - set.setCueScores[0][0] - set.setCueScores[0][1], set.setCueScores[0][1]]);
+        let saDonut = this.createDonutData([" ", " "], [set.setCueScores[0][2], set.setRepCount - set.setCueScores[0][2]]);
+        let fwDonut = this.createDonutData([" ", " "], [set.setCueScores[0][3], set.setRepCount - set.setCueScores[0][3]]);
+        let kaDonut = this.createDonutData([" ", " "], [set.setCueScores[0][4], set.setRepCount - set.setCueScores[0][4]]);
 
         listOfSDDonutData.push(sdDonut);
         listOfSADonutData.push(saDonut);
@@ -349,7 +349,7 @@ class Calendar extends Component {
                     <Col lg={3} sm={6}>
                       <Card
                         title={"Squat Depth"}
-                        category={"Donut"}
+                        category={""}
                         content={
                           <ChartistGraph
                             data={listOfSDDonutData[key].data}
@@ -362,7 +362,7 @@ class Calendar extends Component {
                     <Col lg={3} sm={6}>
                       <Card
                         title={"Feet Width"}
-                        category={"Donut"}
+                        category={""}
                         content={
                           <ChartistGraph
                             data={listOfFWDonutData[key].data}
@@ -375,7 +375,7 @@ class Calendar extends Component {
                     <Col lg={3} sm={6}>
                       <Card
                         title={"Shoulder Alignment"}
-                        category={"Donut"}
+                        category={""}
                         content={
                           <ChartistGraph
                             data={listOfSADonutData[key].data}
@@ -388,7 +388,7 @@ class Calendar extends Component {
                     <Col lg={3} sm={6}>
                       <Card
                         title={"Knee Angle"}
-                        category={"Donut"}
+                        category={""}
                         content={
                           <ChartistGraph
                             data={listOfKADonutData[key].data}
