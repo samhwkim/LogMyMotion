@@ -392,7 +392,7 @@ class PoseNet extends React.Component {
       });
 
       // save the video recording from this set
-      this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
+      // this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
     } else {
       let setString = "set_";
       let urlRef = this.props.firebase.sets(currentUserUid, date, workoutTitle);
@@ -412,7 +412,7 @@ class PoseNet extends React.Component {
       });
 
       // save the video recording from this set
-      this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
+      // this.storeVideo(currentUserUid, date, workoutTitle, setTitle, globalBlob);
     }
 
     // CLEAR DATA FOR NEW SET!
@@ -1272,7 +1272,6 @@ class PoseNet extends React.Component {
             />
           </div>
           <Grid fluid>
-            <Row>{workoutVideo}</Row>
             <Row>
               <Col lg={3} sm={6}>
                 <Card
@@ -1327,6 +1326,7 @@ class PoseNet extends React.Component {
                 />
               </Col>
             </Row>
+            // <Row>{workoutVideo}</Row>
           </Grid>
           <SummaryTable
             numReps={goodRepCounter + badRepCounter}

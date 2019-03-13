@@ -137,26 +137,26 @@ class Calendar extends Component {
 
         // retrieve respective video
         // console.log(`users/${uid}/workoutVideos/${globalDate}/${globalWorkoutTitle}/${globalSetTitle}/video`);
-         stub.push(new Promise((resolve) => {
-           this.props.firebase.createStorageRef(uid, globalDate, globalWorkoutTitle, globalSetTitle)
-          .getDownloadURL()
-          .then(async function(url) {
-              var xhr = await new XMLHttpRequest();
-              xhr.responseType = 'blob';
-              xhr.onload = function(event) {
-                var blob = xhr.response;
-                listOfBlobs.push(blob);
-                resolve();
-              };
-              xhr.open('GET', url);
-              xhr.send();
-
-          }).catch(function(error) {
-            // Handle any error
-          })
-        }));
+      //    stub.push(new Promise((resolve) => {
+      //      this.props.firebase.createStorageRef(uid, globalDate, globalWorkoutTitle, globalSetTitle)
+      //     .getDownloadURL()
+      //     .then(async function(url) {
+      //         var xhr = await new XMLHttpRequest();
+      //         xhr.responseType = 'blob';
+      //         xhr.onload = function(event) {
+      //           var blob = xhr.response;
+      //           listOfBlobs.push(blob);
+      //           resolve();
+      //         };
+      //         xhr.open('GET', url);
+      //         xhr.send();
+      //
+      //     }).catch(function(error) {
+      //       // Handle any error
+      //     })
+      //   }));
       });
-      return Promise.all(stub);
+      // return Promise.all(stub);
 
     } else {
       console.log("no sets found");
@@ -218,9 +218,9 @@ class Calendar extends Component {
     await this.getSets(setsRef); // retrieves set info & set video
 
     // convert the downloaded blobs into videos (populates listOfTempVideos)
-    this.convertBlobToVideo();
+    // this.convertBlobToVideo();
     // prepare and define the video components (populates listOfFinalVideos)
-    this.prepareVideoObjects();
+    // this.prepareVideoObjects();
 
     console.log("summary clicked!!");
     this.showSummary();
@@ -333,7 +333,7 @@ class Calendar extends Component {
                 opt['onEnter'] = this.handleSelect;
                 return (
                   <Tab.Pane {...opt}>
-                    <div align="center">
+                    <div align="center" style={{marginBottom: "20px"}}>
                       <StarRatings
                         rating={(listOfSetData[key].setScore/100 * 5)}
                         starRatedColor="gold"
@@ -342,9 +342,6 @@ class Calendar extends Component {
                         name='rating'
                       />
                     </div>
-                    <Row>
-                      {listOfFinalVideos[key]}
-                    </Row>
                     <Row>
                     <Col lg={3} sm={6}>
                       <Card
@@ -399,6 +396,9 @@ class Calendar extends Component {
                       />
                     </Col>
                     </Row>
+                    // <Row>
+                    //   {listOfFinalVideos[key]}
+                    // </Row>
                     <SummaryTable
                       numReps={listOfSetData[key].setData.length}
                       repStatsList={listOfSetData[key].setData}
