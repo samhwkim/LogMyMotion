@@ -396,9 +396,6 @@ class Calendar extends Component {
                       />
                     </Col>
                     </Row>
-                    // <Row>
-                    //   {listOfFinalVideos[key]}
-                    // </Row>
                     <SummaryTable
                       numReps={listOfSetData[key].setData.length}
                       repStatsList={listOfSetData[key].setData}

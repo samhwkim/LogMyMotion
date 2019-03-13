@@ -840,6 +840,7 @@ class PoseNet extends React.Component {
               currentCalibrationCounter == maxCalibrationConfidenceLevel &&
               calibrationConfidenceLevel > maxCalibrationConfidenceLevel - 10
             ) {
+              this.onChangeFW(true);
               calibrationComplete = true;
               //this.startRecording();
               this.calibrationCompleteSound.play();
@@ -1326,7 +1327,7 @@ class PoseNet extends React.Component {
                 />
               </Col>
             </Row>
-            // <Row>{workoutVideo}</Row>
+            <Row>{workoutVideo}</Row>
           </Grid>
           <SummaryTable
             numReps={goodRepCounter + badRepCounter}
