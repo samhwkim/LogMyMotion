@@ -1,0 +1,162 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+.videocueinfo {
+  font: 2em "Raleway", Sans-serif;
+  background: rgba(153, 153, 153, 0.6);
+  border-radius: 10px;
+  padding: 5px;
+  position: absolute;
+  top: 17.5%;
+  right: 1%;
+}
+
+.videocueinfo #video-info-SD {
+  color: white;
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.videocueinfo #video-info-SA {
+  color: white;
+
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.videocueinfo #video-info-FW {
+  color: white;
+
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.videocueinfo #video-info-KA {
+  color: white;
+
+  padding-top: 5%;
+  padding-bottom: 5%;
+}
+
+.videocueinfo {
+  font-weight: 1000;
+  float: right;
+  z-index: 11;
+}
+
+.videocueinfo #SD-good {
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.videocueinfo #SA-good {
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.videocueinfo #FW-good {
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.videocueinfo #KA-good {
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+}
+
+.PoseNet #posenetCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+.calibration-container {
+  font-weight: 1000;
+  font: 3.5em "Raleway", Sans-serif;
+  color: white;
+  position: absolute;
+  top: 2.5%;
+  left: 40%;
+  z-index: 1;
+  background: rgba(153, 153, 153, 0.6);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.rep-container {
+  font-weight: 1000;
+  font: 3.5em "Raleway", Sans-serif;
+}
+
+.rep-container #save-workout {
+  font-size: 30px;
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+  margin-left: 50px;
+}
+
+.rep-container #return-to-dash {
+  font-size: 30px;
+  text-align: center;
+  border: 3px solid;
+  border-color: black;
+  padding: 6px;
+  border-radius: 12px;
+  margin-left: 250px;
+}
+
+.videoOverlay-Good {
+  font: 2.5em "Raleway", Sans-serif;
+  font-weight: 1000;
+
+  color: white;
+  position: absolute;
+  top: 2.5%;
+  left: 2.5%;
+  z-index: 1;
+  background: rgba(153, 153, 153, 0.6);
+  border-radius: 10px;
+  padding: 5px;
+}
+.videoOverlay-Good .goodCounterCount {
+  text-align: center;
+}
+
+.videoOverlay-Bad {
+  font: 2.5em "Raleway", Sans-serif;
+  font-weight: 1000;
+
+  color: white;
+  position: absolute;
+  top: 2.5%;
+  right: 2.5%;
+  z-index: 1;
+  background: rgba(153, 153, 153, 0.6);
+  border-radius: 10px;
+  padding: 5px;
+}
+
+.videoOverlay-Bad .badCounterCount {
+  text-align: center;
+}
+
+.PoseNet #posenetVideo {
+  display: block;
+  margin: 0 auto;
+}

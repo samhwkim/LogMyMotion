@@ -1,0 +1,33 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+
+.about-container {
+  text-align: center;
+}
+.black-underline {
+  border-bottom: solid #000000;
+}
+
+.about-container .about-title {
+  font: 5.1em "Raleway", monospace;
+  color: black;
+  padding-bottom: 2.5%;
+}
+
+.about-container .about-description {
+  font: 2.2em "Raleway", sans-serif;
+  padding-right: 2.5%;
+  text-transform: uppercase;
+  padding-top: 10%;
+}
+
+.about-container .imageicon-container {
+  font: 1.8em "Raleway", sans-serif;
+}
+.imageicon-container .eyeImage {
+  padding-bottom: 2.5%;
+}
+
+.imageicon-container .crossImage .crossAbout {
+  padding-top: 1%;
+}

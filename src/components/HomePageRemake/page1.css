@@ -1,0 +1,60 @@
+@charset "UTF-8";
+@import url("https://fonts.googleapis.com/css?family=Raleway");
+.blue-accents {
+  color: #99ccff;
+  font-weight: 1000;
+}
+
+.title-container {
+  background: url(squat.gif) no-repeat center center fixed;
+}
+
+.title-container .main-title .title-text {
+  font: 7.5em "Raleway", sans-serif;
+  text-align: center;
+  padding-bottom: 12.5%;
+}
+
+.title-container .main-title .title-tagline {
+  font: 2.6em "Raleway", sans-serif;
+  text-align: center;
+  padding-top: 17.5%;
+  padding-bottom: 2.5%;
+}
+
+.title-container .link-container {
+  font: 2.5em "Raleway", sans-serif;
+  text-align: center;
+}
+
+.title-container .link-container .login-text {
+  padding-right: 7.5%;
+}
+
+.title-container .link-container .login-text .login-link {
+  text-decoration: none;
+  color: black;
+  border: 3px solid;
+  border-color: black;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.title-container .link-container .login-text .login-link:hover {
+  color: #99ccff;
+  border: 5px solid;
+}
+
+.title-container .link-container .signup-link {
+  text-decoration: none;
+  color: black;
+  border: 3px solid;
+  border-color: black;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.title-container .link-container .signup-link:hover {
+  color: #99ccff;
+  border: 5px solid;
+}
